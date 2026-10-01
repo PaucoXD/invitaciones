@@ -86,6 +86,15 @@
   .check{display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer}
   .check input{width:16px;height:16px;accent-color:var(--accent)}
   .aviso-guardado{font-size:12px;color:var(--muted)}
+  /* Ajustar posición de foto */
+  .enc-vistas{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin:6px 0 4px}
+  .enc-vistas figure{flex:1;min-width:150px;text-align:center}
+  .enc-vistas figcaption{font-size:12px;color:var(--muted);margin-top:6px}
+  .enc-box{position:relative;overflow:hidden;border-radius:8px;background:#ddd;cursor:grab;touch-action:none;max-height:300px;margin:0 auto}
+  .enc-box.arrastrando{cursor:grabbing}
+  .enc-box img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;user-select:none}
+  .enc-mira{position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px;border:2px solid rgba(255,255,255,.85);border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.3);pointer-events:none}
+  .campo input[type=range]{width:100%;accent-color:var(--accent)}
   /* Modal */
   .modal{position:fixed;inset:0;background:rgba(30,25,20,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
   .modal.ver{display:flex}
