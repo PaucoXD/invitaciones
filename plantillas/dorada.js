@@ -26,6 +26,7 @@
       { id: 'abanico', nombre: 'Abanico superior', ayuda: 'PNG transparente horizontal (~900×360 px)' },
       { id: 'separador', nombre: 'Separador', ayuda: 'PNG transparente horizontal pequeño (~700×80 px)' }
     ],
+    pdf: { slot: 'esquina', svg: ESQUINA, modo: 'cuatro' },
     fuentes: 'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Pinyon+Script&display=swap',
 
     render(d, S) {

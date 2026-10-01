@@ -568,6 +568,46 @@
   });
 
   // ---------------------------------------------------------------------------
+  // Invitación en PDF
+  // ---------------------------------------------------------------------------
+  const modalPdf = $('#modal-pdf');
+  function abrirPdf() {
+    const s = $('#pdf-para'); s.innerHTML = '';
+    s.append(el('option', { value: '' }, 'Invitación general (sin nombre)'));
+    (datos.invitados || []).forEach((x, i) => { if (x.nombre) s.append(el('option', { value: String(i) }, `${x.nombre} (${x.pases || '?'})`)); });
+    if ($('#ver-como').value) s.value = $('#ver-como').value;
+    $('#pdf-base').value = $('#inv-base').value;
+    $('#pdf-estado').textContent = (datos.invitados || []).length ? '' : 'Tip: agrega invitados en la sección “Invitados” para hacer un PDF personalizado para cada familia.';
+    modalPdf.classList.add('ver');
+  }
+  const ocupado = (si) => ['#pdf-uno', '#pdf-todos'].forEach(b => { $(b).disabled = si; $(b).style.opacity = si ? .5 : 1; });
+  $('#b-pdf').addEventListener('click', abrirPdf);
+  $('#pdf-cerrar').addEventListener('click', () => modalPdf.classList.remove('ver'));
+  $('#pdf-base').addEventListener('input', (e) => { $('#inv-base').value = e.target.value; $('#inv-base').dispatchEvent(new Event('input')); });
+  $('#pdf-uno').addEventListener('click', async () => {
+    const i = $('#pdf-para').value, inv = i !== '' ? datos.invitados[+i] : null;
+    ocupado(true); $('#pdf-estado').textContent = 'Generando PDF…';
+    try {
+      const blob = await Invitacion.pdf.generar(datos, { invitado: inv, base: $('#pdf-base').value.trim() });
+      descargar(`${slug()}${inv ? '-' + inv.nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w]+/g, '-') : ''}.pdf`, blob, 'application/pdf');
+      $('#pdf-estado').textContent = '✓ PDF descargado.';
+    } catch (e) { console.error(e); $('#pdf-estado').textContent = 'No se pudo generar el PDF: ' + e.message; }
+    ocupado(false);
+  });
+  $('#pdf-todos').addEventListener('click', async () => {
+    const lista = (datos.invitados || []).filter(x => x.nombre);
+    if (!lista.length) { $('#pdf-estado').textContent = 'Primero agrega invitados en la sección “Invitados”.'; return; }
+    ocupado(true);
+    try {
+      const zip = await Invitacion.pdf.generarTodos(datos, lista, { base: $('#pdf-base').value.trim() },
+        (n, t, nom) => { $('#pdf-estado').textContent = `Generando ${n} de ${t}: ${nom}…`; });
+      descargar(`invitaciones-pdf-${slug()}.zip`, zip, 'application/zip');
+      $('#pdf-estado').textContent = `✓ ${lista.length} PDFs descargados en un ZIP.`;
+    } catch (e) { console.error(e); $('#pdf-estado').textContent = 'No se pudo generar: ' + e.message; }
+    ocupado(false);
+  });
+
+  // ---------------------------------------------------------------------------
   // Enlaces para invitados
   // ---------------------------------------------------------------------------
   const modal = $('#modal-invitados');

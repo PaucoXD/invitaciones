@@ -57,6 +57,7 @@
       { id: 'guirnalda', nombre: 'Guirnalda', ayuda: 'PNG transparente horizontal de follaje (~1400×350 px)' },
       { id: 'ramo', nombre: 'Ramo silvestre', ayuda: 'PNG transparente vertical (~700×950 px)' }
     ],
+    pdf: { slot: 'guirnalda', svg: GUIRNALDA, modo: 'arriba' },
     fuentes: 'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Josefin+Sans:wght@300;400;600&family=Parisienne&display=swap',
 
     render(d, S) {

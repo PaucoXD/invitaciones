@@ -21,6 +21,7 @@
     colores: ['#fbf8f2', '#8a9a7b', '#3f4a37', '#b8955a'],
     efecto: null,
     adornos: [{ id: 'rama', nombre: 'Rama', ayuda: 'PNG transparente, rama diagonal (~700×700 px)' }],
+    pdf: { slot: 'rama', svg: RAMA, modo: 'esquinas' },
     fuentes: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Great+Vibes&family=Montserrat:wght@300;400;500&display=swap',
 
     render(d, S) {

@@ -15,6 +15,7 @@
 <script src="plantillas/vino.js"></script>
 <script src="plantillas/botanica.js"></script>
 <script src="bodas/ejemplo.js"></script>
+<script src="motor/pdf.js"></script>
 <style>
   :root{--bg:#f4f1ec;--panel:#fff;--ink:#28231d;--muted:#857b6f;--line:#e7e0d6;--accent:#9b5f68;--accent-ink:#fff;--soft:#faf7f3;--ok:#3f7a52;--danger:#b2463d}
   *{box-sizing:border-box;margin:0;padding:0}
@@ -149,6 +150,7 @@
   <button class="b" id="b-abrir" title="Abrir un archivo .json guardado">📂 <span class="txt">Abrir</span></button>
   <button class="b" id="b-guardar" title="Guardar los datos para editarlos después">💾 <span class="txt">Guardar datos</span></button>
   <button class="b" id="b-invitados" title="Crear enlaces personalizados para cada invitado">👥 <span class="txt">Enlaces de invitados</span></button>
+  <button class="b" id="b-pdf" title="Invitación en PDF para imprimir o mandar por WhatsApp">📄 <span class="txt">PDF</span></button>
   <button class="b pri" id="b-descargar" title="Descargar la invitación lista para publicar">⬇ <span class="txt">Descargar invitación</span></button>
   <input type="file" id="abrir-archivo" accept=".json,application/json" hidden>
 </div>
@@ -177,6 +179,23 @@
     <div class="caja-pie">
       <button class="b" id="inv-csv">Descargar lista (Excel/CSV)</button>
       <button class="b pri" id="inv-cerrar">Listo</button>
+    </div>
+  </div>
+</div>
+
+<!-- PDF -->
+<div class="modal" id="modal-pdf">
+  <div class="caja">
+    <h2>Invitación en PDF</h2>
+    <p>Para quienes prefieren algo sencillo: se abre en cualquier celular, se manda por WhatsApp y se puede imprimir (tamaño A5). Tiene el mismo diseño, y los botones de mapa y WhatsApp se pueden tocar.</p>
+    <div class="campo"><label>Para</label><select id="pdf-para"></select></div>
+    <div class="campo"><label>Dirección de la invitación publicada (opcional, para el código QR)</label><input type="url" id="pdf-base" placeholder="https://tusitio.com/valeria-y-santiago.html">
+      <p class="ayuda">Si la escribes, el PDF incluye un código QR que abre la invitación digital de esa familia.</p></div>
+    <p class="ayuda" id="pdf-estado"></p>
+    <div class="caja-pie">
+      <button class="b" id="pdf-cerrar">Cerrar</button>
+      <button class="b" id="pdf-todos">📦 Un PDF por invitado (ZIP)</button>
+      <button class="b pri" id="pdf-uno">⬇ Descargar PDF</button>
     </div>
   </div>
 </div>
