@@ -11,7 +11,7 @@ llenas un formulario y descargas la invitación lista para publicar.
 | `editor.html` | **El editor.** Formulario + vista previa en vivo + descarga. |
 | `invitacion.html` | Muestra una invitación (`?plantilla=boho`, `?b=nombre-de-boda`). |
 | `demos/` | Un archivo de demostración por diseño, listo para enviar a clientes. |
-| `plantillas/` | Los 5 diseños: Floral Romántica, Rústica Campestre, Boho Terracota, Elegante Negro y Dorado, Jardín Botánico. |
+| `plantillas/` | Los 6 diseños: Vino y Olivo (collage), Floral Romántica, Rústica Campestre, Boho Terracota, Elegante Negro y Dorado, Jardín Botánico. |
 | `plantillas/adornos/` | Aquí van tus ilustraciones PNG propias (ver `LEEME.md`). |
 | `motor/` | El código compartido (no necesitas abrirlo). |
 | `bodas/ejemplo.js` | Datos de la boda ficticia de ejemplo. |

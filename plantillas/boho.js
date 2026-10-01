@@ -80,6 +80,7 @@ ${S.sobre(d, { forro: FORRO })}
   ${S.historia(d, { clase: 'arena' })}
   ${S.regalos(d, { antes: pam('pam-sec der') })}
   ${S.rsvp(d, { clase: 'arena' })}
+  ${S.extras(d)}
   ${S.cierre(d, { separador: sol('sol-sec rv'), antes: arc('arc-fondo') })}
 </main>`;
     },

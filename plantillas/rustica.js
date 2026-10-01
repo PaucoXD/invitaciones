@@ -89,6 +89,7 @@ ${S.sobre(d, { forro: ENCAJE, selloExtra: '<span class="cordel-v"></span>' })}
   ${S.historia(d, { clase: 'kraft encaje' })}
   ${S.regalos(d)}
   ${S.rsvp(d, { clase: 'kraft encaje' })}
+  ${S.extras(d)}
   ${S.cierre(d, { separador: guir('guir-sec rv'), antes: `<span class="luces" aria-hidden="true">${LUCES}</span>` })}
 </main>`;
     },

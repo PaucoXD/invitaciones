@@ -65,6 +65,11 @@ window.INVITACION = {
     "pases": 2,
     "texto": ""
   },
+  "hospedaje": [
+    { "nombre": "Hotel Casa de Sierra Nevada", "nota": "Tarifa especial: BODAVS", "direccion": "Hospicio 42, Zona Centro\nSan Miguel de Allende, Gto.", "mapa": "" },
+    { "nombre": "Hotel Matilda", "nota": "A 5 minutos de la parroquia", "direccion": "Aldama 53, Zona Centro\nSan Miguel de Allende, Gto.", "mapa": "" }
+  ],
+  "contactos": { "novia": "5215512345678", "novio": "5215587654321" },
   "hashtag": "#ValeYSantiParaSiempre",
   "nota": "Ceremonia y recepción solo para adultos. ¡Gracias por tu comprensión!",
   "despedida": "Gracias por ser parte de nuestra historia",

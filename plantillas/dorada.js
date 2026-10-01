@@ -58,6 +58,7 @@ ${S.sobre(d, { forro: FORRO })}
   ${S.historia(d, { clase: 'alt' })}
   ${S.regalos(d)}
   ${S.rsvp(d, { clase: 'alt' })}
+  ${S.extras(d)}
   ${S.cierre(d, { separador: sep, antes: marco })}
 </main>`;
     },

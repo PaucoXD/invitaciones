@@ -12,6 +12,7 @@ El nombre del archivo es `<plantilla>-<adorno>.png`:
 | Boho Terracota | `boho-pampas.png`, `boho-arcoiris.png`, `boho-sol.png` |
 | Elegante Negro y Dorado | `dorada-esquina.png`, `dorada-abanico.png`, `dorada-separador.png` |
 | Jardín Botánico | `botanica-rama.png` |
+| Vino y Olivo | `vino-ramo.png`, `vino-alcatraz.png` |
 
 También puedes subirlos desde el editor (sección “Adornos de la plantilla”); así quedan
 solo en esa invitación. Usa ilustraciones con licencia comercial si vas a vender.
