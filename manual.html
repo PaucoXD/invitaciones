@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Manual del administrador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#faf7f3;--card:#fff;--ink:#2b241f;--muted:#7d7266;--line:#e8dfd4;--accent:#8e3b4a;--accent-bg:#f7ecee;--ok:#3f7a52;--ok-bg:#e9f3ec;--warn:#9a6b12;--warn-bg:#fbf2df;--dark:#2b1a1e}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scroll-padding-top:20px}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15.5px;line-height:1.65}
+  a{color:var(--accent)}
+  .portada{background:var(--dark);color:#f4e9e2;padding:46px 20px 40px}
+  .portada .in{max-width:1180px;margin:0 auto}
+  .portada small{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#d7a9b1;font-weight:600}
+  .portada h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(38px,7vw,60px);line-height:1.05;margin:8px 0 10px}
+  .portada p{color:#d9c6bd;max-width:720px}
+  .accesos{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .accesos a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.3);padding:9px 14px;border-radius:10px;font-weight:500;font-size:14px}
+  .accesos a:hover{background:rgba(255,255,255,.1)}
+  .layout{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:260px 1fr;gap:40px;padding:30px 20px 80px}
+  nav.indice{position:sticky;top:20px;align-self:start;max-height:calc(100vh - 40px);overflow:auto;font-size:13.5px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  nav.indice b{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  nav.indice a{display:block;color:var(--ink);text-decoration:none;padding:4px 8px;border-radius:6px}
+  nav.indice a:hover{background:var(--accent-bg);color:var(--accent)}
+  nav.indice a.sub{padding-left:20px;color:var(--muted);font-size:13px}
+  main section{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px 32px;margin-bottom:22px}
+  h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34px;line-height:1.15;margin-bottom:6px}
+  h2 .n{display:inline-flex;width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;font-family:Inter,sans-serif;font-size:17px;align-items:center;justify-content:center;margin-right:10px;vertical-align:4px}
+  h3{font-size:18px;margin:26px 0 8px}
+  h4{font-size:15.5px;margin:18px 0 6px}
+  p{margin:8px 0}
+  .intro{color:var(--muted);font-size:16px}
+  ol,ul{margin:8px 0 8px 22px}
+  li{margin:5px 0}
+  ol.pasos{list-style:none;margin-left:0;counter-reset:p}
+  ol.pasos>li{counter-increment:p;position:relative;padding-left:44px;margin:12px 0}
+  ol.pasos>li::before{content:counter(p);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--accent-bg);color:var(--accent);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px}
+  kbd,.btn{display:inline-block;background:#f3eee8;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:0 7px;font-family:Inter,sans-serif;font-size:13px;font-weight:600;white-space:nowrap}
+  code{background:#f3eee8;border-radius:5px;padding:1px 6px;font-size:13.5px;word-break:break-all}
+  .caja{border-radius:12px;padding:14px 16px;margin:14px 0;font-size:14.5px}
+  .caja b:first-child{display:block;margin-bottom:2px}
+  .tip{background:var(--ok-bg);border-left:4px solid var(--ok)}
+  .ojo{background:var(--warn-bg);border-left:4px solid var(--warn)}
+  .imp{background:var(--accent-bg);border-left:4px solid var(--accent)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14.5px}
+  th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+  th{background:#f6f1eb;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .mapa{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+  .pieza{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fdfbf8}
+  .pieza i{font-style:normal;font-size:24px}
+  .pieza h4{margin:6px 0 2px}
+  .pieza p{font-size:13.5px;color:var(--muted);margin:4px 0}
+  .pieza .q{font-size:12px;font-weight:600;color:var(--accent)}
+  .flujo{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:16px 0;font-size:13.5px}
+  .flujo span{background:#fdfbf8;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:500}
+  .flujo em{font-style:normal;color:var(--accent);font-weight:700}
+  .check{list-style:none;margin-left:0}
+  .check li{padding-left:30px;position:relative}
+  .check li::before{content:"";position:absolute;left:0;top:4px;width:17px;height:17px;border:2px solid var(--accent);border-radius:4px}
+  details{border:1px solid var(--line);border-radius:12px;margin:10px 0;background:#fdfbf8}
+  summary{padding:12px 16px;cursor:pointer;font-weight:600;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"▸ ";color:var(--accent)}
+  details[open] summary::before{content:"▾ "}
+  details>div{padding:0 16px 12px}
+  .imprimir{position:fixed;right:18px;bottom:18px;background:var(--dark);color:#fff;border:none;border-radius:30px;padding:12px 18px;font:inherit;font-weight:600;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr}
+    nav.indice{position:static;max-height:none}
+    .mapa{grid-template-columns:1fr 1fr}
+    main section{padding:22px 18px}
+  }
+  @media (max-width:520px){.mapa{grid-template-columns:1fr}}
+  @media print{
+    body{background:#fff;font-size:12pt}
+    .portada{background:#fff;color:#000;padding:0 0 10px}.portada small,.portada p{color:#333}.accesos,.imprimir,nav.indice{display:none}
+    .layout{display:block;padding:0}
+    main section{border:none;padding:0;margin:0 0 18px;page-break-inside:auto}
+    h2{page-break-after:avoid}
+    details{border:none}details>div{display:block}
+    a{color:#000}
+  }
+</style>
+</head>
+<body>
+
+<header class="portada"><div class="in">
+  <small>Estudio de Invitaciones</small>
+  <h1>Manual del administrador</h1>
+  <p>Todo lo que necesitas para vender, hacer, publicar y dar seguimiento a tus invitaciones digitales, paso a paso y sin tecnicismos.</p>
+  <div class="accesos">
+    <a href="editor.html">✏️ Editor</a>
+    <a href="mis-bodas.html">📋 Mis bodas</a>
+    <a href="index.html">🛍️ Mi página de ventas</a>
+    <a href="panel.html?demo=1">📊 Panel de novios (ejemplo)</a>
+    <a href="https://github.com/PaucoXD/invitaciones" target="_blank" rel="noopener">⚙️ Mi repositorio en GitHub</a>
+  </div>
+</div></header>
+
+<div class="layout">
+<nav class="indice" aria-label="Índice">
+  <b>Contenido</b>
+  <a href="#mapa">1. Cómo funciona todo</a>
+  <a href="#una-vez">2. Configuración inicial (una vez)</a>
+  <a class="sub" href="#negocio">Datos de tu negocio</a>
+  <a class="sub" href="#google">Google Sheets</a>
+  <a class="sub" href="#clave-admin">Tu clave de Mis bodas</a>
+  <a href="#cliente">3. Hacer la invitación de un cliente</a>
+  <a class="sub" href="#editor">El editor, botón por botón</a>
+  <a class="sub" href="#secciones">Las secciones del formulario</a>
+  <a class="sub" href="#fotos">Fotos</a>
+  <a class="sub" href="#invitados">Invitados</a>
+  <a class="sub" href="#mesas">Paquete Mesas</a>
+  <a class="sub" href="#confirmaciones">Confirmaciones automáticas</a>
+  <a href="#publicar">4. Publicar y enviar</a>
+  <a class="sub" href="#subir">Subir la invitación</a>
+  <a class="sub" href="#enlaces">Enlaces por familia</a>
+  <a class="sub" href="#pdf">PDF</a>
+  <a class="sub" href="#acceso-novios">Acceso de los novios</a>
+  <a href="#cambios">5. Cambios después de enviada</a>
+  <a href="#seguimiento">6. Seguimiento: Mis bodas y panel</a>
+  <a href="#ventas">7. Tu página de ventas</a>
+  <a href="#adornos">8. Ilustraciones propias</a>
+  <a href="#problemas">9. Problemas comunes</a>
+  <a href="#checklist">10. Lista de revisión por boda</a>
+  <a href="#respaldo">11. Respaldos y seguridad</a>
+  <a href="#glosario">12. Glosario</a>
+</nav>
+
+<main>
+
+<!-- 1 -->
+<section id="mapa">
+  <h2><span class="n">1</span>Cómo funciona todo</h2>
+  <p class="intro">Tu sistema tiene 6 piezas. Todas viven en tu sitio <code>https://paucoxd.github.io/invitaciones/</code>.</p>
+  <div class="mapa">
+    <div class="pieza"><i>🛍️</i><h4>Página de ventas</h4><p>Lo que ven tus clientes: diseños, paquetes, precios y botón de WhatsApp.</p><p class="q">Pública · <a href="index.html">index.html</a></p></div>
+    <div class="pieza"><i>✏️</i><h4>Editor</h4><p>Donde TÚ armas cada invitación llenando un formulario.</p><p class="q">Solo tú · <a href="editor.html">editor.html</a></p></div>
+    <div class="pieza"><i>💌</i><h4>Invitación</h4><p>El archivo que descargas del editor y publicas. Es lo que reciben los invitados.</p><p class="q">Invitados</p></div>
+    <div class="pieza"><i>📊</i><h4>Panel de los novios</h4><p>Los novios ven quién confirmó, quién falta, mensajes y canciones.</p><p class="q">Novios · <a href="panel.html?demo=1">panel.html</a></p></div>
+    <div class="pieza"><i>📋</i><h4>Mis bodas</h4><p>Tu panel con todas tus bodas y su avance.</p><p class="q">Solo tú · <a href="mis-bodas.html">mis-bodas.html</a></p></div>
+    <div class="pieza"><i>📗</i><h4>Google Sheets</h4><p>Tu hoja de cálculo gratuita donde se guardan todas las confirmaciones. Es la "memoria" del sistema.</p><p class="q">Tu cuenta de Google</p></div>
+  </div>
+  <h3>El recorrido de una boda</h3>
+  <div class="flujo">
+    <span>Cliente te escribe</span><em>→</em><span>Armas su invitación en el editor</span><em>→</em><span>La publicas</span><em>→</em><span>Envías un enlace a cada familia</span><em>→</em><span>Los invitados confirman</span><em>→</em><span>Se guarda en Google Sheets</span><em>→</em><span>Novios y tú lo ven en sus paneles</span>
+  </div>
+  <div class="caja tip"><b>Lo más importante de entender</b>El editor <u>no guarda las bodas en internet</u>. Cada boda se guarda como un archivo <code>.json</code> en tu computadora con el botón <span class="btn">💾 Guardar datos</span>. Ese archivo es tu "original" para hacer cambios después. ¡Guárdalo siempre!</div>
+</section>
+
+<!-- 2 -->
+<section id="una-vez">
+  <h2><span class="n">2</span>Configuración inicial (una sola vez)</h2>
+  <p class="intro">Esto se hace una vez y ya. Después solo trabajas con el editor.</p>
+
+  <h3 id="negocio">2.1 Pon los datos de tu negocio</h3>
+  <p>Tu nombre, WhatsApp, precios y paquetes están en un archivo llamado <code>negocio.js</code>. Se edita desde GitHub, en el navegador:</p>
+  <ol class="pasos">
+    <li>Entra a <a href="https://github.com/PaucoXD/invitaciones/blob/main/negocio.js" target="_blank" rel="noopener">github.com/PaucoXD/invitaciones → negocio.js</a> (con tu sesión de GitHub iniciada).</li>
+    <li>Da clic en el <b>lápiz ✏️</b> (arriba a la derecha del archivo) para editarlo.</li>
+    <li>Cambia <b>solo lo que está entre comillas</b> <code>'...'</code> o los números. No borres comas ni comillas.
+      <table>
+        <tr><th>Campo</th><th>Qué poner</th><th>Ejemplo</th></tr>
+        <tr><td><code>marca</code></td><td>Nombre de tu negocio</td><td><code>'Paulo Invitaciones'</code></td></tr>
+        <tr><td><code>whatsapp</code></td><td>Tu número con 521 + 10 dígitos, sin espacios</td><td><code>'5215512345678'</code></td></tr>
+        <tr><td><code>instagram</code>, <code>tiktok</code></td><td>Tu usuario sin @ (opcional)</td><td><code>'pauloinvitaciones'</code></td></tr>
+        <tr><td><code>entrega</code>, <code>anticipo</code></td><td>Tiempo de entrega y anticipo</td><td><code>'48 horas'</code>, <code>'50%'</code></td></tr>
+        <tr><td><code>hojaConfirmaciones</code></td><td>La dirección de tu Google Sheets (paso 2.2)</td><td><code>'https://script.google.com/macros/s/…/exec'</code></td></tr>
+        <tr><td><code>precio</code></td><td>Precio de cada paquete, solo el número</td><td><code>1290</code></td></tr>
+      </table>
+    </li>
+    <li>Baja y da clic en el botón verde <span class="btn">Commit changes…</span> y luego otra vez <span class="btn">Commit changes</span>.</li>
+    <li>Espera 1 a 3 minutos y abre tu página. Si no ves el cambio, recarga con <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd> (en el celular, cierra y vuelve a abrir la pestaña).</li>
+  </ol>
+  <div class="caja ojo"><b>Si algo se rompe</b>Si después de guardar la página sale en blanco, seguramente se borró una coma o comilla. En GitHub abre el archivo → pestaña <b>History</b> (historial) para ver qué cambió, o pídeme ayuda y lo corregimos.</div>
+
+  <h3 id="google">2.2 Instala las confirmaciones en Google Sheets</h3>
+  <p>Necesario si vendes el paquete de <b>confirmaciones automáticas</b> o quieres usar <b>Mis bodas</b>. Usa tu cuenta de Google (la de tu negocio). Sirve para <b>todas</b> tus bodas.</p>
+  <ol class="pasos">
+    <li>Abre <a href="https://sheets.new" target="_blank" rel="noopener">sheets.new</a> → se crea una hoja nueva. Ponle nombre arriba a la izquierda, por ejemplo <b>"Confirmaciones invitaciones"</b>.</li>
+    <li>En el menú de la hoja: <b>Extensiones → Apps Script</b>. Se abre otra pestaña con un poco de código.</li>
+    <li>En el <a href="editor.html">editor</a>, abre la sección <b>Confirmaciones automáticas</b> y da clic en <span class="btn">📋 Copiar código para Google Sheets</span>.</li>
+    <li>Regresa a Apps Script, <b>borra todo</b> lo que hay y <b>pega</b> (<kbd>Ctrl</kbd> + <kbd>V</kbd>). Da clic en el disquete 💾 para guardar.</li>
+    <li>Arriba a la derecha: <span class="btn">Implementar</span> → <b>Nueva implementación</b>. En el engrane ⚙️ junto a "Seleccionar tipo" elige <b>App web</b>.</li>
+    <li>Configura: <b>Ejecutar como: Yo</b> · <b>Quién tiene acceso: Cualquier persona</b>. Da clic en <span class="btn">Implementar</span>.</li>
+    <li>Google pedirá permiso: <b>Autorizar acceso</b> → elige tu cuenta. Saldrá "Google no verificó esta app": es normal porque el código es tuyo. Da clic en <b>Configuración avanzada → Ir a (nombre del proyecto)</b> → <b>Permitir</b>.</li>
+    <li>Copia la <b>URL de la app web</b> (termina en <code>/exec</code>). Pégala en <code>negocio.js</code> en <code>hojaConfirmaciones</code> (paso 2.1).</li>
+  </ol>
+  <div class="caja tip"><b>¿Cómo sé que funcionó?</b>En el editor, sección Confirmaciones automáticas, pega la URL y da clic en <span class="btn">🔌 Probar conexión</span>. Debe decir <b>"✓ Conexión correcta con Google Sheets"</b>.</div>
+  <h4>Cuando te avise que hay una versión nueva del código</h4>
+  <p>Copia el código otra vez desde el editor, pégalo en Apps Script (reemplazando todo) y guarda. Luego: <b>Implementar → Administrar implementaciones → ✏️ (lápiz) → Versión: Nueva versión → Implementar</b>. <u>La URL no cambia</u>, no tienes que cambiar nada más.</p>
+  <div class="caja ojo"><b>No hagas "Nueva implementación" para actualizar</b>Eso crea una URL diferente y las invitaciones que ya enviaste dejarían de guardar confirmaciones. Para actualizar usa siempre "Administrar implementaciones".</div>
+
+  <h3 id="clave-admin">2.3 Crea tu clave de "Mis bodas"</h3>
+  <ol class="pasos">
+    <li>Abre <a href="mis-bodas.html">Mis bodas</a>.</li>
+    <li>Escribe una clave de al menos 6 caracteres y da clic en <b>Entrar</b>. <b>La primera clave que escribas se queda como tu clave de administrador.</b></li>
+    <li>Anótala en un lugar seguro. Tu navegador la recordará, pero si cambias de celular o computadora la vas a necesitar.</li>
+  </ol>
+  <div class="caja imp"><b>¿Olvidaste la clave?</b>En Apps Script: ⚙️ <b>Configuración del proyecto → Propiedades del script</b> → borra <code>CLAVE_ADMIN</code>. La próxima clave que escribas en Mis bodas será la nueva.</div>
+</section>
+
+<!-- 3 -->
+<section id="cliente">
+  <h2><span class="n">3</span>Hacer la invitación de un cliente</h2>
+  <p class="intro">Abre el <a href="editor.html">editor</a> desde tu sitio publicado (no con doble clic en tu computadora), así funcionan todos los botones.</p>
+
+  <h3 id="editor">3.1 El editor, botón por botón</h3>
+  <table>
+    <tr><th>Botón</th><th>Para qué sirve</th></tr>
+    <tr><td><span class="btn">📋 Mis bodas</span></td><td>Va a tu panel con todas las bodas.</td></tr>
+    <tr><td><span class="btn">Nueva</span></td><td>Empieza una invitación en blanco. <b>Antes, guarda la actual</b> con "Guardar datos".</td></tr>
+    <tr><td><span class="btn">📂 Abrir</span></td><td>Abre una boda que guardaste antes (su archivo <code>.json</code>) para editarla.</td></tr>
+    <tr><td><span class="btn">💾 Guardar datos</span></td><td>Descarga el archivo <code>.json</code> de esta boda. <b>Es tu respaldo.</b> Hazlo cada vez que termines o cambies algo.</td></tr>
+    <tr><td><span class="btn">👥 Enlaces de invitados</span></td><td>Genera un enlace distinto para cada familia y te deja mandarlo por WhatsApp.</td></tr>
+    <tr><td><span class="btn">📄 PDF</span></td><td>Crea la versión para imprimir o mandar a quienes no usan internet.</td></tr>
+    <tr><td><span class="btn">⬇ Descargar invitación</span></td><td>Descarga la invitación terminada (un archivo <code>.html</code>) para publicarla.</td></tr>
+    <tr><td><b>Celular / Computadora</b></td><td>Cambia cómo se ve la vista previa.</td></tr>
+    <tr><td><b>Ver sobre de entrada</b></td><td>Muestra la animación del sobre en la vista previa.</td></tr>
+    <tr><td><b>Ver como</b></td><td>Muestra la invitación como la verá una familia en particular (su nombre, lugares, mesa).</td></tr>
+  </table>
+  <div class="caja tip"><b>Guardado automático</b>El editor recuerda lo último que hiciste en ese navegador (dice "guardado en este navegador"). Pero si subes muchas fotos puede no caber, y si limpias el navegador se pierde. <b>El respaldo real es "Guardar datos".</b></div>
+
+  <h3 id="secciones">3.2 Las secciones del formulario</h3>
+  <p>Arriba eliges el <b>diseño</b> (puedes cambiarlo cuando quieras; los datos se conservan). Luego abre cada sección:</p>
+  <table>
+    <tr><th>Sección</th><th>Qué llenar</th></tr>
+    <tr><td>Pareja y fecha</td><td>Nombres, iniciales del sello, fecha, hora, zona horaria (para la cuenta regresiva) y ciudad.</td></tr>
+    <tr><td>Portada</td><td>Texto de arriba ("Nos casamos") y foto de portada.</td></tr>
+    <tr><td>Frase</td><td>Una frase o cita con su autor.</td></tr>
+    <tr><td>Padres y padrinos</td><td>Un nombre por renglón. Padrinos: tipo (velación, anillos, lazo, arras…) y nombres.</td></tr>
+    <tr><td>Itinerario</td><td>Hora, evento, detalle e ícono de cada momento.</td></tr>
+    <tr><td>Lugares</td><td>Ceremonia y recepción: nombre, dirección, hora y enlace de Google Maps (opcional: en Maps → Compartir → Copiar vínculo).</td></tr>
+    <tr><td>Código de vestimenta</td><td>Tipo (Formal, Etiqueta…), sugerencia, colores y nota.</td></tr>
+    <tr><td>Historia y fotos</td><td>Texto de su historia y fotos de la galería (ver 3.3).</td></tr>
+    <tr><td>Mesa de regalos</td><td>Tiendas (Liverpool, Amazon…), número de evento o enlace, banco y CLABE.</td></tr>
+    <tr><td>Confirmación de asistencia</td><td>WhatsApp que recibe confirmaciones (521 + 10 dígitos), lugares por defecto y fecha límite.</td></tr>
+    <tr><td>Invitados</td><td>Cada familia con sus lugares (ver 3.4).</td></tr>
+    <tr><td>Mesas ✦</td><td>Solo si contrataron el paquete (ver 3.5).</td></tr>
+    <tr><td>Confirmaciones automáticas ✦</td><td>Solo si contrataron el paquete (ver 3.6).</td></tr>
+    <tr><td>Hospedaje</td><td>Hoteles recomendados, nota (tarifa, código) y dirección.</td></tr>
+    <tr><td>Contactos</td><td>WhatsApp de la novia y del novio para dudas.</td></tr>
+    <tr><td>Cierre</td><td>Hashtag, nota (ej. "Solo adultos") y frase de despedida.</td></tr>
+    <tr><td>Música</td><td>Sin música, melodía incluida o su canción en MP3 (2–4 MB recomendado).</td></tr>
+    <tr><td>Adornos de la plantilla</td><td>Para cambiar las flores dibujadas por PNG propios (ver sección 8).</td></tr>
+    <tr><td>Mostrar / ocultar secciones</td><td>Desmarca lo que el cliente no quiera (ej. hospedaje, canciones).</td></tr>
+  </table>
+  <div class="caja tip"><b>Campos vacíos</b>Si dejas una sección vacía (ej. sin hospedaje), no aparece en la invitación. No tienes que ocultarla.</div>
+
+  <h3 id="fotos">3.3 Fotos</h3>
+  <ul>
+    <li><b>Foto de portada:</b> en "Portada". Mejor vertical.</li>
+    <li><b>Galería:</b> en "Historia y fotos" → <b>Agregar foto</b> → <b>Subir imagen</b>. Con las flechas ↑ ↓ cambias el orden; con 🗑 la quitas.</li>
+    <li><b>✥ Ajustar posición:</b> junto a cada foto. Arrastra para elegir qué parte se ve (ej. que no se corten las caras) y usa el zoom. Aplica en la invitación y en el PDF.</li>
+    <li>Las fotos se reducen solas para que la invitación cargue rápido.</li>
+    <li><b>Diseño Vino y Olivo:</b> las fotos de la galería se reparten así: 1 = historia · 2 y 3 = padrinos · 4 = franja ancha · 5 = buenos deseos · 6 = fondo del cierre. Si falta una, ese espacio no aparece.</li>
+  </ul>
+
+  <h3 id="invitados">3.4 Invitados (lugares por familia)</h3>
+  <p>Cada familia recibe su propio enlace con su nombre y sus lugares ("Familia López · 4 lugares").</p>
+  <ol class="pasos">
+    <li>Pide a los novios su lista en Excel o Google Sheets con columnas: <b>Nombre | Lugares | Mesa | WhatsApp</b> (mesa y WhatsApp opcionales).</li>
+    <li>Selecciona las columnas, copia, y en la sección Invitados da clic en <span class="btn">📋 Pegar lista</span> → pega → <b>Agregar</b>.</li>
+    <li>Revisa arriba el total: "X invitaciones · Y personas".</li>
+  </ol>
+  <div class="caja tip"><b>¿Para qué el WhatsApp de cada familia?</b>Para que en el panel de los novios el botón "Recordar" les escriba directo a esa familia.</div>
+
+  <h3 id="mesas">3.5 Paquete Mesas (opcional)</h3>
+  <ol class="pasos">
+    <li>Marca <b>Activar paquete de mesas</b>.</li>
+    <li><span class="btn">✦ Generar mesas</span>: escribe cuántas mesas y cuántos lugares por mesa. Se acomodan solas alrededor de la pista.</li>
+    <li><b>Arrastra</b> las mesas para que coincidan con el salón real. Agrega pista, novios, entrada, barra o DJ si hace falta.</li>
+    <li>Toca una mesa para cambiar su número/nombre, lugares o forma.</li>
+    <li>En "Invitados", elige la <b>mesa</b> de cada familia. Las mesas muestran "5/10" y se ponen rojas si se pasan.</li>
+    <li><span class="btn">⬇ Lista por mesa</span> descarga un Excel para el salón.</li>
+  </ol>
+  <p>Cada invitado verá "Te esperamos en la <b>Mesa 5</b>" con el plano y su mesa resaltada.</p>
+
+  <h3 id="confirmaciones">3.6 Confirmaciones automáticas (paquete)</h3>
+  <p>Requiere haber hecho el paso <a href="#google">2.2</a>.</p>
+  <ol class="pasos">
+    <li>En la sección <b>Confirmaciones automáticas</b>, la URL ya aparece si la pusiste en <code>negocio.js</code>. Si no, pégala.</li>
+    <li>El <b>ID de la boda</b> y la <b>clave del panel</b> se crean solos. No los cambies después de enviar la invitación.</li>
+    <li>Da clic en <span class="btn">🔌 Probar conexión</span> → debe salir ✓.</li>
+    <li>Da clic en <span class="btn">👥 Sincronizar lista de invitados</span>. Esto le dice a Google quiénes están invitados (para saber quién falta) y hace que la boda aparezca en Mis bodas.</li>
+    <li>Opcional: marca <b>"Además abrir WhatsApp"</b> si los novios también quieren recibir el mensaje en su WhatsApp.</li>
+  </ol>
+  <div class="caja ojo"><b>Si cambias la lista de invitados</b>Vuelve a dar clic en "Sincronizar lista de invitados".</div>
+  <p>Cuando un invitado confirma, ve "¡Gracias, Familia López! Registramos tu confirmación…" y la respuesta aparece en el panel de los novios y en Mis bodas.</p>
+</section>
+
+<!-- 4 -->
+<section id="publicar">
+  <h2><span class="n">4</span>Publicar y enviar</h2>
+
+  <h3 id="subir">4.1 Subir la invitación a internet</h3>
+  <p>Primero, en el editor: <span class="btn">💾 Guardar datos</span> (respaldo) y luego <span class="btn">⬇ Descargar invitación</span>. Obtienes un archivo como <code>valeria-y-santiago.html</code>.</p>
+  <h4>Opción recomendada: en tu mismo sitio de GitHub</h4>
+  <ol class="pasos">
+    <li>Entra a tu repositorio → carpeta <a href="https://github.com/PaucoXD/invitaciones/tree/main/i" target="_blank" rel="noopener"><code>i</code></a> (de "invitaciones publicadas").</li>
+    <li>Da clic en <span class="btn">Add file</span> → <b>Upload files</b> y arrastra el archivo <code>.html</code>.</li>
+    <li>Da clic en <span class="btn">Commit changes</span>.</li>
+    <li>En 1 a 3 minutos quedará en: <code>https://paucoxd.github.io/invitaciones/i/valeria-y-santiago.html</code></li>
+  </ol>
+  <div class="caja tip"><b>Nombre del archivo = dirección</b>El nombre del archivo es parte del enlace. Usa nombres cortos, sin espacios ni acentos (el editor ya los genera así).</div>
+  <h4>Otras opciones</h4>
+  <ul>
+    <li><b>Netlify</b> (<a href="https://app.netlify.com/drop" target="_blank" rel="noopener">app.netlify.com/drop</a>): arrastras el archivo y te da un enlace. Crea una cuenta gratis para que no se borre.</li>
+    <li><b>Dominio propio</b> (ej. <code>tumarca.com</code>): se puede conectar a GitHub Pages o Netlify más adelante.</li>
+  </ul>
+  <div class="caja ojo"><b>Repositorio público</b>Tu repositorio de GitHub es público: cualquiera con el enlace puede ver los archivos que subas. No incluyas datos sensibles en las invitaciones (las claves de los paneles NO van dentro de la invitación).</div>
+
+  <h3 id="enlaces">4.2 Enviar un enlace a cada familia</h3>
+  <ol class="pasos">
+    <li>En el editor: <span class="btn">👥 Enlaces de invitados</span>.</li>
+    <li>Pega la dirección de la invitación publicada (paso 4.1).</li>
+    <li>Edita el mensaje de WhatsApp si quieres ({nombre} y {enlace} se reemplazan solos).</li>
+    <li>En cada familia: <b>Copiar</b> el enlace o <b>WhatsApp</b> para abrirlo con el mensaje listo (eliges el contacto).</li>
+    <li><b>Descargar lista</b> te da un Excel con todos los enlaces (útil si los novios los van a enviar ellos).</li>
+  </ol>
+  <div class="caja tip"><b>¿Y el enlace general?</b>La dirección sin nada extra funciona para cualquiera, pero no muestra nombre ni lugares. Úsala solo para redes sociales o grupos.</div>
+
+  <h3 id="pdf">4.3 PDF para imprimir o para personas mayores</h3>
+  <ol class="pasos">
+    <li><span class="btn">📄 PDF</span> → elige <b>Para</b>: invitación general o una familia.</li>
+    <li>(Opcional) Pega la dirección publicada para incluir un <b>código QR</b> a su invitación digital.</li>
+    <li><span class="btn">⬇ Descargar PDF</span>, o <span class="btn">📦 Un PDF por invitado (ZIP)</span> para generar todos. Con muchas familias tarda unos minutos: no cierres la página.</li>
+  </ol>
+  <p>El PDF es tamaño A5, trae fotos, mapas y botón de confirmar que se pueden tocar.</p>
+
+  <h3 id="acceso-novios">4.4 Darle a los novios acceso a su panel</h3>
+  <ol class="pasos">
+    <li>En el editor, sección Confirmaciones automáticas → <span class="btn">🔗 Copiar acceso para los novios</span> (o desde <a href="mis-bodas.html">Mis bodas</a> → "Acceso para novios").</li>
+    <li>Pégalo en WhatsApp a los novios. Incluye un enlace directo (un toque y entran), el código y la clave.</li>
+    <li>Recomiéndales agregarlo a su pantalla de inicio: iPhone → Compartir → "Agregar a inicio"; Android → menú ⋮ → "Agregar a la pantalla principal".</li>
+  </ol>
+</section>
+
+<!-- 5 -->
+<section id="cambios">
+  <h2><span class="n">5</span>Cambios después de enviada</h2>
+  <p class="intro">Como es digital, los cambios se ven en el mismo enlace: <b>no hay que volver a enviarla</b>.</p>
+  <ol class="pasos">
+    <li>Abre el editor → <span class="btn">📂 Abrir</span> → elige el <code>.json</code> de esa boda.</li>
+    <li>Haz el cambio y revisa en la vista previa.</li>
+    <li><span class="btn">💾 Guardar datos</span> (respaldo actualizado) → <span class="btn">⬇ Descargar invitación</span>.</li>
+    <li>En GitHub, carpeta <code>i</code> → <b>Add file → Upload files</b> → sube el archivo <b>con el mismo nombre</b> → Commit. Reemplaza al anterior y el enlace sigue igual.</li>
+    <li>Si cambiaste la lista de invitados y tienen confirmaciones automáticas: <b>Sincronizar lista de invitados</b>. A las familias nuevas mándales su enlace.</li>
+  </ol>
+  <div class="caja ojo"><b>No cambies</b> el ID de la boda ni la clave del panel después de enviar la invitación.</div>
+</section>
+
+<!-- 6 -->
+<section id="seguimiento">
+  <h2><span class="n">6</span>Seguimiento: Mis bodas y el panel de los novios</h2>
+  <h3>Mis bodas (tú)</h3>
+  <ul>
+    <li><b>Tarjetas de arriba:</b> bodas próximas, cuántas en los próximos 30 días, personas confirmadas y familias sin responder.</li>
+    <li><b>Cada boda:</b> días que faltan, barra verde (confirmaron) y roja (no asistirán), pendientes, mensajes 💌 y canciones 🎵.</li>
+    <li><b>Aviso rojo:</b> faltan 14 días o menos y hay familias sin responder → avísale a los novios que usen "Recordar".</li>
+    <li><b>Aviso amarillo "Sin lista de invitados":</b> falta dar clic en "Sincronizar lista de invitados" en el editor.</li>
+    <li>Botones: <b>Abrir panel</b> (ves lo mismo que los novios), <b>Acceso para novios</b>, y copiar el código.</li>
+  </ul>
+  <h3>Panel de los novios</h3>
+  <ul>
+    <li>Personas confirmadas, invitaciones respondidas, pendientes y quiénes no asistirán.</li>
+    <li>Lista con filtros y buscador. En los pendientes, <b>💬 Recordar</b> abre WhatsApp con un mensaje y su enlace.</li>
+    <li>Pestañas de <b>Buenos deseos</b> y <b>Canciones</b> (con votos).</li>
+    <li><b>⬇ Excel</b> para el salón o banquete. Se actualiza solo cada minuto.</li>
+  </ul>
+  <div class="caja tip"><b>Para tus ventas</b>Muestra el ejemplo del panel a tus clientes: <a href="panel.html?demo=1">panel.html?demo=1</a> y de Mis bodas: <a href="mis-bodas.html?demo=1">mis-bodas.html?demo=1</a>.</div>
+</section>
+
+<!-- 7 -->
+<section id="ventas">
+  <h2><span class="n">7</span>Tu página de ventas</h2>
+  <p>Tu página <a href="index.html">index.html</a> toma todo de <code>negocio.js</code>: nombre, WhatsApp, precios, lo que incluye cada paquete, extras y preguntas frecuentes. Para cambiar algo, edita ese archivo (ver <a href="#negocio">2.1</a>).</p>
+  <ul>
+    <li>Todos los botones abren WhatsApp con un mensaje ya escrito (paquete o diseño elegido). <b>Si no pusiste tu WhatsApp, abren WhatsApp sin destinatario.</b></li>
+    <li>El editor, Mis bodas y este manual <b>no</b> aparecen en la página pública. Tú entras directo con su dirección.</li>
+    <li>Para agregar una pregunta frecuente, copia una línea de <code>preguntas</code> y cambia el texto.</li>
+    <li>El <a href="aviso-privacidad.html">aviso de privacidad</a> es una plantilla: revísalo antes de usarlo.</li>
+  </ul>
+  <h4>Para mandar a un cliente</h4>
+  <ul>
+    <li>Tu página: <code>https://paucoxd.github.io/invitaciones/</code></li>
+    <li>Demo de un diseño: <code>…/invitacion.html?plantilla=vino</code> (cambia <code>vino</code> por <code>floral</code>, <code>rustica</code>, <code>boho</code>, <code>dorada</code> o <code>botanica</code>).</li>
+    <li>Demo con sus nombres: hazla en el editor en minutos y mándales el PDF o súbela como cualquier invitación.</li>
+  </ul>
+</section>
+
+<!-- 8 -->
+<section id="adornos">
+  <h2><span class="n">8</span>Ilustraciones propias (flores en acuarela)</h2>
+  <p>Los diseños traen flores dibujadas. Para que se vean más profesionales, cámbialas por PNG con fondo transparente (búscalas como "watercolor flowers PNG commercial use").</p>
+  <ul>
+    <li><b>Para una boda:</b> editor → <b>Adornos de la plantilla</b> → sube tu PNG en cada espacio. Ahí dice el tamaño recomendado.</li>
+    <li><b>Para todas las bodas:</b> súbelos a la carpeta <code>plantillas/adornos/</code> de GitHub con el nombre que indica el editor (ej. <code>floral-ramo-esquina.png</code>).</li>
+  </ul>
+  <div class="caja ojo"><b>Licencias</b>Si vas a vender, compra ilustraciones, música y fuentes con <b>licencia comercial</b>.</div>
+</section>
+
+<!-- 9 -->
+<section id="problemas">
+  <h2><span class="n">9</span>Problemas comunes</h2>
+  <details><summary>Hice un cambio y no lo veo</summary><div>Espera 1 a 3 minutos (GitHub tarda en publicar) y recarga con <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>. En celular, cierra la pestaña y ábrela de nuevo.</div></details>
+  <details><summary>El editor perdió mi trabajo</summary><div>Usa <span class="btn">📂 Abrir</span> y elige el último <code>.json</code> que guardaste. Por eso es importante "Guardar datos" siempre.</div></details>
+  <details><summary>Dice "⚠ fotos muy pesadas para guardado automático"</summary><div>No pasa nada: tu trabajo sigue en pantalla. Solo da clic en "Guardar datos" para tener el respaldo.</div></details>
+  <details><summary>"Probar conexión" falla</summary><div>Revisa que la URL termine en <code>/exec</code>, que la implementación diga "Cualquier persona" y que la hayas autorizado (paso 2.2). Si cambiaste el código, crea una "Nueva versión".</div></details>
+  <details><summary>Mis bodas dice "versión anterior del código"</summary><div>Copia el código de nuevo desde el editor y actualiza con <b>Administrar implementaciones → Nueva versión</b> (sección <a href="#google">2.2</a>).</div></details>
+  <details><summary>Sincronizar dice "Ese ID de boda ya existe con otra clave"</summary><div>Abriste esa boda sin su <code>.json</code> original y se creó otra clave. Abre el <code>.json</code> correcto con "Abrir", o cambia el ID de la boda (solo si aún no enviaste la invitación).</div></details>
+  <details><summary>Los novios dicen que su clave no funciona</summary><div>Abre Mis bodas → su boda → "Acceso para novios" y mándales el mensaje otra vez (lleva el enlace directo).</div></details>
+  <details><summary>Un invitado no ve su nombre en el sobre</summary><div>Abrió el enlace general. Mándale el suyo desde "Enlaces de invitados".</div></details>
+  <details><summary>Las confirmaciones no llegan al panel</summary><div>Revisa que la invitación publicada sea la versión descargada <u>después</u> de poner la URL en "Confirmaciones automáticas". Si no, descárgala otra vez y vuelve a subirla con el mismo nombre.</div></details>
+  <details><summary>La vista previa del editor sale cortada</summary><div>Usa el editor en una pantalla más ancha o cambia a "Computadora". En celular usa el botón "Vista previa" de arriba.</div></details>
+  <details><summary>Los botones de WhatsApp de mi página no llevan a mi número</summary><div>Falta tu número en <code>negocio.js</code> → <code>whatsapp</code> (con 521 y sin espacios).</div></details>
+  <details><summary>Las letras se ven "normales", no las elegantes</summary><div>Las letras se descargan de Google Fonts y necesitan internet. Con conexión se ven bien.</div></details>
+</section>
+
+<!-- 10 -->
+<section id="checklist">
+  <h2><span class="n">10</span>Lista de revisión por boda</h2>
+  <p class="intro">Imprímela o cópiala para cada cliente.</p>
+  <h4>Antes de empezar</h4>
+  <ul class="check">
+    <li>Paquete y extras acordados y anticipo recibido.</li>
+    <li>Datos: nombres, fecha, hora, lugares, padres, padrinos, itinerario, vestimenta, regalos, WhatsApp de confirmación.</li>
+    <li>Fotos (portada vertical + galería) y lista de invitados en Excel.</li>
+  </ul>
+  <h4>En el editor</h4>
+  <ul class="check">
+    <li>Diseño elegido y todas las secciones revisadas.</li>
+    <li>Fotos con "Ajustar posición" revisado.</li>
+    <li>Invitados pegados (total de personas correcto).</li>
+    <li>Mesas asignadas (si aplica).</li>
+    <li>Confirmaciones: Probar conexión ✓ y Sincronizar ✓ (si aplica).</li>
+    <li>"Ver como" con 2 o 3 familias para revisar nombres y lugares.</li>
+    <li><b>💾 Guardar datos</b> (archivo .json guardado en la carpeta del cliente).</li>
+  </ul>
+  <h4>Publicar y entregar</h4>
+  <ul class="check">
+    <li>Invitación descargada y subida a la carpeta <code>i</code>.</li>
+    <li>Abrí el enlace en mi celular y probé: sobre, mapa, música, confirmar.</li>
+    <li>Enlaces de invitados generados (Excel descargado si los envían los novios).</li>
+    <li>PDFs generados (si aplica).</li>
+    <li>Acceso al panel enviado a los novios.</li>
+    <li>Pago final recibido.</li>
+  </ul>
+</section>
+
+<!-- 11 -->
+<section id="respaldo">
+  <h2><span class="n">11</span>Respaldos y seguridad</h2>
+  <ul>
+    <li><b>Haz una carpeta por cliente</b> (en tu computadora o Google Drive) con: el <code>.json</code>, el <code>.html</code> descargado, sus fotos originales y los PDFs.</li>
+    <li><b>Tu hoja de Google Sheets</b> tiene todas las confirmaciones. No borres sus pestañas (Confirmaciones, Invitados, Bodas).</li>
+    <li><b>Claves:</b> la clave de Mis bodas es solo tuya. La clave de cada panel es de esos novios; no la compartas con otros clientes.</li>
+    <li><b>Privacidad:</b> manejas nombres y teléfonos de invitados. Úsalos solo para la boda y bórralos cuando el cliente lo pida (o unos meses después del evento).</li>
+    <li><b>Nunca</b> subas a GitHub los <code>.json</code> de clientes ni listas de invitados: el repositorio es público.</li>
+  </ul>
+</section>
+
+<!-- 12 -->
+<section id="glosario">
+  <h2><span class="n">12</span>Glosario</h2>
+  <table>
+    <tr><th>Palabra</th><th>Qué significa aquí</th></tr>
+    <tr><td><b>GitHub</b></td><td>El lugar donde viven los archivos de tu sitio. Lo usas para editar <code>negocio.js</code> y subir invitaciones.</td></tr>
+    <tr><td><b>Repositorio</b></td><td>Tu "carpeta" en GitHub: <code>PaucoXD/invitaciones</code>.</td></tr>
+    <tr><td><b>GitHub Pages</b></td><td>El servicio gratis que convierte tu repositorio en el sitio <code>paucoxd.github.io/invitaciones</code>.</td></tr>
+    <tr><td><b>Commit</b></td><td>"Guardar cambios" en GitHub.</td></tr>
+    <tr><td><b>Pull request / Merge</b></td><td>Cuando yo hago mejoras, las propongo en un "pull request" y al hacer "merge" se aplican a tu sitio.</td></tr>
+    <tr><td><b>Archivo .json</b></td><td>El archivo con todos los datos de una boda. Se abre con el editor ("Abrir").</td></tr>
+    <tr><td><b>Archivo .html</b></td><td>La invitación terminada que se publica.</td></tr>
+    <tr><td><b>Apps Script</b></td><td>El pequeño programa dentro de tu Google Sheets que recibe las confirmaciones.</td></tr>
+    <tr><td><b>URL /exec</b></td><td>La dirección de ese programa. Va en <code>negocio.js</code> y en el editor.</td></tr>
+    <tr><td><b>ID de la boda</b></td><td>El código único de cada boda (ej. <code>valeria-y-santiago-ab12</code>).</td></tr>
+    <tr><td><b>Clave del panel</b></td><td>La contraseña de los novios para ver su panel.</td></tr>
+    <tr><td><b>Sincronizar</b></td><td>Enviar la lista de invitados a Google Sheets para saber quién falta y que la boda salga en Mis bodas.</td></tr>
+    <tr><td><b>Enlace personalizado</b></td><td>La dirección de la invitación + el nombre, lugares y mesa de esa familia.</td></tr>
+  </table>
+  <p style="margin-top:18px;color:var(--muted)">¿Algo no está claro o algo no funciona como dice aquí? Pregúntame y lo ajustamos.</p>
+</section>
+
+</main>
+</div>
+<button class="imprimir" onclick="document.querySelectorAll('details').forEach(d=>d.open=true);print()">🖨️ Imprimir / guardar PDF</button>
+</body>
+</html>

@@ -11,6 +11,8 @@ llenas un formulario y descargas la invitación lista para publicar.
 | `negocio.js` | **Tus datos de negocio**: nombre, WhatsApp, redes, precios, paquetes, extras y preguntas frecuentes. |
 | `aviso-privacidad.html` | Plantilla de aviso de privacidad (revísala antes de usarla). |
 | `panel.html` | Panel de confirmaciones para los novios (`?demo=1` para ver un ejemplo). |
+| `manual.html` | **Manual del administrador**: todo explicado paso a paso (también se puede imprimir). |
+| `i/` | Carpeta donde subes las invitaciones terminadas para publicarlas. |
 | `mis-bodas.html` | **Tu panel de administrador**: todas tus bodas, días que faltan y avance de confirmaciones (`?demo=1` para ver un ejemplo). |
 | `editor.html` | **El editor.** Formulario + vista previa en vivo + descarga. |
 | `invitacion.html` | Muestra una invitación (`?plantilla=boho`, `?b=nombre-de-boda`). |
