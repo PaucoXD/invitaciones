@@ -69,6 +69,7 @@
       { id: 'ramo', nombre: 'Ramo de flores', ayuda: 'PNG transparente, ramo que cuelga de la esquina (~700×900 px)' },
       { id: 'alcatraz', nombre: 'Flor suelta horizontal', ayuda: 'PNG transparente horizontal (~1000×250 px)' }
     ],
+    pdf: { slot: 'ramo', svg: RAMO, modo: 'colgante' },
     fuentes: 'https://fonts.googleapis.com/css2?family=Gilda+Display&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Pinyon+Script&display=swap',
 
     render(d, S) {

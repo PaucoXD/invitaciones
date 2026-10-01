@@ -36,6 +36,17 @@ llenas un formulario y descargas la invitación lista para publicar.
   y su mesa resaltada. *Lista por mesa* descarga un Excel para el salón o el coordinador.
 - **Ver como:** arriba de la vista previa eliges un invitado para ver su invitación personalizada.
 
+## Invitación en PDF
+
+Para quienes no se llevan bien con la tecnología: botón **📄 PDF** en el editor.
+
+- Hoja tamaño **A5** con el mismo diseño de la plantilla; se manda por WhatsApp o se imprime.
+- Los botones de **mapa**, **mesa de regalos** y **confirmar por WhatsApp** se pueden tocar dentro del PDF.
+- Elige **para quién** es: aparece su nombre, lugares y mesa (si contrataron el paquete Mesas, con el plano).
+- Si escribes la dirección publicada, incluye un **código QR** que abre la invitación digital de esa familia.
+- **Un PDF por invitado (ZIP):** genera todos de una vez.
+- Funciona sin internet: las librerías están en `motor/lib/`.
+
 ## Personalización por invitado
 
 Cualquier invitación acepta al final del enlace:

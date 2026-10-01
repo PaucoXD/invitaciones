@@ -978,6 +978,6 @@ ${r.html}
     registrar(p) { Plantillas[p.id] = p; },
     plantillas: Plantillas,
     construir, montar, exportarHTML, normalizar,
-    ICONOS, ICONOS_EVENTO, ICONOS_REGALO, SECCIONES, fechaInfo, huella
+    ICONOS, ICONOS_EVENTO, ICONOS_REGALO, SECCIONES, fechaInfo, huella, S
   };
 })();

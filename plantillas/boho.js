@@ -46,6 +46,7 @@
       { id: 'arcoiris', nombre: 'Arco de colores', ayuda: 'PNG transparente horizontal (~900×480 px)' },
       { id: 'sol', nombre: 'Sol', ayuda: 'PNG transparente cuadrado (~400×400 px)' }
     ],
+    pdf: { slot: 'pampas', svg: PAMPAS, modo: 'abajo' },
     fuentes: 'https://fonts.googleapis.com/css2?family=Allura&family=Italiana&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Josefin+Sans:wght@300;400;600&display=swap',
 
     render(d, S) {

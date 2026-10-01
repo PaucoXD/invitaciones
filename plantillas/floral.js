@@ -55,6 +55,7 @@
       { id: 'ramo-arco', nombre: 'Ramo sobre el arco', ayuda: 'PNG transparente horizontal (~1200×500 px)' },
       { id: 'separador', nombre: 'Separador', ayuda: 'PNG transparente horizontal pequeño (~600×100 px)' }
     ],
+    pdf: { slot: 'ramo-esquina', svg: RAMO_ESQUINA, modo: 'esquinas' },
     fuentes: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@400;500&family=Pinyon+Script&display=swap',
 
     render(d, S) {
