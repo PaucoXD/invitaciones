@@ -61,7 +61,7 @@
 .pdf-cont{position:relative;z-index:3;flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;overflow:hidden}
 .pdf-portada .pdf-cont{justify-content:center;align-items:center;gap:0}
 .pp-eye,.pdf-eye{font-family:var(--f-etiqueta);font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--acento)}
-.pp-foto{width:150px;height:180px;object-fit:cover;border-radius:80px 80px 4px 4px;border:4px solid var(--tarjeta,#fff);box-shadow:0 6px 16px rgba(0,0,0,.15);margin-bottom:18px}
+.pp-foto{width:176px;height:212px;flex-shrink:0;border-radius:80px 80px 4px 4px;border:4px solid var(--tarjeta,#fff);box-shadow:0 6px 16px rgba(0,0,0,.15);margin-bottom:18px}
 .pp-nombres{font-family:var(--f-titulo);font-weight:400;font-size:60px;line-height:1.02;color:var(--titulo,var(--tinta));margin:12px 0 6px}
 .pp-nombres i{display:block;font-style:normal;font-size:.45em;color:var(--acento);margin:4px 0}
 .pp-fecha{display:flex;align-items:center;justify-content:center;gap:14px;margin:14px 0 6px}
@@ -74,6 +74,12 @@
 .pp-para small{font-family:var(--f-etiqueta);font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--acento)}
 .pp-para strong{display:block;font-family:var(--f-titulo);font-weight:400;font-size:26px;line-height:1.2;color:var(--titulo,var(--tinta))}
 .pp-para span{font-size:13px}
+.compacta .pp-foto{width:132px;height:159px;margin-bottom:10px}
+.compacta .pp-nombres{font-size:48px;margin:6px 0 2px}
+.compacta .pp-fecha{margin:8px 0 4px}.compacta .pp-fecha b{font-size:42px}
+.compacta .pp-lugar{margin-top:6px}
+.compacta .pp-para{margin-top:12px;padding:8px 22px}
+.compacta .pp-qr{margin-top:12px}
 .pp-qr{display:flex;align-items:center;gap:12px;margin-top:18px;text-align:left;font-size:11px;color:var(--suave);line-height:1.3}
 .pp-qr img{width:74px;height:74px;background:#fff;padding:3px;border-radius:3px}
 .pp-qr b{display:block;font-family:var(--f-etiqueta);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--acento)}
@@ -91,6 +97,10 @@
 .pdf-it div{display:flex;gap:10px;align-items:baseline;border-bottom:1px dotted var(--linea);padding:4px 0}
 .pdf-it b{font-family:var(--f-titulo);font-weight:400;font-size:17px;color:var(--titulo,var(--tinta));min-width:48px}
 .pdf-it span{font-size:12.5px}
+.pdf-galeria{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+.pdf-galeria figure{position:relative;background:var(--tarjeta,#fff);padding:5px;box-shadow:0 3px 10px rgba(0,0,0,.14)}
+.pdf-galeria img{display:block}
+.pdf-galeria figcaption{font-family:var(--f-titulo);font-size:16px;color:var(--titulo,var(--tinta));padding-top:4px}
 .pdf-colores{display:flex;justify-content:center;gap:7px;margin-top:6px}.pdf-colores span{width:18px;height:18px;border-radius:50%;border:1px solid var(--linea)}
 .pdf-bloque .pdf-mesa-num{font-family:var(--f-titulo);font-size:52px;line-height:1.1;color:var(--titulo,var(--tinta))}
 .pdf-pie{position:relative;z-index:3;font-family:var(--f-etiqueta);font-size:8.5px;letter-spacing:.35em;text-transform:uppercase;color:var(--acento);padding-top:8px}
@@ -103,7 +113,7 @@
 `;
 
   function construir(datos, opc = {}) {
-    const d = I.normalizar(datos);
+    const d = I.normalizar(datos), fotos = opc.fotos || {};
     const p = I.plantillas[d.plantilla] || Object.values(I.plantillas)[0];
     d.plantilla = p.id; d._rutaAdornos = null;
     const f = I.fechaInfo(d), ini = S.iniciales(d), inv = opc.invitado || null;
@@ -118,7 +128,7 @@
 
     // ---------- Portada ----------
     const portada = pagina(`
-      ${d.fotoPortada ? `<img class="pp-foto" src="${esc(d.fotoPortada)}" alt="">` : ''}
+      ${fotos.portada ? `<img class="pp-foto" src="${fotos.portada}" alt="">` : ''}
       <p class="pp-eye">${esc(d.introPortada)}</p>
       <h1 class="pp-nombres">${esc(d.novia)}<i>&amp;</i>${esc(d.novio)}</h1>
       <div class="pp-fecha"><span>${f.diaSemana}</span><b>${f.dia}</b><span>${f.anio}</span></div>
@@ -126,7 +136,8 @@
       ${hay(d.ciudad) ? `<p class="pp-lugar">${esc(d.ciudad)}</p>` : ''}
       ${inv && inv.nombre ? `<div class="pp-para"><small>Con cariño para</small><strong>${esc(inv.nombre)}</strong><span>${esc(inv.pases || d.rsvp.pases)} ${+(inv.pases || d.rsvp.pases) === 1 ? 'lugar reservado' : 'lugares reservados'}${conMesa ? ' · ' + esc(etqMesa(inv.mesa)) : ''}</span></div>`
         : (hay(d.frase) ? `<p class="pp-frase">“${br(d.frase)}”</p>` : '')}
-      ${opc.qr ? `<div class="pp-qr"><img src="${opc.qr}" alt=""><div><b>Invitación digital</b>Escanea el código para ver<br>mapas, cuenta regresiva y más</div></div>` : ''}`, 'pdf-portada');
+      ${opc.qr ? `<div class="pp-qr"><img src="${opc.qr}" alt=""><div><b>Invitación digital</b>Escanea el código para ver<br>mapas, cuenta regresiva y más</div></div>` : ''}`,
+      'pdf-portada' + ((fotos.portada ? 1 : 0) + (opc.qr ? 1 : 0) + (inv && inv.nombre ? 1 : 0) >= 2 && fotos.portada ? ' compacta' : ''));
 
     // ---------- Bloques (se acomodan solos en las páginas) ----------
     const B = [];
@@ -144,6 +155,11 @@
     if (!d.ocultar.itinerario && it.length) bloque(`<h2>Itinerario</h2><div class="pdf-it">${it.map(x => `<div><b>${esc(x.hora)}</b><span>${esc(x.evento)}</span></div>`).join('')}</div>`);
     const v = d.vestimenta || {};
     if (!d.ocultar.vestimenta && hay(v.tipo)) bloque(`<p class="pdf-eye">Código de vestimenta</p><h2>${esc(v.tipo)}</h2>${hay(v.texto) ? `<p>${br(v.texto)}</p>` : ''}${(v.colores || []).length ? `<div class="pdf-colores">${v.colores.map(c => `<span style="background:${esc(c)}"></span>`).join('')}</div>` : ''}${hay(v.nota) ? `<p style="font-style:italic;color:var(--suave);margin-top:6px">${esc(v.nota)}</p>` : ''}`);
+    const gal = fotos.galeria || [];
+    if (!d.ocultar.historia && (gal.length || hay(d.historia.texto))) {
+      bloque(`<h2>${esc(d.historia.titulo || 'Nuestra historia')}</h2>${hay(d.historia.texto) ? `<p style="font-style:italic;color:var(--suave)">${br(d.historia.texto)}</p>` : ''}
+        ${gal.length ? `<div class="pdf-galeria n${gal.length}">${gal.map(g => `<figure><img src="${g.src}" width="${g.w}" height="${g.h}" style="width:${g.w}px;height:${g.h}px" alt="">${hay(g.pie) ? `<figcaption>${esc(g.pie)}</figcaption>` : ''}</figure>`).join('')}</div>` : ''}`);
+    }
     const rg = d.regalos || {}, ops = (rg.opciones || []).filter(x => hay(x.nombre)), clabe = String(rg.clabe || '').replace(/\s/g, '');
     if (!d.ocultar.regalos && (ops.length || clabe)) bloque(`<h2>Mesa de regalos</h2>${hay(rg.texto) ? `<p style="font-style:italic;color:var(--suave)">${esc(rg.texto)}</p>` : ''}
       <div class="pdf-col" style="flex-wrap:wrap;margin-top:6px">${ops.map(x => `<div style="min-width:110px"><h3>${esc(x.nombre)}</h3><p>${esc(x.detalle || '')}</p>${hay(x.enlace) ? `<a class="pdf-btn" href="${esc(x.enlace)}">Ver mesa</a>` : ''}</div>`).join('')}</div>
@@ -180,6 +196,36 @@
     const d = String(n).replace(/\D/g, '');
     const local = d.length > 10 ? d.slice(-10) : d;
     return local.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3');
+  }
+
+  // ---------------------------------------------------------------------------
+  // Fotos: se recortan antes (la conversión a PDF no respeta "cover" ni el ajuste de posición)
+  // ---------------------------------------------------------------------------
+  const TAM = { portada: [176, 212], g1: [330, 230], g2: [192, 240], g3: [192, 150] };
+  function cargarImagen(src) {
+    return new Promise((ok) => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => ok(im); im.onerror = () => ok(null); im.src = src; });
+  }
+  /** Recorta la foto al tamaño w×h igual que en la invitación (posición y zoom elegidos en el editor). */
+  async function recortar(src, w, h, enc) {
+    const im = await cargarImagen(src); if (!im || !im.naturalWidth) return '';
+    const k = 2.5, W = w * k, H = h * k;
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const x = enc ? +enc.x : 50, y = enc ? +enc.y : 50, z = enc ? Math.max(1, +enc.z || 1) : 1;
+    const s = Math.max(W / im.naturalWidth, H / im.naturalHeight), dw = im.naturalWidth * s, dh = im.naturalHeight * s;
+    const ox = (W - dw) * x / 100, oy = (H - dh) * y / 100, Ox = W * x / 100, Oy = H * y / 100;
+    try {
+      c.getContext('2d').drawImage(im, Ox + (ox - Ox) * z, Oy + (oy - Oy) * z, dw * z, dh * z);
+      return c.toDataURL('image/jpeg', 0.9);
+    } catch (e) { return ''; } // imagen de otro sitio que no permite copiarse
+  }
+  async function prepararFotos(datos) {
+    const enc = datos.encuadres || {}, e = (src) => enc[I.huella(src)];
+    const out = { portada: '', galeria: [] };
+    if (datos.fotoPortada) out.portada = await recortar(datos.fotoPortada, ...TAM.portada, e(datos.fotoPortada));
+    const fs = ((datos.historia && datos.historia.fotos) || []).filter(f => f.src).slice(0, 4);
+    const t = fs.length === 1 ? TAM.g1 : fs.length === 2 ? TAM.g2 : TAM.g3;
+    for (const f of fs) { const src = await recortar(f.src, ...t, e(f.src)); if (src) out.galeria.push({ src, pie: f.pie, w: t[0], h: t[1] }); }
+    return out;
   }
 
   // ---------------------------------------------------------------------------
@@ -249,7 +295,8 @@
   async function generar(datos, opciones = {}) {
     await prepararLibs(false);
     const qr = opciones.base ? qrDataURL(enlaceInvitado(opciones.base, datos, opciones.invitado)) : '';
-    const r = construir(datos, { invitado: opciones.invitado, qr });
+    const fotos = await prepararFotos(datos);
+    const r = construir(datos, { invitado: opciones.invitado, qr, fotos });
     const cont = prepararRaiz(r);
     const t = document.createElement('div'); t.innerHTML = r.portada; cont.appendChild(t.firstElementChild);
     paginar(r, cont);
@@ -265,7 +312,8 @@
   async function generarTodos(datos, invitados, opciones = {}, progreso = () => {}) {
     await prepararLibs(true);
     const zip = new window.JSZip();
-    const base0 = construir(datos, {});
+    const fotos = await prepararFotos(datos);
+    const base0 = construir(datos, { fotos });
     let cont = prepararRaiz(base0);
     paginar(base0, cont);
     await esperarImagenes(cont);
@@ -276,7 +324,7 @@
       const inv = lista[i];
       progreso(i + 1, lista.length, inv.nombre);
       const qr = opciones.base ? qrDataURL(enlaceInvitado(opciones.base, datos, inv)) : '';
-      const r = construir(datos, { invitado: inv, qr });
+      const r = construir(datos, { invitado: inv, qr, fotos });
       cont = prepararRaiz(r);
       const t = document.createElement('div'); t.innerHTML = r.portada + (r.mesa || ''); [...t.children].forEach(n => cont.appendChild(n));
       await esperarImagenes(cont);
