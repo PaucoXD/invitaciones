@@ -49,6 +49,7 @@ ${S.sobre(d)}
   ${S.historia(d, { clase: 'alt' })}
   ${S.regalos(d)}
   ${S.rsvp(d, { clase: 'alt' })}
+  ${S.extras(d)}
   ${S.cierre(d, { antes: rama('rama-fondo l') + rama('rama-fondo r') })}
 </main>`;
     },

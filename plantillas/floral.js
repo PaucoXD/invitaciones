@@ -87,6 +87,7 @@ ${S.sobre(d, { forro: FORRO })}
   ${S.historia(d, { clase: 'alt', antes: esq('esq tr chica') })}
   ${S.regalos(d)}
   ${S.rsvp(d, { clase: 'alt', antes: esq('esq bl chica') })}
+  ${S.extras(d)}
   ${S.cierre(d, { separador: sep, antes: esq('esq tl tenue') + esq('esq br tenue') })}
 </main>`;
     },

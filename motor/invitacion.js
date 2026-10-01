@@ -99,7 +99,7 @@
   // ---------------------------------------------------------------------------
   // Datos por defecto (se mezclan con los de cada boda)
   // ---------------------------------------------------------------------------
-  const SECCIONES = ['frase', 'familia', 'cuenta', 'itinerario', 'ubicacion', 'vestimenta', 'historia', 'regalos', 'rsvp', 'cierre'];
+  const SECCIONES = ['frase', 'familia', 'cuenta', 'itinerario', 'ubicacion', 'vestimenta', 'historia', 'regalos', 'hospedaje', 'rsvp', 'deseos', 'canciones', 'contactos', 'cierre'];
   function normalizar(d) {
     d = JSON.parse(JSON.stringify(d || {}));
     const def = {
@@ -115,6 +115,7 @@
       historia: { titulo: 'Nuestra historia', texto: '', fotos: [] },
       regalos: { titulo: 'Tu presencia es nuestro mejor regalo', texto: '', opciones: [], banco: '', titular: '', clabe: '' },
       rsvp: { whatsapp: '', fechaLimite: '', pases: 2, texto: '' },
+      hospedaje: [], contactos: { novia: '', novio: '' },
       hashtag: '', nota: '', despedida: 'Gracias por ser parte de nuestra historia',
       musica: 'melodia', adornos: {}, ocultar: {}
     };
@@ -147,7 +148,7 @@
 
     sobre(d, o = {}) {
       return `
-<div id="sobre" class="sobre-pantalla" role="dialog" aria-label="Abrir invitación">
+<div id="sobre" class="sobre-pantalla${o.portada ? ' en-portada' : ''}" ${o.portada ? '' : 'role="dialog"'} aria-label="Abrir invitación">
   ${o.fondo || ''}
   <p class="sobre-para">${esc(o.textoPara || 'Una invitación especial para')}<strong data-invitado-nombre>ti</strong></p>
   <div class="sobre" tabindex="0" role="button" aria-label="Abrir sobre">
@@ -189,11 +190,17 @@
       return seccion('familia', `${o.arriba || ''}${titulo}${hay(d.textoFamilia) ? `<p class="lead rv">${br(d.textoFamilia)}</p>` : ''}${padres}${padrinos}`, o);
     },
 
+    reloj(cortas) {
+      const u = (id, l) => `<div><span data-cd="${id}">00</span><small>${l}</small></div>`;
+      const n = cortas ? ['D', 'H', 'M', 'S'] : ['Días', 'Horas', 'Minutos', 'Segundos'];
+      return `<div class="reloj rv">${u('d', n[0])}<b>:</b>${u('h', n[1])}<b>:</b>${u('m', n[2])}<b>:</b>${u('s', n[3])}</div>`;
+    },
+    enlaceCalendario, enlaceMapa,
+
     cuenta(d, o = {}) {
       if (d.ocultar.cuenta) return '';
-      const u = (id, l) => `<div><span data-cd="${id}">00</span><small>${l}</small></div>`;
       return seccion('cuenta', `${encabezado('Faltan', o.titulo || 'para el gran día')}
-        <div class="reloj rv">${u('d', 'Días')}<b>:</b>${u('h', 'Horas')}<b>:</b>${u('m', 'Minutos')}<b>:</b>${u('s', 'Segundos')}</div>
+        ${S.reloj()}
         <a class="btn rv" target="_blank" rel="noopener" href="${esc(enlaceCalendario(d))}">${ICONOS.calendario}Agendar en calendario</a>`, Object.assign({ clase: 'oscura' }, o));
     },
 
@@ -257,12 +264,9 @@
         ${clabe ? `<p class="banco rv">${hay(r.banco) ? esc(r.banco) + ' · ' : ''}CLABE: <code>${esc(clabe.replace(/(\d{4})(?=\d)/g, '$1 '))}</code><button class="copiar" data-copiar="${esc(clabe)}">Copiar</button>${hay(r.titular) ? `<br>${esc(r.titular)}` : ''}</p>` : ''}`, o);
     },
 
-    rsvp(d, o = {}) {
+    formRsvp(d) {
       const r = d.rsvp || {};
-      if (d.ocultar.rsvp) return '';
-      return seccion('rsvp', `${encabezado('R.S.V.P.', o.titulo || 'Confirma tu asistencia', r.texto)}
-        <div class="pase rv"><strong data-invitado-nombre>Querido invitado</strong>Hemos reservado <b data-pases>${esc(r.pases || 2)}</b> <span data-pases-palabra>lugares</span> en tu honor</div>
-        <form id="form-rsvp" class="rv" novalidate>
+      return `<form id="form-rsvp" class="rv" novalidate>
           <label for="f-nombre">Nombre completo</label>
           <input type="text" id="f-nombre" placeholder="Tu nombre" autocomplete="name">
           <label>¿Nos acompañarás?</label>
@@ -275,7 +279,49 @@
           <textarea id="f-msg" placeholder="Escribe unas palabras…"></textarea>
           <button class="btn solido" type="submit">${ICONOS.whatsapp}Confirmar por WhatsApp</button>
           ${hay(r.fechaLimite) ? `<p class="limite">Agradeceremos tu confirmación antes del ${esc(fechaTexto(r.fechaLimite))}</p>` : ''}
-        </form>`, o);
+        </form>`;
+    },
+
+    rsvp(d, o = {}) {
+      const r = d.rsvp || {};
+      if (d.ocultar.rsvp) return '';
+      return seccion('rsvp', `${encabezado('R.S.V.P.', o.titulo || 'Confirma tu asistencia', r.texto)}
+        <div class="pase rv"><strong data-invitado-nombre>Querido invitado</strong>Hemos reservado <b data-pases>${esc(r.pases || 2)}</b> <span data-pases-palabra>lugares</span> en tu honor</div>
+        ${S.formRsvp(d)}`, o);
+    },
+
+    hospedaje(d, o = {}) {
+      const hs = (d.hospedaje || []).filter(h => hay(h.nombre));
+      if (!hs.length || d.ocultar.hospedaje) return '';
+      return seccion('hospedaje', `${encabezado('Para nuestros invitados', o.titulo || 'Hospedaje')}
+        <div class="hoteles">${hs.map(h => `<div class="hotel rv"><h4>${esc(h.nombre)}</h4>${hay(h.nota) ? `<p class="hotel-nota">${br(h.nota)}</p>` : ''}${hay(h.direccion) ? `<p class="hotel-dir">${br(h.direccion)}</p>` : ''}<a class="btn" target="_blank" rel="noopener" href="${esc(enlaceMapa(h))}">${ICONOS.mapa}Ver ubicación</a></div>`).join('')}</div>`, o);
+    },
+
+    /** Formulario corto que se envía por WhatsApp (buenos deseos, canciones). */
+    formWhats(d, tipo, o) {
+      return `<form class="form-whats" data-whats="${tipo}" novalidate>
+        <input type="text" name="nombre" placeholder="Tu nombre" autocomplete="name" data-nombre-invitado>
+        ${tipo === 'cancion' ? '<input type="text" name="texto" placeholder="Canción y artista">' : '<textarea name="texto" placeholder="Escribe tus buenos deseos…"></textarea>'}
+        <button class="btn solido" type="submit">${ICONOS.whatsapp}${esc(o.boton)}</button>
+      </form>`;
+    },
+    deseos(d, o = {}) {
+      if (d.ocultar.deseos || !hay(d.rsvp.whatsapp)) return '';
+      return seccion('deseos', `${encabezado('Déjanos un mensaje', o.titulo || 'Buenos deseos', o.texto || 'Tus palabras serán un recuerdo para siempre')}${S.formWhats(d, 'deseo', { boton: 'Enviar mis buenos deseos' })}`, o);
+    },
+    canciones(d, o = {}) {
+      if (d.ocultar.canciones || !hay(d.rsvp.whatsapp)) return '';
+      return seccion('canciones', `${encabezado('¡Que no pare la fiesta!', o.titulo || 'Sugiere una canción', o.texto || '¿Qué canción no puede faltar en la pista?')}${S.formWhats(d, 'cancion', { boton: 'Enviar canción' })}`, o);
+    },
+    contactos(d, o = {}) {
+      const c = d.contactos || {};
+      if (d.ocultar.contactos || (!hay(c.novia) && !hay(c.novio))) return '';
+      const b = (num, quien) => hay(num) ? `<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${esc(String(num).replace(/\D/g, ''))}">${ICONOS.whatsapp}${esc(quien)}</a>` : '';
+      return seccion('contactos', `${encabezado('¿Tienes dudas?', o.titulo || 'Contactos')}<div class="contactos rv">${b(c.novia, d.novia)}${b(c.novio, d.novio)}</div>`, o);
+    },
+    /** Hospedaje, buenos deseos, canciones y contactos juntos. */
+    extras(d, o = {}) {
+      return S.hospedaje(d, o.hospedaje) + S.deseos(d, o.deseos) + S.canciones(d, o.canciones) + S.contactos(d, o.contactos);
     },
 
     cierre(d, o = {}) {
@@ -490,6 +536,37 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 #form-rsvp .btn{width:100%;justify-content:center;margin-top:30px}
 .limite{font-size:16px;font-style:italic;color:var(--suave);text-align:center;margin-top:16px}
 
+/* Hospedaje, deseos, canciones, contactos */
+.hoteles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:28px}
+.hotel{border:1px solid var(--linea);background:var(--tarjeta,var(--fondo));padding:28px 20px}
+.hotel h4{font-family:var(--f-titulo);font-weight:400;font-size:30px;color:var(--titulo,var(--tinta));line-height:1.2}
+.hotel-nota{font-family:var(--f-etiqueta);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--acento);margin:6px 0}
+.hotel-dir{font-size:16px;color:var(--suave);margin-bottom:18px}
+.form-whats{max-width:440px;margin:26px auto 0;display:flex;flex-direction:column;gap:12px}
+.form-whats input,.form-whats textarea{width:100%;padding:13px 16px;font-family:var(--f-texto);font-size:18px;color:var(--tinta);background:var(--tarjeta,var(--fondo));border:1px solid var(--linea);border-radius:2px;outline:none}
+.form-whats textarea{min-height:100px;resize:vertical}
+.form-whats .btn{justify-content:center}
+.contactos{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:26px}
+
+/* Sobre como portada (se queda abierto) */
+.sobre-pantalla.en-portada{position:relative;inset:auto;z-index:2;min-height:100vh;min-height:100svh;background:none;overflow:visible}
+.sobre-pantalla.en-portada.abierto{animation:none;pointer-events:auto}
+.sin-sobre .sobre-pantalla.en-portada{display:flex}
+.en-portada.ya *,.en-portada.ya *::before,.en-portada.ya *::after{animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important;transition-delay:0s!important}
+.en-portada .sobre-atras,.en-portada .sobre-frente{animation:none!important}
+
+/* Menú y botón para volver arriba */
+.menu-btn,.arriba-btn{position:fixed;z-index:60;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--acento2);color:var(--fondo);box-shadow:0 6px 16px rgba(0,0,0,.18);transition:opacity .3s,transform .3s}
+.menu-btn{top:14px;right:14px}
+.menu-btn svg,.arriba-btn svg{width:20px;height:20px}
+.arriba-btn{left:16px;bottom:18px;opacity:0;pointer-events:none;transform:translateY(10px)}
+.arriba-btn.ver{opacity:.9;pointer-events:auto;transform:none}
+.menu{position:fixed;inset:0;z-index:70;background:var(--fondo);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;opacity:0;pointer-events:none;transition:opacity .35s;overflow-y:auto;padding:70px 20px}
+.menu a{font-family:var(--f-texto);font-size:20px;letter-spacing:.18em;text-transform:uppercase;color:var(--titulo,var(--tinta));text-decoration:none}
+.menu-abierto .menu{opacity:1;pointer-events:auto}
+.menu-cerrar{position:absolute;top:14px;right:14px}
+.bloqueado .menu-btn{display:none}
+
 /* Cierre */
 .hashtag{font-family:var(--f-etiqueta);font-size:clamp(15px,4.4vw,22px);letter-spacing:.18em;color:var(--acento2);word-break:break-word}
 .pie{padding:90px 24px 110px;text-align:center;background:var(--oscuro);color:var(--sobre-oscuro);position:relative;overflow:hidden}
@@ -612,8 +689,10 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         if (btnM && d.musica) btnM.classList.add('ver');
         observar(); iniciarEfecto();
       }, quieto ? 0 : 3000);
-      setTimeout(function () { pantalla.classList.add('fin'); }, quieto ? 0 : 3800);
+      if (!enPortada) setTimeout(function () { pantalla.classList.add('fin'); }, quieto ? 0 : 3800);
     }
+    var enPortada = pantalla && pantalla.classList.contains('en-portada');
+    if (enPortada && document.body.classList.contains('sin-sobre')) pantalla.classList.add('abierto', 'ya');
     if (pantalla && !document.body.classList.contains('sin-sobre')) {
       document.body.classList.add('bloqueado');
       var s = $('.sobre', pantalla);
@@ -711,6 +790,47 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         z.addEventListener('click', function () { z.remove(); }); document.body.appendChild(z);
       });
     });
+
+    // Formularios cortos por WhatsApp (buenos deseos, canciones)
+    $$('[data-whats]').forEach(function (f) {
+      var n = $('[name=nombre]', f); if (invitado && n) n.value = invitado;
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var nom = $('[name=nombre]', f).value.trim(), txt = $('[name=texto]', f).value.trim();
+        if (!txt) { avisar(f.getAttribute('data-whats') === 'cancion' ? 'Escribe una canción' : 'Escribe tu mensaje'); return; }
+        var num = String((d.rsvp && d.rsvp.whatsapp) || '').replace(/\D/g, '');
+        var msg = f.getAttribute('data-whats') === 'cancion'
+          ? '🎵 Sugerencia de canción para la boda de ' + d.novia + ' & ' + d.novio + ':\n' + txt + (nom ? '\n— ' + nom : '')
+          : '💌 Buenos deseos para ' + d.novia + ' & ' + d.novio + ':\n' + txt + (nom ? '\n— ' + nom : '');
+        W.open('https://wa.me/' + num + '?text=' + encodeURIComponent(msg), '_blank');
+      });
+    });
+
+    // Tarjetas que se voltean y bloques que se despliegan
+    $$('[data-voltear]').forEach(function (e) {
+      e.addEventListener('click', function () { e.classList.toggle('volteada'); });
+      e.addEventListener('keydown', function (k) { if (k.key === 'Enter') e.classList.toggle('volteada'); });
+    });
+    $$('[data-desplegar]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var c = document.getElementById(b.getAttribute('data-desplegar')); if (!c) return;
+        var abrirlo = c.hasAttribute('hidden');
+        if (abrirlo) { c.removeAttribute('hidden'); $$('.rv', c).forEach(function (x) { x.classList.add('vis'); }); setTimeout(function () { c.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); }
+        else c.setAttribute('hidden', '');
+        b.setAttribute('aria-expanded', abrirlo);
+      });
+    });
+
+    // Menú de secciones y botón para volver arriba
+    $$('[data-menu]').forEach(function (b) { b.addEventListener('click', function () { document.body.classList.toggle('menu-abierto'); }); });
+    $$('.menu a').forEach(function (a) { a.addEventListener('click', function () { document.body.classList.remove('menu-abierto'); }); });
+    var arriba = $('[data-arriba]');
+    if (arriba) {
+      arriba.addEventListener('click', function () { W.scrollTo({ top: 0, behavior: 'smooth' }); });
+      var alScroll = function () { arriba.classList.toggle('ver', W.scrollY > 700); };
+      W.addEventListener('scroll', alScroll, { passive: true });
+      limpiar.push(function () { W.removeEventListener('scroll', alScroll); });
+    }
 
     // Confirmación por WhatsApp
     var form = $('#form-rsvp');

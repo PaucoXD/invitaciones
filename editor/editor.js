@@ -179,9 +179,11 @@
       (p.adornos || []).forEach(a => control.append(el('div', { class: 'campo' },
         el('label', {}, a.nombre), campo({ k: a.id, t: 'imagen', png: true }, 'adornos'),
         el('p', { class: 'ayuda' }, `${a.ayuda} · archivo: ${p.id}-${a.id}.png`))));
+    } else if (t === 'nota') {
+      return el('p', { class: 'ayuda', style: 'margin-top:12px' }, def.texto);
     } else if (t === 'ocultar') {
       control = el('div');
-      const nombres = { frase: 'Frase', familia: 'Padres y padrinos', cuenta: 'Cuenta regresiva', itinerario: 'Itinerario', ubicacion: 'Ubicación', vestimenta: 'Código de vestimenta', historia: 'Historia y fotos', regalos: 'Mesa de regalos', rsvp: 'Confirmación', cierre: 'Hashtag y despedida' };
+      const nombres = { frase: 'Frase', familia: 'Padres y padrinos', cuenta: 'Cuenta regresiva', itinerario: 'Itinerario', ubicacion: 'Ubicación', vestimenta: 'Código de vestimenta', historia: 'Historia y fotos', regalos: 'Mesa de regalos', hospedaje: 'Hospedaje', rsvp: 'Confirmación', deseos: 'Buenos deseos', canciones: 'Sugerencia de canciones', contactos: 'Contactos', cierre: 'Hashtag y despedida' };
       Invitacion.SECCIONES.forEach(s => {
         const c = el('input', { type: 'checkbox', onchange: (e) => { const o = Object.assign({}, datos.ocultar); if (e.target.checked) delete o[s]; else o[s] = true; poner('ocultar', o); } });
         c.checked = !datos.ocultar[s];
@@ -236,6 +238,12 @@
       { k: 'rsvp.whatsapp', l: 'WhatsApp que recibe las confirmaciones', ph: '5215512345678', ayuda: 'Con código de país, sin espacios ni “+”. México: 521 + 10 dígitos.' },
       { fila: [{ k: 'rsvp.pases', t: 'number', l: 'Lugares por defecto' }, { k: 'rsvp.fechaLimite', t: 'date', l: 'Confirmar antes del' }] },
       { k: 'rsvp.texto', t: 'area', l: 'Texto adicional (opcional)' }] },
+    { sec: 'Hospedaje', campos: [
+      { k: 'hospedaje', t: 'lista', boton: 'Agregar hotel', nuevo: { nombre: '', nota: '', direccion: '', mapa: '' }, item: [
+        { k: 'nombre', l: 'Hotel' }, { k: 'nota', l: 'Nota (tarifa, código, distancia)', ph: 'Código: BODAVS' }, { k: 'direccion', t: 'area', l: 'Dirección' }, { k: 'mapa', t: 'url', l: 'Enlace de Google Maps (opcional)' }] }] },
+    { sec: 'Contactos', campos: [
+      { fila: [{ k: 'contactos.novia', l: 'WhatsApp de la novia', ph: '5215512345678' }, { k: 'contactos.novio', l: 'WhatsApp del novio' }] },
+      { t: 'nota', texto: 'Los “Buenos deseos” y “Sugerencia de canciones” llegan al WhatsApp de confirmaciones.' }] },
     { sec: 'Cierre', campos: [{ k: 'hashtag', l: 'Hashtag', ph: '#ValeYSanti' }, { k: 'nota', t: 'area', l: 'Nota', ph: 'Evento solo para adultos' }, { k: 'despedida', l: 'Frase de despedida' }] },
     { sec: 'Música', campos: [{ k: 'musica', t: 'musica' }] },
     { sec: 'Adornos de la plantilla', id: 'sec-adornos', campos: [{ t: 'adornos' }] },
