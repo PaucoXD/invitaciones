@@ -27,12 +27,21 @@ llenas un formulario y descargas la invitación lista para publicar.
 6. **Enlaces de invitados** → pega la dirección publicada y la lista `Nombre | lugares`.
    Te da un enlace por invitado (con su nombre en el sobre) y un botón para mandarlo por WhatsApp.
 
+## Invitados y mesas
+
+- **Invitados:** en la sección *Invitados* del editor anotas cada invitación con su número de lugares
+  (Familia López 4, Tía Carmen 1…). Puedes pegar la lista completa desde Excel: `Nombre | lugares | mesa`.
+- **Mesas (paquete opcional):** actívalo solo si el cliente lo contrató. Dibujas el salón (mesas, pista,
+  mesa de novios, entrada), asignas la mesa de cada invitación y cada invitado ve *“Mesa 5”* con el plano
+  y su mesa resaltada. *Lista por mesa* descarga un Excel para el salón o el coordinador.
+- **Ver como:** arriba de la vista previa eliges un invitado para ver su invitación personalizada.
+
 ## Personalización por invitado
 
 Cualquier invitación acepta al final del enlace:
 
 ```
-?invitado=Familia%20López&pases=4
+?invitado=Familia%20López&pases=4&mesa=5
 ```
 
 ## Reemplazar las ilustraciones por las tuyas

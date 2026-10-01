@@ -28,7 +28,18 @@
   // ---------------------------------------------------------------------------
   const vista = $('#vista');
   let listo = false, tPrev = null, tGuardar = null;
-  function enviar() { if (listo) vista.contentWindow.postMessage({ tipo: 'invitacion', datos, conSobre: $('#con-sobre').checked }, '*'); }
+  function invitadoPrueba() {
+    const i = $('#ver-como').value; const x = i !== '' && (datos.invitados || [])[+i];
+    return x ? { nombre: x.nombre, pases: x.pases, mesa: x.mesa } : null;
+  }
+  function enviar() { if (listo) vista.contentWindow.postMessage({ tipo: 'invitacion', datos, conSobre: $('#con-sobre').checked, prueba: invitadoPrueba() }, '*'); }
+  function opcionesVerComo() {
+    const s = $('#ver-como'), v = s.value;
+    s.innerHTML = '';
+    s.append(el('option', { value: '' }, 'Invitado genérico'));
+    (datos.invitados || []).forEach((x, i) => { if (x.nombre) s.append(el('option', { value: String(i) }, `${x.nombre} (${x.pases || '?'}${x.mesa ? ' · mesa ' + x.mesa : ''})`)); });
+    s.value = [...s.options].some(o => o.value === v) ? v : '';
+  }
   window.addEventListener('message', (e) => { if (e.data && e.data.tipo === 'lista') { listo = true; enviar(); } });
   vista.addEventListener('load', () => { listo = true; enviar(); });
   function cambio() {
@@ -41,6 +52,8 @@
     catch (e) { g.textContent = '· ⚠ fotos muy pesadas para guardado automático: usa “Guardar datos”'; }
   }
   $('#con-sobre').addEventListener('change', enviar);
+  $('#ver-como').addEventListener('focus', opcionesVerComo);
+  $('#ver-como').addEventListener('change', enviar);
   $('#dispositivo').addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b) return;
     [...e.currentTarget.children].forEach(x => x.classList.toggle('on', x === b));
@@ -117,7 +130,7 @@
     } else if (t === 'area') {
       control = el('textarea', { placeholder: def.ph || '', oninput: (e) => set(e.target.value) }); control.value = val || '';
     } else if (t === 'select' || t === 'icono') {
-      const ops = t === 'icono' ? (def.set === 'regalo' ? Invitacion.ICONOS_REGALO : Invitacion.ICONOS_EVENTO).map(k => [k, ETIQ_ICONOS[k] || k]) : def.ops;
+      const ops = t === 'icono' ? (def.set === 'regalo' ? Invitacion.ICONOS_REGALO : Invitacion.ICONOS_EVENTO).map(k => [k, ETIQ_ICONOS[k] || k]) : (typeof def.ops === 'function' ? def.ops() : def.ops);
       control = el('select', { onchange: (e) => set(e.target.value.trim()) }, ops.map(([v, l]) => el('option', { value: v }, l)));
       control.value = ops.some(o => o[0] === val) ? val : (ops.find(o => o[0].trim() === val) || ops[0])[0];
     } else if (t === 'imagen') {
@@ -180,6 +193,19 @@
       (p.adornos || []).forEach(a => control.append(el('div', { class: 'campo' },
         el('label', {}, a.nombre), campo({ k: a.id, t: 'imagen', png: true }, 'adornos'),
         el('p', { class: 'ayuda' }, `${a.ayuda} · archivo: ${p.id}-${a.id}.png`))));
+    } else if (t === 'check') {
+      const c = el('input', { type: 'checkbox', onchange: (e) => { set(e.target.checked); if (def.repintar) pintarFormulario(); } });
+      c.checked = !!val;
+      control = el('label', { class: 'check' }, c, def.texto);
+    } else if (t === 'mapaMesas') {
+      return editorMesas();
+    } else if (t === 'invitadosHerramientas') {
+      const inv = datos.invitados || [];
+      const total = inv.reduce((a, x) => a + (parseInt(x.pases, 10) || 0), 0);
+      return el('div', { class: 'inv-herr' },
+        el('p', { class: 'inv-total' }, `${inv.length} invitaciones · ${total} personas`),
+        el('button', { class: 'b chico', type: 'button', onclick: pegarInvitados }, '📋 Pegar lista'),
+        el('button', { class: 'b chico', type: 'button', onclick: () => $('#b-invitados').click() }, '🔗 Enlaces para enviar'));
     } else if (t === 'nota') {
       return el('p', { class: 'ayuda', style: 'margin-top:12px' }, def.texto);
     } else if (t === 'ocultar') {
@@ -242,6 +268,170 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Invitados: pegar una lista completa
+  // ---------------------------------------------------------------------------
+  function pegarInvitados() {
+    const ta = el('textarea', { placeholder: 'Familia López | 4 | 5\nAna y Luis Pérez | 2 | 3\nTía Carmen | 1', style: 'min-height:200px' });
+    const modal = el('div', { class: 'modal ver' }, el('div', { class: 'caja' },
+      el('h2', {}, 'Pegar lista de invitados'),
+      el('p', {}, 'Uno por renglón: Nombre | lugares | mesa (la mesa es opcional). Puedes copiar tres columnas desde Excel o Google Sheets.'),
+      el('div', { class: 'campo' }, ta),
+      el('div', { class: 'caja-pie' },
+        el('button', { class: 'b', type: 'button', onclick: () => modal.remove() }, 'Cancelar'),
+        el('button', { class: 'b pri', type: 'button', onclick: () => {
+          const nuevos = ta.value.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+            const [n, p, m] = l.split(/\s*[|\t;]\s*/);
+            return { nombre: (n || '').trim(), pases: parseInt(p, 10) || datos.rsvp.pases || 2, mesa: (m || '').trim() };
+          }).filter(x => x.nombre);
+          poner('invitados', [...(datos.invitados || []), ...nuevos]);
+          modal.remove(); pintarFormulario(); avisar(`${nuevos.length} invitaciones agregadas`);
+        } }, 'Agregar'))));
+    document.body.append(modal); ta.focus();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Paquete Mesas: plano del salón con mesas que se arrastran
+  // ---------------------------------------------------------------------------
+  const ETQ_EL = { pista: 'Pista', novios: 'Novios', entrada: 'Entrada', barra: 'Barra', dj: 'DJ', pastel: 'Pastel' };
+  let seleccion = null; // { tipo: 'mesa'|'el', i }
+  function editorMesas() {
+    const m = datos.mesas = Object.assign({ activo: false, texto: '', lista: [], elementos: [] }, datos.mesas);
+    const caja = el('div', { class: 'ed-mesas' + (m.activo ? '' : ' apagado') });
+    if (!m.activo) { caja.append(el('p', { class: 'ayuda' }, 'Activa el paquete para dibujar el salón.')); return caja; }
+    const guardar = () => { datos.mesas = Object.assign({}, m); cambio(); };
+    const ocupacion = (nombre) => (datos.invitados || []).filter(x => x.mesa === nombre).reduce((a, x) => a + (parseInt(x.pases, 10) || 0), 0);
+    const plano = el('div', { class: 'ed-plano' });
+    const panel = el('div', { class: 'ed-panel' });
+    const resumen = el('div', { class: 'ed-resumen' });
+
+    function nuevaMesa(forma) {
+      const usados = m.lista.map(x => parseInt(x.nombre, 10)).filter(n => !isNaN(n));
+      m.lista.push({ nombre: String((usados.length ? Math.max(...usados) : 0) + 1), lugares: 10, forma, x: 50, y: 50 });
+      seleccion = { tipo: 'mesa', i: m.lista.length - 1 }; guardar(); pintarFormulario();
+    }
+    function nuevoEl(tipo) {
+      const tam = { pista: [30, 26], novios: [40, 8], entrada: [16, 7], barra: [8, 30], dj: [12, 10], pastel: [10, 10] }[tipo];
+      m.elementos.push({ tipo, x: 50 - tam[0] / 2, y: 50 - tam[1] / 2, w: tam[0], h: tam[1] });
+      seleccion = { tipo: 'el', i: m.elementos.length - 1 }; guardar(); pintar();
+    }
+    function generar() {
+      const n = parseInt(prompt('¿Cuántas mesas? (se acomodan alrededor de la pista)', '12'), 10); if (!n) return;
+      const lug = parseInt(prompt('¿Cuántos lugares por mesa?', '10'), 10) || 10;
+      m.elementos = [{ tipo: 'novios', x: 30, y: 3, w: 40, h: 8 }, { tipo: 'pista', x: 35, y: 34, w: 30, h: 26 }, { tipo: 'entrada', x: 42, y: 92, w: 16, h: 7 }];
+      const pos = [];
+      for (let fy = 0; fy < 8; fy++) for (let fx = 0; fx < 7; fx++) {
+        const x = 9 + fx * 13.6, y = 20 + fy * 10;
+        if (x > 28 && x < 72 && y > 28 && y < 66) continue; // deja libre la pista
+        if (y > 86) continue;
+        pos.push([x, y]);
+      }
+      pos.sort((a, b) => Math.hypot(a[0] - 50, a[1] - 47) - Math.hypot(b[0] - 50, b[1] - 47));
+      m.lista = pos.slice(0, n).sort((a, b) => a[1] - b[1] || a[0] - b[0]).map((p, i) => ({ nombre: String(i + 1), lugares: lug, forma: 'redonda', x: +p[0].toFixed(1), y: +p[1].toFixed(1) }));
+      if (n > pos.length) avisar(`Solo caben ${pos.length} mesas automáticamente; agrega las demás a mano`);
+      seleccion = null; guardar(); pintarFormulario();
+    }
+
+    function arrastrable(nodo, obtenerXY, ponerXY) {
+      let ini = null;
+      nodo.addEventListener('pointerdown', (e) => {
+        e.preventDefault(); const [x, y] = obtenerXY();
+        ini = { px: e.clientX, py: e.clientY, x, y, movio: false }; nodo.setPointerCapture(e.pointerId);
+      });
+      nodo.addEventListener('pointermove', (e) => {
+        if (!ini) return; const r = plano.getBoundingClientRect();
+        const nx = ini.x + (e.clientX - ini.px) / r.width * 100, ny = ini.y + (e.clientY - ini.py) / r.height * 100;
+        if (Math.abs(e.clientX - ini.px) + Math.abs(e.clientY - ini.py) > 3) ini.movio = true;
+        ponerXY(Math.min(100, Math.max(0, nx)), Math.min(100, Math.max(0, ny)));
+      });
+      nodo.addEventListener('pointerup', () => { if (ini) { const movio = ini.movio; ini = null; if (movio) guardar(); } });
+    }
+
+    function pintar() {
+      plano.innerHTML = '';
+      m.elementos.forEach((x, i) => {
+        const n = el('div', { class: `ed-el pl-${x.tipo}` + (seleccion && seleccion.tipo === 'el' && seleccion.i === i ? ' sel' : '') }, x.texto || ETQ_EL[x.tipo]);
+        const pos = () => { n.style.left = x.x + '%'; n.style.top = x.y + '%'; n.style.width = x.w + '%'; n.style.height = x.h + '%'; };
+        pos();
+        arrastrable(n, () => [x.x, x.y], (a, b) => { x.x = +Math.min(a, 100 - x.w).toFixed(1); x.y = +Math.min(b, 100 - x.h).toFixed(1); pos(); });
+        n.addEventListener('click', () => { seleccion = { tipo: 'el', i }; pintar(); });
+        plano.append(n);
+      });
+      m.lista.forEach((x, i) => {
+        const oc = ocupacion(x.nombre), lleno = oc > (x.lugares || 0);
+        const n = el('div', { class: 'ed-mesa' + (x.forma === 'rectangular' ? ' rect' : '') + (lleno ? ' lleno' : '') + (seleccion && seleccion.tipo === 'mesa' && seleccion.i === i ? ' sel' : ''), title: `${x.nombre}: ${oc}/${x.lugares} lugares` },
+          el('b', {}, x.nombre), el('small', {}, `${oc}/${x.lugares}`));
+        const pos = () => { n.style.left = x.x + '%'; n.style.top = x.y + '%'; };
+        pos();
+        arrastrable(n, () => [x.x, x.y], (a, b) => { x.x = +a.toFixed(1); x.y = +b.toFixed(1); pos(); });
+        n.addEventListener('click', () => { seleccion = { tipo: 'mesa', i }; pintar(); });
+        plano.append(n);
+      });
+      pintarPanel(); pintarResumen();
+    }
+
+    function pintarPanel() {
+      panel.innerHTML = '';
+      if (!seleccion) { panel.append(el('p', { class: 'ayuda' }, 'Arrastra las mesas para acomodarlas. Toca una para cambiar su número, lugares o forma.')); return; }
+      if (seleccion.tipo === 'mesa') {
+        const x = m.lista[seleccion.i]; if (!x) { seleccion = null; return pintarPanel(); }
+        const nombreIn = el('input', { type: 'text', value: x.nombre });
+        nombreIn.addEventListener('change', () => {
+          const nuevo = nombreIn.value.trim(); if (!nuevo || nuevo === x.nombre) return;
+          if (m.lista.some(o => o !== x && o.nombre === nuevo)) { avisar('Ya existe una mesa con ese nombre'); nombreIn.value = x.nombre; return; }
+          (datos.invitados || []).forEach(g => { if (g.mesa === x.nombre) g.mesa = nuevo; });
+          x.nombre = nuevo; guardar(); pintarFormulario();
+        });
+        const lug = el('input', { type: 'number', min: '1', value: x.lugares, oninput: (e) => { x.lugares = parseInt(e.target.value, 10) || 1; guardar(); pintar(); } });
+        const forma = el('select', { onchange: (e) => { x.forma = e.target.value; guardar(); pintar(); } }, el('option', { value: 'redonda' }, 'Redonda'), el('option', { value: 'rectangular' }, 'Rectangular'));
+        forma.value = x.forma || 'redonda';
+        panel.append(el('div', { class: 'fila3' },
+          el('div', { class: 'campo' }, el('label', {}, 'Número o nombre'), nombreIn),
+          el('div', { class: 'campo' }, el('label', {}, 'Lugares'), lug),
+          el('div', { class: 'campo' }, el('label', {}, 'Forma'), forma)),
+          el('button', { class: 'b chico peligro', type: 'button', onclick: () => {
+            (datos.invitados || []).forEach(g => { if (g.mesa === x.nombre) g.mesa = ''; });
+            m.lista.splice(seleccion.i, 1); seleccion = null; guardar(); pintarFormulario();
+          } }, '🗑 Eliminar mesa'));
+      } else {
+        const x = m.elementos[seleccion.i]; if (!x) { seleccion = null; return pintarPanel(); }
+        const num = (k, l) => el('div', { class: 'campo' }, el('label', {}, l), el('input', { type: 'number', min: '3', max: '100', value: x[k], oninput: (e) => { x[k] = Math.min(100, Math.max(3, +e.target.value || 3)); guardar(); pintar(); } }));
+        panel.append(el('div', { class: 'fila3' },
+          el('div', { class: 'campo' }, el('label', {}, 'Texto'), el('input', { type: 'text', value: x.texto || ETQ_EL[x.tipo], onchange: (e) => { x.texto = e.target.value; guardar(); pintar(); } })),
+          num('w', 'Ancho %'), num('h', 'Alto %')),
+          el('button', { class: 'b chico peligro', type: 'button', onclick: () => { m.elementos.splice(seleccion.i, 1); seleccion = null; guardar(); pintar(); } }, '🗑 Quitar'));
+      }
+    }
+
+    function pintarResumen() {
+      resumen.innerHTML = '';
+      const inv = datos.invitados || [];
+      const sin = inv.filter(g => g.nombre && !m.lista.some(x => x.nombre === g.mesa));
+      const cap = m.lista.reduce((a, x) => a + (parseInt(x.lugares, 10) || 0), 0);
+      const pers = inv.reduce((a, g) => a + (parseInt(g.pases, 10) || 0), 0);
+      resumen.append(el('p', { class: 'inv-total' }, `${m.lista.length} mesas · ${cap} lugares · ${pers} personas invitadas`));
+      const llenas = m.lista.filter(x => ocupacion(x.nombre) > x.lugares);
+      if (llenas.length) resumen.append(el('p', { class: 'alerta' }, '⚠ Mesas con más personas que lugares: ' + llenas.map(x => x.nombre).join(', ')));
+      if (sin.length) resumen.append(el('p', { class: 'ayuda' }, `Sin mesa (${sin.length}): ` + sin.slice(0, 12).map(g => g.nombre).join(', ') + (sin.length > 12 ? '…' : '') + '. Asígnalas en la sección “Invitados”.'));
+    }
+
+    const tb = (txt, fn) => el('button', { class: 'b chico', type: 'button', onclick: fn }, txt);
+    caja.append(
+      el('div', { class: 'ed-barra' }, tb('✦ Generar mesas', generar), tb('+ Mesa redonda', () => nuevaMesa('redonda')), tb('+ Mesa rectangular', () => nuevaMesa('rectangular')),
+        tb('+ Pista', () => nuevoEl('pista')), tb('+ Novios', () => nuevoEl('novios')), tb('+ Entrada', () => nuevoEl('entrada')), tb('+ Barra', () => nuevoEl('barra')), tb('+ DJ', () => nuevoEl('dj'))),
+      plano, panel, resumen,
+      el('button', { class: 'b chico', type: 'button', onclick: descargarMesas }, '⬇ Lista por mesa (Excel/CSV)'));
+    pintar();
+    return caja;
+  }
+  function descargarMesas() {
+    const q = (s) => `"${String(s).replace(/"/g, '""')}"`;
+    const filas = [];
+    (datos.mesas.lista || []).forEach(x => (datos.invitados || []).filter(g => g.mesa === x.nombre).forEach(g => filas.push([x.nombre, g.nombre, g.pases])));
+    (datos.invitados || []).filter(g => !(datos.mesas.lista || []).some(x => x.nombre === g.mesa)).forEach(g => filas.push(['Sin mesa', g.nombre, g.pases]));
+    descargar(`mesas-${slug()}.csv`, '﻿Mesa,Invitado,Lugares\n' + filas.map(f => f.map(q).join(',')).join('\n'), 'text/csv');
+  }
+
+  // ---------------------------------------------------------------------------
   // Formulario
   // ---------------------------------------------------------------------------
   const FORM = [
@@ -284,6 +474,16 @@
       { k: 'rsvp.whatsapp', l: 'WhatsApp que recibe las confirmaciones', ph: '5215512345678', ayuda: 'Con código de país, sin espacios ni “+”. México: 521 + 10 dígitos.' },
       { fila: [{ k: 'rsvp.pases', t: 'number', l: 'Lugares por defecto' }, { k: 'rsvp.fechaLimite', t: 'date', l: 'Confirmar antes del' }] },
       { k: 'rsvp.texto', t: 'area', l: 'Texto adicional (opcional)' }] },
+    { sec: 'Invitados', campos: [
+      { t: 'nota', texto: 'Cada invitación lleva sus propios lugares: Familia López 4, Tía Carmen 1… Con esta lista se generan los enlaces personalizados para enviar por WhatsApp.' },
+      { t: 'invitadosHerramientas' },
+      { k: 'invitados', t: 'lista', boton: 'Agregar invitación', nuevo: { nombre: '', pases: 2, mesa: '' }, item: [
+        { k: 'nombre', l: 'Nombre en la invitación', ph: 'Familia López' },
+        { fila: [{ k: 'pases', t: 'number', l: 'Lugares' }, { k: 'mesa', t: 'select', l: 'Mesa', ops: () => [['', datos.mesas && datos.mesas.activo ? 'Sin asignar' : '— (paquete Mesas apagado)'], ...((datos.mesas && datos.mesas.lista) || []).map(m => [m.nombre, /^\d+$/.test(m.nombre) ? 'Mesa ' + m.nombre : m.nombre])] }] }] }] },
+    { sec: 'Mesas ✦ paquete opcional', campos: [
+      { k: 'mesas.activo', t: 'check', repintar: true, texto: 'Activar paquete de mesas', ayuda: 'Actívalo solo si el cliente lo contrató. Cada invitado verá en su invitación su número de mesa y el plano del salón con su mesa resaltada.' },
+      { k: 'mesas.texto', t: 'area', l: 'Texto (opcional)', ph: 'Al llegar, nuestro personal te guiará a tu lugar.' },
+      { t: 'mapaMesas' }] },
     { sec: 'Hospedaje', campos: [
       { k: 'hospedaje', t: 'lista', boton: 'Agregar hotel', nuevo: { nombre: '', nota: '', direccion: '', mapa: '' }, item: [
         { k: 'nombre', l: 'Hotel' }, { k: 'nota', l: 'Nota (tarifa, código, distancia)', ph: 'Código: BODAVS' }, { k: 'direccion', t: 'area', l: 'Dirección' }, { k: 'mapa', t: 'url', l: 'Enlace de Google Maps (opcional)' }] }] },
@@ -373,35 +573,39 @@
   const modal = $('#modal-invitados');
   const pref = (() => { try { return JSON.parse(localStorage.getItem(CLAVE + '.invitados')) || {}; } catch (e) { return {}; } })();
   $('#inv-base').value = pref.base || '';
-  $('#inv-lista').value = pref.lista || '';
+  // Migra la lista vieja (texto) a la sección Invitados
+  if (pref.lista && !(datos.invitados || []).length) {
+    datos.invitados = pref.lista.split('\n').map(l => l.trim()).filter(Boolean).map(l => { const [n, p] = l.split('|').map(x => (x || '').trim()); return { nombre: n, pases: parseInt(p, 10) || 2, mesa: '' }; });
+    delete pref.lista; cambio();
+  }
   $('#inv-msg').value = pref.msg || '¡Hola {nombre}! 💌 Con mucho cariño te compartimos nuestra invitación de boda. Ábrela aquí: {enlace}';
   let filas = [];
   function generar() {
     const base = $('#inv-base').value.trim(), msg = $('#inv-msg').value;
-    try { localStorage.setItem(CLAVE + '.invitados', JSON.stringify({ base, lista: $('#inv-lista').value, msg })); } catch (e) {}
-    filas = $('#inv-lista').value.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-      const [n, p] = l.split('|').map(x => (x || '').trim());
-      const pases = parseInt(p, 10) || datos.rsvp.pases || 2;
-      const enlace = base ? `${base}${base.includes('?') ? '&' : '?'}invitado=${encodeURIComponent(n)}&pases=${pases}` : '';
-      return { nombre: n, pases, enlace, mensaje: msg.replace(/\{nombre\}/g, n).replace(/\{enlace\}/g, enlace) };
+    try { localStorage.setItem(CLAVE + '.invitados', JSON.stringify({ base, msg })); } catch (e) {}
+    const conMesas = datos.mesas && datos.mesas.activo;
+    filas = (datos.invitados || []).filter(g => g.nombre).map(g => {
+      const n = g.nombre, pases = parseInt(g.pases, 10) || datos.rsvp.pases || 2, mesa = conMesas ? (g.mesa || '') : '';
+      const enlace = base ? `${base}${base.includes('?') ? '&' : '?'}invitado=${encodeURIComponent(n)}&pases=${pases}${mesa ? '&mesa=' + encodeURIComponent(mesa) : ''}` : '';
+      return { nombre: n, pases, mesa, enlace, mensaje: msg.replace(/\{nombre\}/g, n).replace(/\{enlace\}/g, enlace) };
     });
     const t = $('#inv-tabla'); t.innerHTML = '';
-    if (!filas.length) return;
+    if (!filas.length) { t.append(el('p', { class: 'ayuda' }, 'Agrega invitados en la sección “Invitados” del formulario (puedes pegar la lista completa).')); return; }
     if (!base) { t.append(el('p', { class: 'ayuda' }, 'Escribe arriba la dirección de la invitación publicada para generar los enlaces.')); return; }
-    t.append(el('table', {}, el('tr', {}, el('th', {}, 'Invitado'), el('th', {}, 'Lugares'), el('th', {}, 'Enlace'), el('th', {})),
-      filas.map(f => el('tr', {}, el('td', {}, f.nombre), el('td', {}, String(f.pases)), el('td', { class: 'url', title: f.enlace }, f.enlace),
+    t.append(el('table', {}, el('tr', {}, el('th', {}, 'Invitado'), el('th', {}, 'Lugares'), el('th', {}, 'Mesa'), el('th', {}, 'Enlace'), el('th', {})),
+      filas.map(f => el('tr', {}, el('td', {}, f.nombre), el('td', {}, String(f.pases)), el('td', {}, f.mesa || '—'), el('td', { class: 'url', title: f.enlace }, f.enlace),
         el('td', { style: 'white-space:nowrap' },
           el('button', { class: 'b chico', type: 'button', onclick: () => navigator.clipboard.writeText(f.enlace).then(() => avisar('Enlace copiado ✓')) }, 'Copiar'), ' ',
           el('a', { class: 'b chico', href: 'https://wa.me/?text=' + encodeURIComponent(f.mensaje), target: '_blank', rel: 'noopener', style: 'text-decoration:none' }, 'WhatsApp'))))));
   }
-  ['#inv-base', '#inv-lista', '#inv-msg'].forEach(s => $(s).addEventListener('input', generar));
+  ['#inv-base', '#inv-msg'].forEach(s => $(s).addEventListener('input', generar));
   $('#b-invitados').addEventListener('click', () => { modal.classList.add('ver'); generar(); });
   $('#inv-cerrar').addEventListener('click', () => modal.classList.remove('ver'));
   modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('ver'); });
   $('#inv-csv').addEventListener('click', () => {
     generar(); if (!filas.length) return avisar('Agrega invitados primero');
     const q = (s) => `"${String(s).replace(/"/g, '""')}"`;
-    const csv = '﻿Invitado,Lugares,Enlace,Mensaje\n' + filas.map(f => [f.nombre, f.pases, f.enlace, f.mensaje].map(q).join(',')).join('\n');
+    const csv = '﻿Invitado,Lugares,Mesa,Enlace,Mensaje\n' + filas.map(f => [f.nombre, f.pases, f.mesa, f.enlace, f.mensaje].map(q).join(',')).join('\n');
     descargar(`invitados-${slug()}.csv`, csv, 'text/csv');
   });
 })();

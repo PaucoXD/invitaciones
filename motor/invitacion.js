@@ -123,6 +123,7 @@
       regalos: { titulo: 'Tu presencia es nuestro mejor regalo', texto: '', opciones: [], banco: '', titular: '', clabe: '' },
       rsvp: { whatsapp: '', fechaLimite: '', pases: 2, texto: '' },
       hospedaje: [], contactos: { novia: '', novio: '' },
+      invitados: [], mesas: { activo: false, texto: '', lista: [], elementos: [] },
       hashtag: '', nota: '', despedida: 'Gracias por ser parte de nuestra historia',
       musica: 'melodia', adornos: {}, ocultar: {}, encuadres: {}
     };
@@ -293,7 +294,7 @@
       const r = d.rsvp || {};
       if (d.ocultar.rsvp) return '';
       return seccion('rsvp', `${encabezado('R.S.V.P.', o.titulo || 'Confirma tu asistencia', r.texto)}
-        <div class="pase rv"><strong data-invitado-nombre>Querido invitado</strong>Hemos reservado <b data-pases>${esc(r.pases || 2)}</b> <span data-pases-palabra>lugares</span> en tu honor</div>
+        <div class="pase rv"><strong data-invitado-nombre>Querido invitado</strong>Hemos reservado <b data-pases>${esc(r.pases || 2)}</b> <span data-pases-palabra>lugares</span> en tu honor<em class="pase-mesa" data-mesa-pase hidden></em></div>
         ${S.formRsvp(d)}`, o);
     },
 
@@ -327,8 +328,27 @@
       return seccion('contactos', `${encabezado('¿Tienes dudas?', o.titulo || 'Contactos')}<div class="contactos rv">${b(c.novia, d.novia)}${b(c.novio, d.novio)}</div>`, o);
     },
     /** Hospedaje, buenos deseos, canciones y contactos juntos. */
+    /** Plano del salón con las mesas (paquete opcional "Mesas"). */
+    plano(d) {
+      const m = d.mesas || {};
+      const ETQ = { pista: 'Pista', novios: 'Novios', entrada: 'Entrada', barra: 'Barra', dj: 'DJ', pastel: 'Pastel' };
+      return `<div class="plano">
+        ${(m.elementos || []).map(x => `<div class="pl-el pl-${esc(x.tipo)}" style="left:${+x.x || 0}%;top:${+x.y || 0}%;width:${+x.w || 20}%;height:${+x.h || 15}%"><span>${esc(x.texto || ETQ[x.tipo] || '')}</span></div>`).join('')}
+        ${(m.lista || []).map(x => `<div class="pl-mesa ${x.forma === 'rectangular' ? 'rect' : ''}" data-mesa="${esc(x.nombre)}" style="left:${+x.x || 0}%;top:${+x.y || 0}%"><span>${esc(x.nombre)}</span></div>`).join('')}
+      </div>`;
+    },
+    mesa(d, o = {}) {
+      const m = d.mesas || {};
+      if (!m.activo || !(m.lista || []).length) return '';
+      return seccion('mesa', `${encabezado('Su lugar', o.titulo || 'Tu mesa')}
+        <p class="mesa-txt rv"><span data-invitado-nombre>Querido invitado</span>, te esperamos en la</p>
+        <p class="mesa-num rv" data-mesa-nombre></p>
+        ${hay(m.texto) ? `<p class="lead rv">${br(m.texto)}</p>` : ''}
+        <div class="rv">${S.plano(d)}</div>`, Object.assign({}, o, { clase: (o.clase || '') + ' sin-mesa' }));
+    },
+
     extras(d, o = {}) {
-      return S.hospedaje(d, o.hospedaje) + S.deseos(d, o.deseos) + S.canciones(d, o.canciones) + S.contactos(d, o.contactos);
+      return S.mesa(d, o.mesa) + S.hospedaje(d, o.hospedaje) + S.deseos(d, o.deseos) + S.canciones(d, o.canciones) + S.contactos(d, o.contactos);
     },
 
     cierre(d, o = {}) {
@@ -564,6 +584,20 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 .en-portada.ya *,.en-portada.ya *::before,.en-portada.ya *::after{animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important;transition-delay:0s!important}
 .en-portada .sobre-atras,.en-portada .sobre-frente{animation:none!important}
 
+/* Mesas */
+.sec-mesa.sin-mesa{display:none}
+.mesa-txt{font-style:italic;color:var(--suave)}
+.mesa-num{font-family:var(--f-titulo);font-size:clamp(46px,12vw,64px);line-height:1.1;color:var(--titulo,var(--tinta));margin:4px 0 14px}
+.pase-mesa{display:block;font-style:normal;font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.25em;text-transform:uppercase;color:var(--acento);margin-top:6px}
+.plano{position:relative;width:100%;max-width:520px;aspect-ratio:4/3;margin:24px auto 0;background:var(--tarjeta,var(--fondo));border:1px solid var(--linea);border-radius:6px;overflow:hidden;box-shadow:inset 0 0 0 6px var(--fondo2,transparent)}
+.pl-el{position:absolute;display:flex;align-items:center;justify-content:center;border:1px dashed var(--linea);background:var(--fondo2,rgba(0,0,0,.04));color:var(--suave);font-family:var(--f-etiqueta);font-size:10px;letter-spacing:.2em;text-transform:uppercase;border-radius:4px}
+.pl-pista{background:repeating-linear-gradient(45deg,var(--fondo2,#eee) 0 8px,var(--tarjeta,#fff) 8px 16px)}
+.pl-novios{border-style:solid;border-color:var(--acento);color:var(--acento)}
+.pl-mesa{position:absolute;width:9%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:1px solid var(--linea);background:var(--fondo);display:flex;align-items:center;justify-content:center;font-family:var(--f-etiqueta);font-size:clamp(8px,2.4vw,12px);color:var(--suave);transition:all .4s}
+.pl-mesa.rect{width:15%;aspect-ratio:2.1;border-radius:4px}
+.pl-mesa.tuya{background:var(--acento2);border-color:var(--acento2);color:var(--fondo);font-weight:600;z-index:2;animation:latido 1.6s ease-in-out infinite;box-shadow:0 0 0 0 var(--acento2)}
+@keyframes latido{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--acento2) 60%,transparent)}70%{box-shadow:0 0 0 14px transparent}100%{box-shadow:0 0 0 0 transparent}}
+
 /* Menú y botón para volver arriba */
 .menu-btn,.arriba-btn{position:fixed;z-index:60;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--acento2);color:var(--fondo);box-shadow:0 6px 16px rgba(0,0,0,.18);transition:opacity .3s,transform .3s}
 .menu-btn{top:14px;right:14px}
@@ -622,11 +656,22 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
     var $ = function (s, r) { return (r || document).querySelector(s); };
     var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
-    // Personalización: ?invitado=Familia%20López&pases=4
-    var params = new URLSearchParams(location.search);
-    var invitado = (params.get('invitado') || '').trim().slice(0, 60);
+    // Personalización: ?invitado=Familia%20López&pases=4&mesa=5  (en el editor: d._prueba)
+    var params = new URLSearchParams(location.search), prueba = d._prueba || {};
+    var invitado = (params.get('invitado') || prueba.nombre || '').trim().slice(0, 60);
     var pasesDef = parseInt((d.rsvp && d.rsvp.pases) || 2, 10) || 2;
-    var pases = Math.min(Math.max(parseInt(params.get('pases'), 10) || pasesDef, 1), 20);
+    var pases = Math.min(Math.max(parseInt(params.get('pases') || prueba.pases, 10) || pasesDef, 1), 30);
+    var mesa = String(params.get('mesa') || prueba.mesa || '').trim().slice(0, 40);
+    if (mesa && d.mesas && d.mesas.activo) {
+      var mesasEl = $$('[data-mesa]').filter(function (e) { return e.getAttribute('data-mesa') === mesa; });
+      if (mesasEl.length) {
+        var etq = /^\d+$/.test(mesa) ? 'Mesa ' + mesa : mesa;
+        mesasEl.forEach(function (e) { e.classList.add('tuya'); });
+        $$('.sec-mesa').forEach(function (e) { e.classList.remove('sin-mesa'); });
+        $$('[data-mesa-nombre]').forEach(function (e) { e.textContent = etq; });
+        $$('[data-mesa-pase]').forEach(function (e) { e.textContent = etq; e.hidden = false; });
+      }
+    }
     if (invitado) $$('[data-invitado-nombre]').forEach(function (e) { e.textContent = invitado; });
     $$('[data-pases]').forEach(function (e) { e.textContent = pases; });
     $$('[data-pases-palabra]').forEach(function (e) { e.textContent = pases === 1 ? 'lugar' : 'lugares'; });
