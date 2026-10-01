@@ -11,6 +11,7 @@
     invitacion.html                         → boda de ejemplo
     invitacion.html?b=valeria-santiago      → carga bodas/valeria-santiago.js
     invitacion.html?plantilla=boho          → cambia la plantilla
+    invitacion.html?plantilla=princesa      → XV años de ejemplo (princesa, mariposas, gala)
     &invitado=Familia%20López&pases=4       → personaliza para cada invitado
 -->
 <script src="motor/invitacion.js"></script>
@@ -20,7 +21,11 @@
 <script src="plantillas/dorada.js"></script>
 <script src="plantillas/vino.js"></script>
 <script src="plantillas/botanica.js"></script>
+<script src="plantillas/xv-princesa.js"></script>
+<script src="plantillas/xv-mariposas.js"></script>
+<script src="plantillas/xv-gala.js"></script>
 <script src="bodas/ejemplo.js"></script>
+<script src="bodas/ejemplo-xv.js"></script>
 </head>
 <body>
 <script>
@@ -54,7 +59,8 @@
     s.onerror = function () { document.body.innerHTML = '<p style="font-family:sans-serif;padding:40px;text-align:center">No se encontró la invitación “' + slug + '”.</p>'; };
     document.head.appendChild(s);
   } else {
-    mostrar(window.INVITACION);
+    var pl = Invitacion.plantillas[q.get('plantilla')];
+    mostrar(pl && pl.evento === 'xv' && window.INVITACION_XV ? window.INVITACION_XV : window.INVITACION);
   }
 })();
 </script>

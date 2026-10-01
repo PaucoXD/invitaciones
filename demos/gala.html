@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Valeria &amp; Santiago · Nuestra boda</title>
-<meta name="description" content="Sábado 20 de marzo de 2027 — San Miguel de Allende, Guanajuato">
-<meta property="og:title" content="Valeria & Santiago · ¡Nos casamos!">
-<meta property="og:description" content="Sábado 20 de marzo de 2027 — San Miguel de Allende, Guanajuato">
+<title>Sofía · Mis XV años</title>
+<meta name="description" content="Sábado 12 de junio de 2027 — Guadalajara, Jalisco">
+<meta property="og:title" content="Sofía · ¡Mis XV años!">
+<meta property="og:description" content="Sábado 12 de junio de 2027 — Guadalajara, Jalisco">
 
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&amp;family=Great+Vibes&amp;family=Montserrat:wght@300;400;500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&amp;family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&amp;family=Great+Vibes&amp;display=swap">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -293,30 +293,70 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
   .efecto{display:none}
 }
 
-body.plantilla-botanica{--fondo:#fbf8f2;--fondo2:#f5efe4;--tinta:#3a3631;--suave:#7a7268;--acento:#b8955a;--acento2:#5d6b52;--linea:#e2d6c0;--oscuro:#3f4a37;--sobre-oscuro:#fbf8f2;--titulo:#3f4a37;
-  --f-titulo:'Great Vibes',cursive;--f-texto:'Cormorant Garamond',Georgia,serif;--f-etiqueta:'Montserrat',system-ui,sans-serif;
-  --fondo-sobre:radial-gradient(ellipse at center,#fdfaf4 0%,#efe6d6 100%);--sobre-c1:#e2d5bb;--sobre-c2:#efe5d1;--sobre-c3:#f3ebdb;--sello:radial-gradient(circle at 35% 30%,#c9a96e,#9c7b45 60%,#7d5f31);--sello-borde:#a7864f}
-.plantilla-botanica .alt{background:var(--fondo2)}
-.plantilla-botanica .cuadro{position:relative;width:min(560px,100%);padding:80px 30px 70px;border:1px solid #d8c08f;outline:1px solid #d8c08f;outline-offset:7px;background:rgba(251,248,242,.6)}
-.plantilla-botanica .rama{position:absolute;width:230px}
-.plantilla-botanica .rama.tl{top:-70px;left:-80px;transform:rotate(-8deg)}
-.plantilla-botanica .rama.br{bottom:-70px;right:-80px;transform:rotate(172deg)}
-.plantilla-botanica .foto-portada{width:100%;aspect-ratio:4/5;object-fit:cover;margin-bottom:30px}
-.plantilla-botanica .intro{font-family:var(--f-etiqueta);font-size:11px;letter-spacing:.45em;text-transform:uppercase;color:var(--suave)}
-.plantilla-botanica .nombres .amp{font-family:var(--f-texto);font-style:italic}
-.plantilla-botanica .ciudad{margin-top:24px;font-style:italic;font-size:20px;color:var(--acento2)}
-.plantilla-botanica .rama-fondo{position:absolute;width:300px;opacity:.1;filter:brightness(3)}
-.plantilla-botanica .rama-fondo.l{left:-90px;top:-40px}
-.plantilla-botanica .rama-fondo.r{right:-90px;bottom:-40px;transform:rotate(180deg)}
-.plantilla-botanica .lugar::before{content:"";position:absolute;inset:8px;border:1px solid var(--linea);pointer-events:none}
-.plantilla-botanica .lugar .btn{position:relative;z-index:1}
+body.plantilla-gala{--fondo:#0e1a35;--fondo2:#12224a;--tinta:#e7ecf5;--suave:#a3afc6;--acento:#c3ccda;--acento2:#dfe5ee;--linea:rgba(195,204,218,.3);--oscuro:#09122a;--sobre-oscuro:#e7ecf5;--titulo:#f1f4f9;--tarjeta:#13244b;--radio-btn:0;
+  --f-titulo:'Great Vibes',cursive;--f-texto:'Cormorant Garamond',Georgia,serif;--f-etiqueta:'Cinzel',Georgia,serif;
+  --fondo-sobre:radial-gradient(ellipse at 50% 30%,#1f3463 0%,#09122a 100%);--sobre-c1:#1a2c58;--sobre-c2:#20366a;--sobre-c3:#253d75;--sello:radial-gradient(circle at 35% 30%,#f4f7fc,#c3ccda 55%,#8d99ae);--sello-texto:#1b2a4d;--sello-borde:#9aa6bb}
+.plantilla-gala .sello{font-family:'Cinzel',serif;text-shadow:0 1px 0 rgba(255,255,255,.6)}
+.plantilla-gala .sobre-atras,.plantilla-gala .sobre-frente{outline:1px solid rgba(195,204,218,.35)}
+.plantilla-gala .sobre-carta{background:#13244b;color:var(--acento)}
+.plantilla-gala .eyebrow{font-size:12px;letter-spacing:.35em}
+.plantilla-gala .titulo,.plantilla-gala .nombres,.plantilla-gala .sobre-para strong,.plantilla-gala .pase strong,.plantilla-gala .lugar h3,.plantilla-gala .fecha-deco b{
+  background:linear-gradient(100deg,#8d99ae 0%,#f4f7fc 22%,#c3ccda 40%,#ffffff 50%,#c3ccda 60%,#f4f7fc 78%,#8d99ae 100%);background-size:250% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:foilG 6s ease-in-out infinite}
+@keyframes foilG{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+.plantilla-gala .alt{background:var(--fondo2)}
+.plantilla-gala .sec{border-top:1px solid rgba(195,204,218,.1)}
+.plantilla-gala .cielo{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.8;
+  background-image:radial-gradient(1.2px 1.2px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 28% 72%,#fff,transparent),radial-gradient(1.4px 1.4px at 46% 30%,#dfe8ff,transparent),radial-gradient(1px 1px at 63% 84%,#fff,transparent),radial-gradient(1.6px 1.6px at 78% 22%,#fff,transparent),radial-gradient(1px 1px at 90% 60%,#cfdcff,transparent),radial-gradient(1.2px 1.2px at 6% 52%,#fff,transparent),radial-gradient(1px 1px at 36% 8%,#fff,transparent),radial-gradient(1.3px 1.3px at 55% 55%,#fff,transparent),radial-gradient(1px 1px at 84% 92%,#fff,transparent);
+  background-size:300px 300px;animation:titilar 5s ease-in-out infinite alternate}
+@keyframes titilar{from{opacity:.45}to{opacity:.95}}
+.plantilla-gala .portada{background:radial-gradient(ellipse at 50% 20%,#24407a 0%,#0e1a35 65%)}
+.plantilla-gala .foto-fondo{position:absolute;inset:0;z-index:0}.plantilla-gala .foto-fondo img{width:100%;height:100%;object-fit:cover}
+.plantilla-gala .foto-fondo::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(9,18,42,.62),rgba(9,18,42,.88))}
+.plantilla-gala .portada .marco{z-index:1}
+.plantilla-gala .marco{position:relative;width:min(520px,100%);padding:150px 40px 80px;border:1px solid var(--linea);background:rgba(14,26,53,.35)}
+.plantilla-gala .esq{position:absolute;width:86px;z-index:1}
+.plantilla-gala .esq.tl{top:-1px;left:-1px}
+.plantilla-gala .esq.tr{top:-1px;right:-1px;transform:scaleX(-1)}
+.plantilla-gala .esq.bl{bottom:-1px;left:-1px;transform:scaleY(-1)}
+.plantilla-gala .esq.br{bottom:-1px;right:-1px;transform:scale(-1)}
+.plantilla-gala .sec-cuenta .esq{width:70px;opacity:.7}
+.plantilla-gala .sec-cuenta .esq.tl{top:16px;left:16px}.plantilla-gala .sec-cuenta .esq.tr{top:16px;right:16px}
+.plantilla-gala .sec-cuenta .esq.bl{bottom:16px;left:16px}.plantilla-gala .sec-cuenta .esq.br{bottom:16px;right:16px}
+.plantilla-gala .luna{position:absolute;top:18px;left:50%;width:250px;transform:translateX(-50%)}
+.plantilla-gala .luna-chica{width:170px;margin:0 auto 14px}
+.plantilla-gala .luna-pie{width:180px;margin:0 auto 18px;position:relative;z-index:1}
+.plantilla-gala .pie{position:relative;overflow:hidden;border-top:1px solid var(--linea)}
+.plantilla-gala .pie>*{position:relative;z-index:1}
+.plantilla-gala .pie>.cielo{position:absolute;z-index:0}
+.plantilla-gala .intro{font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.5em;text-transform:uppercase;color:var(--acento);margin-top:10px}
+.plantilla-gala .nombres{font-size:clamp(70px,19vw,116px);padding:0 .12em}
+.plantilla-gala .separador{width:230px;margin:6px auto 22px}
+.plantilla-gala .fecha-deco{display:grid;grid-template-columns:1fr auto 1fr;grid-template-rows:auto auto;align-items:center;gap:4px 18px;max-width:300px;margin:0 auto}
+.plantilla-gala .fecha-deco span{font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--tinta);border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);padding:8px 0}
+.plantilla-gala .fecha-deco b{font-family:var(--f-etiqueta);font-weight:400;font-size:60px;line-height:1;grid-row:1;grid-column:2}
+.plantilla-gala .fecha-deco span:first-child{grid-column:1;grid-row:1}
+.plantilla-gala .fecha-deco span:nth-of-type(2){grid-column:3;grid-row:1}
+.plantilla-gala .fecha-deco .anio{grid-row:2;grid-column:1/4;font-size:22px;letter-spacing:.6em;padding-left:.6em;margin-top:8px}
+.plantilla-gala .ciudad{margin-top:26px;font-style:italic;color:var(--suave);font-size:20px}
+.plantilla-gala .lugar{border-color:var(--linea)}
+.plantilla-gala .lugar::before{content:"";position:absolute;inset:8px;border:1px solid rgba(195,204,218,.15);pointer-events:none}
+.plantilla-gala .lugar .btn{position:relative;z-index:1}
+.plantilla-gala .lugar h3{font-size:44px}
+.plantilla-gala .evento .icono{border-radius:50%;box-shadow:0 0 14px rgba(169,193,255,.25)}
+.plantilla-gala .foto{border:1px solid var(--linea);padding:8px;background:transparent}
+.plantilla-gala .reloj span{font-family:var(--f-etiqueta);font-weight:400;color:var(--titulo)}
+.plantilla-gala .btn.solido{background:linear-gradient(100deg,#9aa6bb,#f4f7fc,#c3ccda);border:none;color:#0e1a35;font-weight:600}
+.plantilla-gala .paleta span{border-color:var(--fondo)}
+.plantilla-gala #form-rsvp .opciones input:checked+label{color:#0e1a35}
 @media (max-width:640px){
-  .plantilla-botanica .rama{width:170px}
-  .plantilla-botanica .rama.tl{top:-56px;left:-60px}.plantilla-botanica .rama.br{bottom:-56px;right:-60px}
-  .plantilla-botanica .cuadro{padding:70px 18px 60px}
+  .plantilla-gala .marco{padding:130px 20px 70px}
+  .plantilla-gala .esq{width:62px}
+  .plantilla-gala .luna{width:200px}
+  .plantilla-gala .fecha-deco b{font-size:48px}
 }</style>
 </head>
-<body class="plantilla-botanica">
+<body class="plantilla-gala">
 
 
 <div id="sobre" class="sobre-pantalla" role="dialog" aria-label="Abrir invitación">
@@ -324,164 +364,163 @@ body.plantilla-botanica{--fondo:#fbf8f2;--fondo2:#f5efe4;--tinta:#3a3631;--suave
   <p class="sobre-para">Una invitación especial para<strong data-invitado-nombre>ti</strong></p>
   <div class="sobre" tabindex="0" role="button" aria-label="Abrir sobre">
     <div class="sobre-atras"></div>
-    <div class="sobre-carta"><small>Nos casamos</small><span>V &amp; S</span><small>20 · 03 · 2027</small></div>
+    <div class="sobre-carta"><small>Mis XV años</small><span>XV</span><small>12 · 06 · 2027</small></div>
     <div class="sobre-frente"></div>
-    <div class="sobre-solapa"><div class="solapa-fuera"></div><div class="solapa-dentro"></div></div>
-    <div class="sello"><span class="mitad mitad-1">V <i>&amp;</i> S</span><span class="mitad mitad-2">V <i>&amp;</i> S</span></div>
+    <div class="sobre-solapa"><div class="solapa-fuera"></div><div class="solapa-dentro"><svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 60">
+    <defs><pattern id="ga-forro-6" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M7 4L7.8 6.2L10 7L7.8 7.8L7 10L6.2 7.8L4 7L6.2 6.2Z" fill="#c3ccda" opacity=".8"/><circle cx="0" cy="0" r=".8" fill="#eef2f8"/></pattern></defs>
+    <rect width="100" height="60" fill="#16264a"/><rect width="100" height="60" fill="url(#ga-forro-6)"/></svg></div></div>
+    <div class="sello"><span class="mitad mitad-1">XV</span><span class="mitad mitad-2">XV</span></div>
   </div>
   <p class="sobre-pista">Toca el sello para abrir</p>
 </div>
 <button id="btn-musica" class="btn-musica" aria-label="Pausar o reproducir música"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></button>
 <main>
-  <section class="portada">
-    <div class="cuadro rv">
-      <span class="orn orn-rama rama tl" aria-hidden="true"><img src="plantillas/adornos/botanica-rama.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 240 240" style="color:#8a9a7b">
-    <g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M30 215C70 170 110 120 205 30"/><path d="M95 140C90 110 100 90 120 75"/><path d="M140 95C160 95 180 100 195 115"/></g>
-    <g fill="currentColor">
-      <ellipse cx="55" cy="180" rx="16" ry="6" transform="rotate(-70 55 180)" opacity=".75"/><ellipse cx="72" cy="190" rx="16" ry="6" transform="rotate(10 72 190)" opacity=".55"/>
-      <ellipse cx="78" cy="152" rx="17" ry="6.5" transform="rotate(-60 78 152)" opacity=".8"/><ellipse cx="100" cy="162" rx="17" ry="6.5" transform="rotate(5 100 162)" opacity=".6"/>
-      <ellipse cx="88" cy="118" rx="15" ry="5.5" transform="rotate(-80 88 118)" opacity=".7"/><ellipse cx="110" cy="88" rx="14" ry="5" transform="rotate(-40 110 88)" opacity=".85"/>
-      <ellipse cx="124" cy="118" rx="18" ry="6.5" transform="rotate(-50 124 118)" opacity=".7"/><ellipse cx="145" cy="122" rx="17" ry="6" transform="rotate(15 145 122)" opacity=".55"/>
-      <ellipse cx="160" cy="88" rx="16" ry="6" transform="rotate(-45 160 88)" opacity=".8"/><ellipse cx="172" cy="96" rx="14" ry="5" transform="rotate(30 172 96)" opacity=".6"/>
-      <ellipse cx="188" cy="110" rx="12" ry="4.5" transform="rotate(50 188 110)" opacity=".7"/><ellipse cx="180" cy="55" rx="15" ry="5.5" transform="rotate(-35 180 55)" opacity=".75"/>
-      <ellipse cx="196" cy="62" rx="13" ry="5" transform="rotate(25 196 62)" opacity=".55"/><ellipse cx="208" cy="30" rx="12" ry="4.5" transform="rotate(-45 208 30)" opacity=".85"/>
-    </g>
-    <g fill="#d8c08f"><circle cx="120" cy="74" r="3.2"/><circle cx="126" cy="70" r="2.4"/><circle cx="196" cy="116" r="3"/><circle cx="200" cy="122" r="2.2"/><circle cx="46" cy="200" r="2.6"/></g>
-  </svg></span></span><span class="orn orn-rama rama br" aria-hidden="true"><img src="plantillas/adornos/botanica-rama.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 240 240" style="color:#8a9a7b">
-    <g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M30 215C70 170 110 120 205 30"/><path d="M95 140C90 110 100 90 120 75"/><path d="M140 95C160 95 180 100 195 115"/></g>
-    <g fill="currentColor">
-      <ellipse cx="55" cy="180" rx="16" ry="6" transform="rotate(-70 55 180)" opacity=".75"/><ellipse cx="72" cy="190" rx="16" ry="6" transform="rotate(10 72 190)" opacity=".55"/>
-      <ellipse cx="78" cy="152" rx="17" ry="6.5" transform="rotate(-60 78 152)" opacity=".8"/><ellipse cx="100" cy="162" rx="17" ry="6.5" transform="rotate(5 100 162)" opacity=".6"/>
-      <ellipse cx="88" cy="118" rx="15" ry="5.5" transform="rotate(-80 88 118)" opacity=".7"/><ellipse cx="110" cy="88" rx="14" ry="5" transform="rotate(-40 110 88)" opacity=".85"/>
-      <ellipse cx="124" cy="118" rx="18" ry="6.5" transform="rotate(-50 124 118)" opacity=".7"/><ellipse cx="145" cy="122" rx="17" ry="6" transform="rotate(15 145 122)" opacity=".55"/>
-      <ellipse cx="160" cy="88" rx="16" ry="6" transform="rotate(-45 160 88)" opacity=".8"/><ellipse cx="172" cy="96" rx="14" ry="5" transform="rotate(30 172 96)" opacity=".6"/>
-      <ellipse cx="188" cy="110" rx="12" ry="4.5" transform="rotate(50 188 110)" opacity=".7"/><ellipse cx="180" cy="55" rx="15" ry="5.5" transform="rotate(-35 180 55)" opacity=".75"/>
-      <ellipse cx="196" cy="62" rx="13" ry="5" transform="rotate(25 196 62)" opacity=".55"/><ellipse cx="208" cy="30" rx="12" ry="4.5" transform="rotate(-45 208 30)" opacity=".85"/>
-    </g>
-    <g fill="#d8c08f"><circle cx="120" cy="74" r="3.2"/><circle cx="126" cy="70" r="2.4"/><circle cx="196" cy="116" r="3"/><circle cx="200" cy="122" r="2.2"/><circle cx="46" cy="200" r="2.6"/></g>
+  <section class="portada ">
+    <div class="cielo" aria-hidden="true"></div>
+    
+    <div class="marco rv">
+      <span class="orn orn-esquina esq tl" aria-hidden="true"><img src="plantillas/adornos/gala-esquina.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 200"><defs><linearGradient id="ga-plata2-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs>
+    <g fill="none" stroke="url(#ga-plata2-1)" stroke-width="1.6"><path d="M6 194V6H194"/><path d="M18 182V18H182" stroke-width=".9"/>
+      <path d="M18 70C40 70 70 40 70 18" /><path d="M18 46C30 46 46 30 46 18"/><circle cx="18" cy="18" r="8"/></g>
+    <path transform="translate(18 18)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(86 30)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(30 86)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(120 22)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(22 120)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(60 60)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.6"/>
+  </svg></span></span><span class="orn orn-esquina esq tr" aria-hidden="true"><img src="plantillas/adornos/gala-esquina.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 200"><defs><linearGradient id="ga-plata2-2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs>
+    <g fill="none" stroke="url(#ga-plata2-2)" stroke-width="1.6"><path d="M6 194V6H194"/><path d="M18 182V18H182" stroke-width=".9"/>
+      <path d="M18 70C40 70 70 40 70 18" /><path d="M18 46C30 46 46 30 46 18"/><circle cx="18" cy="18" r="8"/></g>
+    <path transform="translate(18 18)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(86 30)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(30 86)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(120 22)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(22 120)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(60 60)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.6"/>
+  </svg></span></span><span class="orn orn-esquina esq bl" aria-hidden="true"><img src="plantillas/adornos/gala-esquina.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 200"><defs><linearGradient id="ga-plata2-3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs>
+    <g fill="none" stroke="url(#ga-plata2-3)" stroke-width="1.6"><path d="M6 194V6H194"/><path d="M18 182V18H182" stroke-width=".9"/>
+      <path d="M18 70C40 70 70 40 70 18" /><path d="M18 46C30 46 46 30 46 18"/><circle cx="18" cy="18" r="8"/></g>
+    <path transform="translate(18 18)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(86 30)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(30 86)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(120 22)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(22 120)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(60 60)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.6"/>
+  </svg></span></span><span class="orn orn-esquina esq br" aria-hidden="true"><img src="plantillas/adornos/gala-esquina.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 200"><defs><linearGradient id="ga-plata2-4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs>
+    <g fill="none" stroke="url(#ga-plata2-4)" stroke-width="1.6"><path d="M6 194V6H194"/><path d="M18 182V18H182" stroke-width=".9"/>
+      <path d="M18 70C40 70 70 40 70 18" /><path d="M18 46C30 46 46 30 46 18"/><circle cx="18" cy="18" r="8"/></g>
+    <path transform="translate(18 18)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(86 30)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(30 86)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(120 22)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(22 120)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(60 60)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.6"/>
   </svg></span></span>
-      
-      <p class="intro">Nos casamos</p>
-      <h1 class="nombres"><span class="n1">Valeria</span><span class="amp">&amp;</span><span class="n2">Santiago</span></h1>
-      <div class="fecha-bloque"><span class="lado">Sábado</span><span class="dia">20<small>Marzo</small></span><span class="lado">2027</span></div>
-      <p class="ciudad">San Miguel de Allende, Guanajuato</p>
+      <span class="orn orn-luna luna" aria-hidden="true"><img src="plantillas/adornos/gala-luna.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 300 170"><defs><linearGradient id="ga-plata-7" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs>
+    <path d="M150 20a62 62 0 1 0 54 92a50 50 0 1 1 -54 -92z" fill="url(#ga-plata-7)" opacity=".95"/>
+    <g stroke="#c3ccda" stroke-width=".8" opacity=".55" fill="none"><path d="M40 60L78 30L112 52M196 40L236 24L262 62L284 50"/></g>
+    <path transform="translate(40 60)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(78 30)" d="M0 -8L1.6 -1.6L8 0L1.6 1.6L0 8L-1.6 1.6L-8 0L-1.6 -1.6Z" fill="#eef2f8" opacity="1"/><path transform="translate(112 52)" d="M0 -5L1 -1L5 0L1 1L0 5L-1 1L-5 0L-1 -1Z" fill="#eef2f8" opacity="0.8"/><path transform="translate(196 40)" d="M0 -5L1 -1L5 0L1 1L0 5L-1 1L-5 0L-1 -1Z" fill="#eef2f8" opacity="0.8"/><path transform="translate(236 24)" d="M0 -9L1.8 -1.8L9 0L1.8 1.8L0 9L-1.8 1.8L-9 0L-1.8 -1.8Z" fill="#eef2f8" opacity="1"/><path transform="translate(262 62)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(284 50)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/>
+    <path transform="translate(20 120)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.6"/><path transform="translate(270 130)" d="M0 -5L1 -1L5 0L1 1L0 5L-1 1L-5 0L-1 -1Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(222 96)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.6"/><path transform="translate(60 150)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.5"/>
+    <g fill="#eef2f8"><circle cx="96" cy="90" r="1.4"/><circle cx="250" cy="100" r="1.2"/><circle cx="130" cy="150" r="1.3"/><circle cx="20" cy="30" r="1.2"/><circle cx="292" cy="150" r="1.4"/></g>
+  </svg></span></span>
+      <p class="intro">Mis XV años</p>
+      <h1 class="nombres nombre-xv"><span class="n1">Sofía</span></h1>
+      <span class="orn orn-separador separador rv" aria-hidden="true"><img src="plantillas/adornos/gala-separador.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 260 40"><defs><linearGradient id="ga-plata3-5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs><path d="M10 20H104M156 20H250" stroke="url(#ga-plata3-5)" stroke-width="1"/>
+    <path d="M130 6L134 16L144 20L134 24L130 34L126 24L116 20L126 16Z" fill="url(#ga-plata3-5)"/><path transform="translate(112 20)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.8"/><path transform="translate(148 20)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.8"/><circle cx="104" cy="20" r="2" fill="#c3ccda"/><circle cx="156" cy="20" r="2" fill="#c3ccda"/></svg></span></span>
+      <div class="fecha-deco"><span>Sábado</span><b>12</b><span>Junio</span><b class="anio">2027</b></div>
+      <p class="ciudad">Guadalajara, Jalisco</p>
     </div>
     <a href="#frase" class="bajar" aria-label="Bajar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M6 9l6 6 6-6"/></svg></a>
   </section>
-  <section id="frase" class="sec sec-frase alt"><div class="cont"><blockquote class="rv">“El amor no consiste en mirarse el uno al otro, sino en mirar juntos en la misma dirección.”</blockquote><cite class="rv">Antoine de Saint-Exupéry</cite></div></section>
-  <section id="familia" class="sec sec-familia "><div class="cont"><p class="eyebrow rv">Con la bendición de Dios</p><h2 class="titulo rv">y de nuestros padres</h2><p class="lead rv">tenemos el honor de invitarte a celebrar la unión de nuestras vidas</p><div class="padres">
-        <div class="rv"><h3>Padres de la novia</h3><p>Ricardo Morales Ibarra<br>Lucía Fernández de Morales</p></div>
-        <div class="rv"><h3>Padres del novio</h3><p>Alejandro Ríos Castañeda †<br>Mariana Treviño Garza</p></div>
-      </div><div class="padrinos"><div class="rv"><h3>Velación</h3><p>Jorge &amp; Patricia Salinas</p></div><div class="rv"><h3>Anillos</h3><p>Diego &amp; Fernanda Ríos</p></div><div class="rv"><h3>Lazo</h3><p>Héctor &amp; Andrea Morales</p></div></div></div></section>
-  <section id="cuenta" class="sec sec-cuenta oscura"><span class="orn orn-rama rama-fondo l" aria-hidden="true"><img src="plantillas/adornos/botanica-rama.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 240 240" style="color:#8a9a7b">
-    <g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M30 215C70 170 110 120 205 30"/><path d="M95 140C90 110 100 90 120 75"/><path d="M140 95C160 95 180 100 195 115"/></g>
-    <g fill="currentColor">
-      <ellipse cx="55" cy="180" rx="16" ry="6" transform="rotate(-70 55 180)" opacity=".75"/><ellipse cx="72" cy="190" rx="16" ry="6" transform="rotate(10 72 190)" opacity=".55"/>
-      <ellipse cx="78" cy="152" rx="17" ry="6.5" transform="rotate(-60 78 152)" opacity=".8"/><ellipse cx="100" cy="162" rx="17" ry="6.5" transform="rotate(5 100 162)" opacity=".6"/>
-      <ellipse cx="88" cy="118" rx="15" ry="5.5" transform="rotate(-80 88 118)" opacity=".7"/><ellipse cx="110" cy="88" rx="14" ry="5" transform="rotate(-40 110 88)" opacity=".85"/>
-      <ellipse cx="124" cy="118" rx="18" ry="6.5" transform="rotate(-50 124 118)" opacity=".7"/><ellipse cx="145" cy="122" rx="17" ry="6" transform="rotate(15 145 122)" opacity=".55"/>
-      <ellipse cx="160" cy="88" rx="16" ry="6" transform="rotate(-45 160 88)" opacity=".8"/><ellipse cx="172" cy="96" rx="14" ry="5" transform="rotate(30 172 96)" opacity=".6"/>
-      <ellipse cx="188" cy="110" rx="12" ry="4.5" transform="rotate(50 188 110)" opacity=".7"/><ellipse cx="180" cy="55" rx="15" ry="5.5" transform="rotate(-35 180 55)" opacity=".75"/>
-      <ellipse cx="196" cy="62" rx="13" ry="5" transform="rotate(25 196 62)" opacity=".55"/><ellipse cx="208" cy="30" rx="12" ry="4.5" transform="rotate(-45 208 30)" opacity=".85"/>
-    </g>
-    <g fill="#d8c08f"><circle cx="120" cy="74" r="3.2"/><circle cx="126" cy="70" r="2.4"/><circle cx="196" cy="116" r="3"/><circle cx="200" cy="122" r="2.2"/><circle cx="46" cy="200" r="2.6"/></g>
-  </svg></span></span><span class="orn orn-rama rama-fondo r" aria-hidden="true"><img src="plantillas/adornos/botanica-rama.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 240 240" style="color:#8a9a7b">
-    <g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M30 215C70 170 110 120 205 30"/><path d="M95 140C90 110 100 90 120 75"/><path d="M140 95C160 95 180 100 195 115"/></g>
-    <g fill="currentColor">
-      <ellipse cx="55" cy="180" rx="16" ry="6" transform="rotate(-70 55 180)" opacity=".75"/><ellipse cx="72" cy="190" rx="16" ry="6" transform="rotate(10 72 190)" opacity=".55"/>
-      <ellipse cx="78" cy="152" rx="17" ry="6.5" transform="rotate(-60 78 152)" opacity=".8"/><ellipse cx="100" cy="162" rx="17" ry="6.5" transform="rotate(5 100 162)" opacity=".6"/>
-      <ellipse cx="88" cy="118" rx="15" ry="5.5" transform="rotate(-80 88 118)" opacity=".7"/><ellipse cx="110" cy="88" rx="14" ry="5" transform="rotate(-40 110 88)" opacity=".85"/>
-      <ellipse cx="124" cy="118" rx="18" ry="6.5" transform="rotate(-50 124 118)" opacity=".7"/><ellipse cx="145" cy="122" rx="17" ry="6" transform="rotate(15 145 122)" opacity=".55"/>
-      <ellipse cx="160" cy="88" rx="16" ry="6" transform="rotate(-45 160 88)" opacity=".8"/><ellipse cx="172" cy="96" rx="14" ry="5" transform="rotate(30 172 96)" opacity=".6"/>
-      <ellipse cx="188" cy="110" rx="12" ry="4.5" transform="rotate(50 188 110)" opacity=".7"/><ellipse cx="180" cy="55" rx="15" ry="5.5" transform="rotate(-35 180 55)" opacity=".75"/>
-      <ellipse cx="196" cy="62" rx="13" ry="5" transform="rotate(25 196 62)" opacity=".55"/><ellipse cx="208" cy="30" rx="12" ry="4.5" transform="rotate(-45 208 30)" opacity=".85"/>
-    </g>
-    <g fill="#d8c08f"><circle cx="120" cy="74" r="3.2"/><circle cx="126" cy="70" r="2.4"/><circle cx="196" cy="116" r="3"/><circle cx="200" cy="122" r="2.2"/><circle cx="46" cy="200" r="2.6"/></g>
+  <section id="frase" class="sec sec-frase alt"><div class="cont"><span class="orn orn-separador separador rv" aria-hidden="true"><img src="plantillas/adornos/gala-separador.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 260 40"><defs><linearGradient id="ga-plata3-5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs><path d="M10 20H104M156 20H250" stroke="url(#ga-plata3-5)" stroke-width="1"/>
+    <path d="M130 6L134 16L144 20L134 24L130 34L126 24L116 20L126 16Z" fill="url(#ga-plata3-5)"/><path transform="translate(112 20)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.8"/><path transform="translate(148 20)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.8"/><circle cx="104" cy="20" r="2" fill="#c3ccda"/><circle cx="156" cy="20" r="2" fill="#c3ccda"/></svg></span></span><blockquote class="rv">“Hay momentos que se esperan toda una vida; hoy celebro el mío rodeada de quienes más quiero.”</blockquote></div></section>
+  <section id="familia" class="sec sec-familia "><div class="cont"><span class="orn orn-luna luna-chica rv" aria-hidden="true"><img src="plantillas/adornos/gala-luna.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 300 170"><defs><linearGradient id="ga-plata-8" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs>
+    <path d="M150 20a62 62 0 1 0 54 92a50 50 0 1 1 -54 -92z" fill="url(#ga-plata-8)" opacity=".95"/>
+    <g stroke="#c3ccda" stroke-width=".8" opacity=".55" fill="none"><path d="M40 60L78 30L112 52M196 40L236 24L262 62L284 50"/></g>
+    <path transform="translate(40 60)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(78 30)" d="M0 -8L1.6 -1.6L8 0L1.6 1.6L0 8L-1.6 1.6L-8 0L-1.6 -1.6Z" fill="#eef2f8" opacity="1"/><path transform="translate(112 52)" d="M0 -5L1 -1L5 0L1 1L0 5L-1 1L-5 0L-1 -1Z" fill="#eef2f8" opacity="0.8"/><path transform="translate(196 40)" d="M0 -5L1 -1L5 0L1 1L0 5L-1 1L-5 0L-1 -1Z" fill="#eef2f8" opacity="0.8"/><path transform="translate(236 24)" d="M0 -9L1.8 -1.8L9 0L1.8 1.8L0 9L-1.8 1.8L-9 0L-1.8 -1.8Z" fill="#eef2f8" opacity="1"/><path transform="translate(262 62)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(284 50)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/>
+    <path transform="translate(20 120)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.6"/><path transform="translate(270 130)" d="M0 -5L1 -1L5 0L1 1L0 5L-1 1L-5 0L-1 -1Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(222 96)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.6"/><path transform="translate(60 150)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.5"/>
+    <g fill="#eef2f8"><circle cx="96" cy="90" r="1.4"/><circle cx="250" cy="100" r="1.2"/><circle cx="130" cy="150" r="1.3"/><circle cx="20" cy="30" r="1.2"/><circle cx="292" cy="150" r="1.4"/></g>
+  </svg></span></span><p class="eyebrow rv">Con la bendición de Dios</p><h2 class="titulo rv">y de mis padres</h2><p class="lead rv">tengo el honor de invitarte a celebrar mis quince años</p><div class="padres">
+        <div class="rv"><h3>Mis padres</h3><p>Eduardo Ramírez Ochoa<br>Claudia Herrera de Ramírez</p></div>
+        
+      </div><div class="padrinos"><div class="rv"><h3>Padrinos de velación</h3><p>Raúl &amp; Gabriela Herrera</p></div><div class="rv"><h3>Padrinos de anillo</h3><p>Miguel &amp; Laura Ramírez</p></div><div class="rv"><h3>Padrinos de la última muñeca</h3><p>Óscar &amp; Diana Torres</p></div><div class="rv"><h3>Chambelán de honor</h3><p>Emilio Ramírez</p></div></div></div></section>
+  <section id="cuenta" class="sec sec-cuenta oscura"><div class="cielo" aria-hidden="true"></div><span class="orn orn-esquina esq tl" aria-hidden="true"><img src="plantillas/adornos/gala-esquina.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 200"><defs><linearGradient id="ga-plata2-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs>
+    <g fill="none" stroke="url(#ga-plata2-1)" stroke-width="1.6"><path d="M6 194V6H194"/><path d="M18 182V18H182" stroke-width=".9"/>
+      <path d="M18 70C40 70 70 40 70 18" /><path d="M18 46C30 46 46 30 46 18"/><circle cx="18" cy="18" r="8"/></g>
+    <path transform="translate(18 18)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(86 30)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(30 86)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(120 22)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(22 120)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(60 60)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.6"/>
+  </svg></span></span><span class="orn orn-esquina esq tr" aria-hidden="true"><img src="plantillas/adornos/gala-esquina.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 200"><defs><linearGradient id="ga-plata2-2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs>
+    <g fill="none" stroke="url(#ga-plata2-2)" stroke-width="1.6"><path d="M6 194V6H194"/><path d="M18 182V18H182" stroke-width=".9"/>
+      <path d="M18 70C40 70 70 40 70 18" /><path d="M18 46C30 46 46 30 46 18"/><circle cx="18" cy="18" r="8"/></g>
+    <path transform="translate(18 18)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(86 30)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(30 86)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(120 22)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(22 120)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(60 60)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.6"/>
+  </svg></span></span><span class="orn orn-esquina esq bl" aria-hidden="true"><img src="plantillas/adornos/gala-esquina.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 200"><defs><linearGradient id="ga-plata2-3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs>
+    <g fill="none" stroke="url(#ga-plata2-3)" stroke-width="1.6"><path d="M6 194V6H194"/><path d="M18 182V18H182" stroke-width=".9"/>
+      <path d="M18 70C40 70 70 40 70 18" /><path d="M18 46C30 46 46 30 46 18"/><circle cx="18" cy="18" r="8"/></g>
+    <path transform="translate(18 18)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(86 30)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(30 86)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(120 22)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(22 120)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(60 60)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.6"/>
+  </svg></span></span><span class="orn orn-esquina esq br" aria-hidden="true"><img src="plantillas/adornos/gala-esquina.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 200"><defs><linearGradient id="ga-plata2-4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs>
+    <g fill="none" stroke="url(#ga-plata2-4)" stroke-width="1.6"><path d="M6 194V6H194"/><path d="M18 182V18H182" stroke-width=".9"/>
+      <path d="M18 70C40 70 70 40 70 18" /><path d="M18 46C30 46 46 30 46 18"/><circle cx="18" cy="18" r="8"/></g>
+    <path transform="translate(18 18)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(86 30)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(30 86)" d="M0 -7L1.4000000000000001 -1.4000000000000001L7 0L1.4000000000000001 1.4000000000000001L0 7L-1.4000000000000001 1.4000000000000001L-7 0L-1.4000000000000001 -1.4000000000000001Z" fill="#eef2f8" opacity="0.9"/><path transform="translate(120 22)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(22 120)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(60 60)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.6"/>
   </svg></span></span><div class="cont"><p class="eyebrow rv">Faltan</p><h2 class="titulo rv">para el gran día</h2>
         <div class="reloj rv"><div><span data-cd="d">00</span><small>Días</small></div><b>:</b><div><span data-cd="h">00</span><small>Horas</small></div><b>:</b><div><span data-cd="m">00</span><small>Minutos</small></div><b>:</b><div><span data-cd="s">00</span><small>Segundos</small></div></div>
-        <a class="btn rv" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Boda+Valeria+%26+Santiago&amp;dates=20270320T230000Z%2F20270321T080000Z&amp;location=Hacienda+Las+Jacarandas%2C+Carretera+a+Dolores+Hidalgo+km+4.5+San+Miguel+de+Allende%2C+Gto.&amp;details=%C2%A1Te+esperamos%21"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Agendar en calendario</a></div></section>
+        <a class="btn rv" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=XV+a%C3%B1os+de+Sof%C3%ADa&amp;dates=20270613T000000Z%2F20270613T090000Z&amp;location=Sal%C3%B3n+Cristal%2C+Av.+L%C3%B3pez+Mateos+Sur+2375+Zapopan%2C+Jal.&amp;details=%C2%A1Te+esperamos%21"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Agendar en calendario</a></div></section>
   <section id="itinerario" class="sec sec-itinerario "><div class="cont"><p class="eyebrow rv">Itinerario</p><h2 class="titulo rv">Programa del día</h2>
         <div class="linea"><div class="evento rv">
-          <div class="hora">17:00</div>
+          <div class="hora">18:00</div>
           <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 2v4M10 4h4M5 22V11l7-5 7 5v11M9 22v-6a3 3 0 016 0v6M3 22h18"/></svg></div>
-          <div class="que">Ceremonia religiosa<small>Parroquia de San Miguel</small></div>
+          <div class="que">Misa de acción de gracias<small>Templo de San Francisco</small></div>
         </div><div class="evento rv">
-          <div class="hora">19:00</div>
+          <div class="hora">20:00</div>
           <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M8 2h8l-1 7a3 3 0 01-6 0zM12 12v8M8 22h8"/></svg></div>
-          <div class="que">Cóctel de bienvenida<small>Jardín de la hacienda</small></div>
+          <div class="que">Recepción<small>Salón Cristal</small></div>
         </div><div class="evento rv">
-          <div class="hora">20:30</div>
+          <div class="hora">20:45</div>
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 18h18M4 18L3 8l5 4 4-7 4 7 5-4-1 10"/><circle cx="12" cy="4" r="1"/><circle cx="3" cy="7.5" r=".8"/><circle cx="21" cy="7.5" r=".8"/></svg></div>
+          <div class="que">Vals<small>Con mis chambelanes</small></div>
+        </div><div class="evento rv">
+          <div class="hora">21:30</div>
           <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 11h18M5 11a7 7 0 0114 0M12 4V2M4 15h16M7 15v5M17 15v5"/></svg></div>
-          <div class="que">Cena<small>Salón principal</small></div>
+          <div class="que">Cena</div>
         </div><div class="evento rv">
-          <div class="hora">22:00</div>
+          <div class="hora">22:30</div>
           <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
-          <div class="que">¡A bailar!<small>Pista bajo las estrellas</small></div>
+          <div class="que">¡A bailar!</div>
         </div><div class="evento rv">
-          <div class="hora">03:00</div>
+          <div class="hora">02:00</div>
           <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg></div>
-          <div class="que">Fin de la fiesta<small>Gracias por acompañarnos</small></div>
+          <div class="que">Fin de la fiesta<small>Gracias por acompañarme</small></div>
         </div></div></div></section>
   <section id="ubicacion" class="sec sec-ubicacion alt"><div class="cont"><p class="eyebrow rv">Dónde</p><h2 class="titulo rv">Ubicación</h2>
         <div class="lugares n2"><div class="lugar rv">
           <div class="lugar-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 2v4M10 4h4M5 22V11l7-5 7 5v11M9 22v-6a3 3 0 016 0v6M3 22h18"/></svg></div>
-          <h3>Ceremonia</h3>
-          <p class="lugar-hora">17:00 hrs</p>
-          <p class="lugar-nombre">Parroquia de San Miguel Arcángel</p>
-          <p class="lugar-dir">Plaza Principal s/n, Zona Centro<br>San Miguel de Allende, Gto.</p>
-          <a class="btn" target="_blank" rel="noopener" href="https://maps.google.com/?q=Parroquia%20de%20San%20Miguel%20Arc%C3%A1ngel%20Plaza%20Principal%20s%2Fn%2C%20Zona%20Centro%20San%20Miguel%20de%20Allende%2C%20Gto."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 22s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Ver mapa</a>
+          <h3>Misa</h3>
+          <p class="lugar-hora">18:00 hrs</p>
+          <p class="lugar-nombre">Templo de San Francisco de Asís</p>
+          <p class="lugar-dir">Av. 16 de Septiembre 289, Centro<br>Guadalajara, Jal.</p>
+          <a class="btn" target="_blank" rel="noopener" href="https://maps.google.com/?q=Templo%20de%20San%20Francisco%20de%20As%C3%ADs%20Av.%2016%20de%20Septiembre%20289%2C%20Centro%20Guadalajara%2C%20Jal."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 22s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Ver mapa</a>
         </div><div class="lugar rv">
           <div class="lugar-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M2 21h20M4 21V10h16v11M2 10l10-6 10 6M8 21v-5a2 2 0 014 0v5M14 14h3v3h-3z"/></svg></div>
           <h3>Recepción</h3>
-          <p class="lugar-hora">19:00 hrs</p>
-          <p class="lugar-nombre">Hacienda Las Jacarandas</p>
-          <p class="lugar-dir">Carretera a Dolores Hidalgo km 4.5<br>San Miguel de Allende, Gto.</p>
-          <a class="btn" target="_blank" rel="noopener" href="https://maps.google.com/?q=Hacienda%20Las%20Jacarandas%20Carretera%20a%20Dolores%20Hidalgo%20km%204.5%20San%20Miguel%20de%20Allende%2C%20Gto."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 22s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Ver mapa</a>
+          <p class="lugar-hora">20:00 hrs</p>
+          <p class="lugar-nombre">Salón Cristal</p>
+          <p class="lugar-dir">Av. López Mateos Sur 2375<br>Zapopan, Jal.</p>
+          <a class="btn" target="_blank" rel="noopener" href="https://maps.google.com/?q=Sal%C3%B3n%20Cristal%20Av.%20L%C3%B3pez%20Mateos%20Sur%202375%20Zapopan%2C%20Jal."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 22s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Ver mapa</a>
         </div></div></div></section>
   <section id="vestimenta" class="sec sec-vestimenta "><div class="cont"><p class="eyebrow rv">Código de vestimenta</p><h2 class="titulo rv">Formal</h2>
         <div class="figuras rv"><figure><svg viewBox="0 0 70 110" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M27 6l8 8 8-8M27 6l-11 6-4 28 8 2 2 64h26l2-64 8-2-4-28-11-6"/><path d="M35 14l-5 16 5 6 5-6-5-16M31 20l4 3 4-3"/><circle cx="35" cy="48" r="1"/><circle cx="35" cy="58" r="1"/></svg><figcaption>Traje</figcaption></figure><figure><svg viewBox="0 0 70 110" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M28 6c0 8 2 14 7 18 5-4 7-10 7-18"/><path d="M28 6l-4 2 3 26-4 6-13 66h50L47 40l-4-6 3-26-4-2"/><path d="M24 40h22"/></svg><figcaption>Vestido largo</figcaption></figure></div>
-        <p class="rv">Sugerimos tonos neutros, tierra y verdes suaves.</p>
-        <div class="paleta rv"><span style="background:#5d6b52"></span><span style="background:#8a9a7b"></span><span style="background:#c9b79c"></span><span style="background:#b8955a"></span><span style="background:#7a5c4a"></span></div>
-        <p class="nota rv">El color blanco está reservado para la novia.</p></div></section>
-  <section id="historia" class="sec sec-historia alt"><div class="cont"><p class="eyebrow rv">Momentos</p><h2 class="titulo rv">Nuestra historia</h2><p class="lead rv">Desde aquel café en Coyoacán en 2019, cada día ha sido una aventura juntos.</p>
+        <p class="rv">Te sugerimos colores de noche y tonos pastel.</p>
+        <div class="paleta rv"><span style="background:#1f3463"></span><span style="background:#7c5ea8"></span><span style="background:#b8c4d6"></span><span style="background:#c9a75c"></span></div>
+        <p class="nota rv">El color rosa está reservado para la quinceañera.</p></div></section>
+  <section id="historia" class="sec sec-historia alt"><div class="cont"><p class="eyebrow rv">Momentos</p><h2 class="titulo rv">Mis momentos</h2><p class="lead rv">Quince años de risas, aprendizajes y sueños. ¡Gracias por ser parte de ellos!</p>
         <div class="galeria g3"><figure class="foto rv vacia" >
           <span class="foto-hueco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="4"/></svg></span>
-          <figcaption>2019</figcaption>
+          <figcaption>Mi primer año</figcaption>
         </figure><figure class="foto rv vacia" >
           <span class="foto-hueco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="4"/></svg></span>
-          <figcaption>El sí</figcaption>
+          <figcaption>Con mi familia</figcaption>
         </figure><figure class="foto rv vacia" >
           <span class="foto-hueco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="4"/></svg></span>
-          <figcaption>2027</figcaption>
+          <figcaption>Hoy</figcaption>
         </figure></div></div></section>
-  <section id="regalos" class="sec sec-regalos "><div class="cont"><p class="eyebrow rv">Mesa de regalos</p><h2 class="titulo rv">Tu presencia es nuestro mejor regalo</h2><p class="lead rv">pero si deseas obsequiarnos algo, aquí algunas opciones</p>
-        <div class="regalos n3"><div class="regalo rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 9h18v4H3zM5 13v8h14v-8M12 9v12M12 9c-2-4-7-4-6-1 1 2 6 1 6 1zm0 0c2-4 7-4 6-1-1 2-6 1-6 1z"/></svg><h4>Liverpool</h4><p>Evento #50123456</p></div><div class="regalo rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 7h16l-1 13H5zM9 7V5a3 3 0 016 0v2"/></svg><h4>Amazon</h4><p>Lista “Vale y Santi”</p></div><div class="regalo rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 7l9 6 9-6"/></svg><h4>Lluvia de sobres</h4><p>El día del evento</p></div></div>
-        <p class="banco rv">BBVA · CLABE: <code>0121 8000 1234 5678 90</code><button class="copiar" data-copiar="012180001234567890">Copiar</button><br>Valeria Morales Fernández</p></div></section>
+  <section id="regalos" class="sec sec-regalos "><div class="cont"><p class="eyebrow rv">Mesa de regalos</p><h2 class="titulo rv">Tu presencia es mi mejor regalo</h2><p class="lead rv">pero si deseas obsequiarme algo, aquí algunas opciones</p>
+        <div class="regalos n2"><div class="regalo rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 9h18v4H3zM5 13v8h14v-8M12 9v12M12 9c-2-4-7-4-6-1 1 2 6 1 6 1zm0 0c2-4 7-4 6-1-1 2-6 1-6 1z"/></svg><h4>Liverpool</h4><p>Evento #50987654</p></div><div class="regalo rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 7l9 6 9-6"/></svg><h4>Lluvia de sobres</h4><p>El día del evento</p></div></div>
+        </div></section>
   <section id="rsvp" class="sec sec-rsvp alt"><div class="cont"><p class="eyebrow rv">R.S.V.P.</p><h2 class="titulo rv">Confirma tu asistencia</h2>
         <div class="pase rv"><strong data-invitado-nombre>Querido invitado</strong>Hemos reservado <b data-pases>2</b> <span data-pases-palabra>lugares</span> en tu honor<em class="pase-mesa" data-mesa-pase hidden></em></div>
         <form id="form-rsvp" class="rv" novalidate>
           <label for="f-nombre">Nombre completo</label>
           <input type="text" id="f-nombre" placeholder="Tu nombre" autocomplete="name">
-          <label>¿Nos acompañarás?</label>
+          <label>¿Me acompañarás?</label>
           <div class="opciones">
             <input type="radio" name="asiste" id="asiste-si" value="si" checked><label for="asiste-si">Sí, ahí estaré</label>
             <input type="radio" name="asiste" id="asiste-no" value="no"><label for="asiste-no">No podré asistir</label>
           </div>
           <div id="caja-pases"><label for="f-pases">Número de asistentes</label><select id="f-pases"></select></div>
-          <label for="f-msg">Mensaje para los novios (opcional)</label>
+          <label for="f-msg">Mensaje para Sofía (opcional)</label>
           <textarea id="f-msg" placeholder="Escribe unas palabras…"></textarea>
           <button class="btn solido" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Confirmar por WhatsApp</button>
-          <p class="limite">Agradeceremos tu confirmación antes del 20 de febrero de 2027</p>
+          <p class="limite">Agradeceremos tu confirmación antes del 20 de mayo de 2027</p>
         </form></div></section>
-  <section id="mesa" class="sec sec-mesa  sin-mesa"><div class="cont"><p class="eyebrow rv">Su lugar</p><h2 class="titulo rv">Tu mesa</h2>
-        <p class="mesa-txt rv"><span data-invitado-nombre>Querido invitado</span>, te esperamos en la</p>
-        <p class="mesa-num rv" data-mesa-nombre></p>
-        <p class="lead rv">Al llegar, nuestro personal te guiará a tu lugar.</p>
-        <div class="rv"><div class="plano">
-        <div class="pl-el pl-novios" style="left:30%;top:3%;width:40%;height:8%"><span>Novios</span></div><div class="pl-el pl-pista" style="left:35%;top:34%;width:30%;height:26%"><span>Pista</span></div><div class="pl-el pl-entrada" style="left:42%;top:92%;width:16%;height:7%"><span>Entrada</span></div>
-        <div class="pl-mesa " data-mesa="1" style="left:36.2%;top:20%"><span>1</span></div><div class="pl-mesa " data-mesa="2" style="left:49.8%;top:20%"><span>2</span></div><div class="pl-mesa " data-mesa="3" style="left:63.4%;top:20%"><span>3</span></div><div class="pl-mesa " data-mesa="4" style="left:22.6%;top:30%"><span>4</span></div><div class="pl-mesa " data-mesa="5" style="left:77%;top:30%"><span>5</span></div><div class="pl-mesa " data-mesa="6" style="left:22.6%;top:40%"><span>6</span></div><div class="pl-mesa " data-mesa="7" style="left:77%;top:40%"><span>7</span></div><div class="pl-mesa " data-mesa="8" style="left:22.6%;top:50%"><span>8</span></div><div class="pl-mesa " data-mesa="9" style="left:77%;top:50%"><span>9</span></div><div class="pl-mesa " data-mesa="10" style="left:22.6%;top:60%"><span>10</span></div><div class="pl-mesa " data-mesa="11" style="left:77%;top:60%"><span>11</span></div><div class="pl-mesa " data-mesa="12" style="left:36.2%;top:70%"><span>12</span></div><div class="pl-mesa " data-mesa="13" style="left:49.8%;top:70%"><span>13</span></div><div class="pl-mesa " data-mesa="14" style="left:63.4%;top:70%"><span>14</span></div>
-      </div></div></div></section><section id="hospedaje" class="sec sec-hospedaje "><div class="cont"><p class="eyebrow rv">Para nuestros invitados</p><h2 class="titulo rv">Hospedaje</h2>
-        <div class="hoteles"><div class="hotel rv"><h4>Hotel Casa de Sierra Nevada</h4><p class="hotel-nota">Tarifa especial: BODAVS</p><p class="hotel-dir">Hospicio 42, Zona Centro<br>San Miguel de Allende, Gto.</p><a class="btn" target="_blank" rel="noopener" href="https://maps.google.com/?q=Hotel%20Casa%20de%20Sierra%20Nevada%20Hospicio%2042%2C%20Zona%20Centro%20San%20Miguel%20de%20Allende%2C%20Gto."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 22s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Ver ubicación</a></div><div class="hotel rv"><h4>Hotel Matilda</h4><p class="hotel-nota">A 5 minutos de la parroquia</p><p class="hotel-dir">Aldama 53, Zona Centro<br>San Miguel de Allende, Gto.</p><a class="btn" target="_blank" rel="noopener" href="https://maps.google.com/?q=Hotel%20Matilda%20Aldama%2053%2C%20Zona%20Centro%20San%20Miguel%20de%20Allende%2C%20Gto."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 22s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Ver ubicación</a></div></div></div></section><section id="deseos" class="sec sec-deseos "><div class="cont"><p class="eyebrow rv">Déjanos un mensaje</p><h2 class="titulo rv">Buenos deseos</h2><p class="lead rv">Tus palabras serán un recuerdo para siempre</p><form class="form-whats" data-whats="deseo" novalidate>
+  <section id="deseos" class="sec sec-deseos "><div class="cont"><p class="eyebrow rv">Déjame un mensaje</p><h2 class="titulo rv">Buenos deseos</h2><p class="lead rv">Tus palabras serán un recuerdo para siempre</p><form class="form-whats" data-whats="deseo" novalidate>
         <input type="text" name="nombre" placeholder="Tu nombre" autocomplete="name" data-nombre-invitado>
         <textarea name="texto" placeholder="Escribe tus buenos deseos…"></textarea>
         <button class="btn solido" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Enviar mis buenos deseos</button>
@@ -489,38 +528,21 @@ body.plantilla-botanica{--fondo:#fbf8f2;--fondo2:#f5efe4;--tinta:#3a3631;--suave
         <input type="text" name="nombre" placeholder="Tu nombre" autocomplete="name" data-nombre-invitado>
         <input type="text" name="texto" placeholder="Canción y artista">
         <button class="btn solido" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Enviar canción</button>
-      </form></div></section><section id="contactos" class="sec sec-contactos "><div class="cont"><p class="eyebrow rv">¿Tienes dudas?</p><h2 class="titulo rv">Contactos</h2><div class="contactos rv"><a class="btn" target="_blank" rel="noopener" href="https://wa.me/5215512345678"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Valeria</a><a class="btn" target="_blank" rel="noopener" href="https://wa.me/5215587654321"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Santiago</a></div></div></section>
-  <section id="compartir" class="sec sec-compartir "><div class="cont">
-          <p class="eyebrow rv">Comparte tus fotos</p><p class="hashtag rv">#ValeYSantiParaSiempre</p>
-          <p class="nota rv">Ceremonia y recepción solo para adultos. ¡Gracias por tu comprensión!</p></div></section>
-        <footer class="pie "><span class="orn orn-rama rama-fondo l" aria-hidden="true"><img src="plantillas/adornos/botanica-rama.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 240 240" style="color:#8a9a7b">
-    <g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M30 215C70 170 110 120 205 30"/><path d="M95 140C90 110 100 90 120 75"/><path d="M140 95C160 95 180 100 195 115"/></g>
-    <g fill="currentColor">
-      <ellipse cx="55" cy="180" rx="16" ry="6" transform="rotate(-70 55 180)" opacity=".75"/><ellipse cx="72" cy="190" rx="16" ry="6" transform="rotate(10 72 190)" opacity=".55"/>
-      <ellipse cx="78" cy="152" rx="17" ry="6.5" transform="rotate(-60 78 152)" opacity=".8"/><ellipse cx="100" cy="162" rx="17" ry="6.5" transform="rotate(5 100 162)" opacity=".6"/>
-      <ellipse cx="88" cy="118" rx="15" ry="5.5" transform="rotate(-80 88 118)" opacity=".7"/><ellipse cx="110" cy="88" rx="14" ry="5" transform="rotate(-40 110 88)" opacity=".85"/>
-      <ellipse cx="124" cy="118" rx="18" ry="6.5" transform="rotate(-50 124 118)" opacity=".7"/><ellipse cx="145" cy="122" rx="17" ry="6" transform="rotate(15 145 122)" opacity=".55"/>
-      <ellipse cx="160" cy="88" rx="16" ry="6" transform="rotate(-45 160 88)" opacity=".8"/><ellipse cx="172" cy="96" rx="14" ry="5" transform="rotate(30 172 96)" opacity=".6"/>
-      <ellipse cx="188" cy="110" rx="12" ry="4.5" transform="rotate(50 188 110)" opacity=".7"/><ellipse cx="180" cy="55" rx="15" ry="5.5" transform="rotate(-35 180 55)" opacity=".75"/>
-      <ellipse cx="196" cy="62" rx="13" ry="5" transform="rotate(25 196 62)" opacity=".55"/><ellipse cx="208" cy="30" rx="12" ry="4.5" transform="rotate(-45 208 30)" opacity=".85"/>
-    </g>
-    <g fill="#d8c08f"><circle cx="120" cy="74" r="3.2"/><circle cx="126" cy="70" r="2.4"/><circle cx="196" cy="116" r="3"/><circle cx="200" cy="122" r="2.2"/><circle cx="46" cy="200" r="2.6"/></g>
-  </svg></span></span><span class="orn orn-rama rama-fondo r" aria-hidden="true"><img src="plantillas/adornos/botanica-rama.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 240 240" style="color:#8a9a7b">
-    <g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M30 215C70 170 110 120 205 30"/><path d="M95 140C90 110 100 90 120 75"/><path d="M140 95C160 95 180 100 195 115"/></g>
-    <g fill="currentColor">
-      <ellipse cx="55" cy="180" rx="16" ry="6" transform="rotate(-70 55 180)" opacity=".75"/><ellipse cx="72" cy="190" rx="16" ry="6" transform="rotate(10 72 190)" opacity=".55"/>
-      <ellipse cx="78" cy="152" rx="17" ry="6.5" transform="rotate(-60 78 152)" opacity=".8"/><ellipse cx="100" cy="162" rx="17" ry="6.5" transform="rotate(5 100 162)" opacity=".6"/>
-      <ellipse cx="88" cy="118" rx="15" ry="5.5" transform="rotate(-80 88 118)" opacity=".7"/><ellipse cx="110" cy="88" rx="14" ry="5" transform="rotate(-40 110 88)" opacity=".85"/>
-      <ellipse cx="124" cy="118" rx="18" ry="6.5" transform="rotate(-50 124 118)" opacity=".7"/><ellipse cx="145" cy="122" rx="17" ry="6" transform="rotate(15 145 122)" opacity=".55"/>
-      <ellipse cx="160" cy="88" rx="16" ry="6" transform="rotate(-45 160 88)" opacity=".8"/><ellipse cx="172" cy="96" rx="14" ry="5" transform="rotate(30 172 96)" opacity=".6"/>
-      <ellipse cx="188" cy="110" rx="12" ry="4.5" transform="rotate(50 188 110)" opacity=".7"/><ellipse cx="180" cy="55" rx="15" ry="5.5" transform="rotate(-35 180 55)" opacity=".75"/>
-      <ellipse cx="196" cy="62" rx="13" ry="5" transform="rotate(25 196 62)" opacity=".55"/><ellipse cx="208" cy="30" rx="12" ry="4.5" transform="rotate(-45 208 30)" opacity=".85"/>
-    </g>
-    <g fill="#d8c08f"><circle cx="120" cy="74" r="3.2"/><circle cx="126" cy="70" r="2.4"/><circle cx="196" cy="116" r="3"/><circle cx="200" cy="122" r="2.2"/><circle cx="46" cy="200" r="2.6"/></g>
+      </form></div></section><section id="contactos" class="sec sec-contactos "><div class="cont"><p class="eyebrow rv">¿Tienes dudas?</p><h2 class="titulo rv">Contactos</h2><div class="contactos rv"><a class="btn" target="_blank" rel="noopener" href="https://wa.me/5213312345678"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Mamá</a></div></div></section>
+  <section id="compartir" class="sec sec-compartir "><div class="cont"><span class="orn orn-separador separador rv" aria-hidden="true"><img src="plantillas/adornos/gala-separador.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 260 40"><defs><linearGradient id="ga-plata3-5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs><path d="M10 20H104M156 20H250" stroke="url(#ga-plata3-5)" stroke-width="1"/>
+    <path d="M130 6L134 16L144 20L134 24L130 34L126 24L116 20L126 16Z" fill="url(#ga-plata3-5)"/><path transform="translate(112 20)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.8"/><path transform="translate(148 20)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.8"/><circle cx="104" cy="20" r="2" fill="#c3ccda"/><circle cx="156" cy="20" r="2" fill="#c3ccda"/></svg></span></span>
+          <p class="eyebrow rv">Comparte tus fotos</p><p class="hashtag rv">#LosXVdeSofi</p>
+          </div></section>
+        <footer class="pie "><div class="cielo" aria-hidden="true"></div><span class="orn orn-luna luna-pie" aria-hidden="true"><img src="plantillas/adornos/gala-luna.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 300 170"><defs><linearGradient id="ga-plata-9" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa6bb"/><stop offset=".45" stop-color="#f4f7fc"/><stop offset=".7" stop-color="#c3ccda"/><stop offset="1" stop-color="#8d99ae"/></linearGradient></defs>
+    <path d="M150 20a62 62 0 1 0 54 92a50 50 0 1 1 -54 -92z" fill="url(#ga-plata-9)" opacity=".95"/>
+    <g stroke="#c3ccda" stroke-width=".8" opacity=".55" fill="none"><path d="M40 60L78 30L112 52M196 40L236 24L262 62L284 50"/></g>
+    <path transform="translate(40 60)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(78 30)" d="M0 -8L1.6 -1.6L8 0L1.6 1.6L0 8L-1.6 1.6L-8 0L-1.6 -1.6Z" fill="#eef2f8" opacity="1"/><path transform="translate(112 52)" d="M0 -5L1 -1L5 0L1 1L0 5L-1 1L-5 0L-1 -1Z" fill="#eef2f8" opacity="0.8"/><path transform="translate(196 40)" d="M0 -5L1 -1L5 0L1 1L0 5L-1 1L-5 0L-1 -1Z" fill="#eef2f8" opacity="0.8"/><path transform="translate(236 24)" d="M0 -9L1.8 -1.8L9 0L1.8 1.8L0 9L-1.8 1.8L-9 0L-1.8 -1.8Z" fill="#eef2f8" opacity="1"/><path transform="translate(262 62)" d="M0 -6L1.2000000000000002 -1.2000000000000002L6 0L1.2000000000000002 1.2000000000000002L0 6L-1.2000000000000002 1.2000000000000002L-6 0L-1.2000000000000002 -1.2000000000000002Z" fill="#eef2f8" opacity="1"/><path transform="translate(284 50)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.7"/>
+    <path transform="translate(20 120)" d="M0 -4L0.8 -0.8L4 0L0.8 0.8L0 4L-0.8 0.8L-4 0L-0.8 -0.8Z" fill="#eef2f8" opacity="0.6"/><path transform="translate(270 130)" d="M0 -5L1 -1L5 0L1 1L0 5L-1 1L-5 0L-1 -1Z" fill="#eef2f8" opacity="0.7"/><path transform="translate(222 96)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.6"/><path transform="translate(60 150)" d="M0 -3L0.6000000000000001 -0.6000000000000001L3 0L0.6000000000000001 0.6000000000000001L0 3L-0.6000000000000001 0.6000000000000001L-3 0L-0.6000000000000001 -0.6000000000000001Z" fill="#eef2f8" opacity="0.5"/>
+    <g fill="#eef2f8"><circle cx="96" cy="90" r="1.4"/><circle cx="250" cy="100" r="1.2"/><circle cx="130" cy="150" r="1.3"/><circle cx="20" cy="30" r="1.2"/><circle cx="292" cy="150" r="1.4"/></g>
   </svg></span></span>
-          <p class="rv">Gracias por ser parte de nuestra historia</p>
-          <p class="nombres"><span class="n1">Valeria</span><span class="amp">&amp;</span><span class="n2">Santiago</span></p>
-          <p class="pie-fecha rv">20 · 03 · 2027</p>
+          <p class="rv">Gracias por acompañarme en este día tan especial</p>
+          <p class="nombres nombre-xv"><span class="n1">Sofía</span></p>
+          <p class="pie-fecha rv">12 · 06 · 2027</p>
         </footer>
 </main>
 <script>(function runtime(d) {
@@ -820,6 +842,6 @@ body.plantilla-botanica{--fondo:#fbf8f2;--fondo2:#f5efe4;--tinta:#3a3631;--suave
         form.parentNode.insertBefore(aviso2, form);
       }
     }
-  })({"plantilla":"botanica","novia":"Valeria","novio":"Santiago","iniciales":"","fecha":"2027-03-20","hora":"17:00","zonaHoraria":"-06:00","ciudad":"San Miguel de Allende, Guanajuato","introPortada":"Nos casamos","fotoPortada":"","frase":"El amor no consiste en mirarse el uno al otro, sino en mirar juntos en la misma dirección.","fraseAutor":"Antoine de Saint-Exupéry","tituloFamilia":"Con la bendición de Dios y de nuestros padres","textoFamilia":"tenemos el honor de invitarte a celebrar la unión de nuestras vidas","padresNovia":"Ricardo Morales Ibarra\nLucía Fernández de Morales","padresNovio":"Alejandro Ríos Castañeda †\nMariana Treviño Garza","padrinos":[{"rol":"Velación","nombres":"Jorge & Patricia Salinas"},{"rol":"Anillos","nombres":"Diego & Fernanda Ríos"},{"rol":"Lazo","nombres":"Héctor & Andrea Morales"}],"itinerario":[{"hora":"17:00","evento":"Ceremonia religiosa","detalle":"Parroquia de San Miguel","icono":"iglesia"},{"hora":"19:00","evento":"Cóctel de bienvenida","detalle":"Jardín de la hacienda","icono":"copa"},{"hora":"20:30","evento":"Cena","detalle":"Salón principal","icono":"cena"},{"hora":"22:00","evento":"¡A bailar!","detalle":"Pista bajo las estrellas","icono":"musica"},{"hora":"03:00","evento":"Fin de la fiesta","detalle":"Gracias por acompañarnos","icono":"luna"}],"lugares":[{"tipo":"Ceremonia","hora":"17:00","nombre":"Parroquia de San Miguel Arcángel","direccion":"Plaza Principal s/n, Zona Centro\nSan Miguel de Allende, Gto.","mapa":"","icono":"iglesia"},{"tipo":"Recepción","hora":"19:00","nombre":"Hacienda Las Jacarandas","direccion":"Carretera a Dolores Hidalgo km 4.5\nSan Miguel de Allende, Gto.","mapa":"","icono":"hacienda"}],"vestimenta":{"tipo":"Formal","texto":"Sugerimos tonos neutros, tierra y verdes suaves.","colores":["#5d6b52","#8a9a7b","#c9b79c","#b8955a","#7a5c4a"],"nota":"El color blanco está reservado para la novia."},"historia":{"titulo":"Nuestra historia","texto":"Desde aquel café en Coyoacán en 2019, cada día ha sido una aventura juntos.","fotos":[{"src":"","pie":"2019"},{"src":"","pie":"El sí"},{"src":"","pie":"2027"}]},"regalos":{"titulo":"Tu presencia es nuestro mejor regalo","texto":"pero si deseas obsequiarnos algo, aquí algunas opciones","opciones":[{"nombre":"Liverpool","detalle":"Evento #50123456","enlace":"","icono":"regalo"},{"nombre":"Amazon","detalle":"Lista “Vale y Santi”","enlace":"","icono":"bolsa"},{"nombre":"Lluvia de sobres","detalle":"El día del evento","enlace":"","icono":"sobre"}],"banco":"BBVA","titular":"Valeria Morales Fernández","clabe":"012180001234567890"},"rsvp":{"whatsapp":"5215512345678","fechaLimite":"2027-02-20","pases":2,"texto":""},"hospedaje":[{"nombre":"Hotel Casa de Sierra Nevada","nota":"Tarifa especial: BODAVS","direccion":"Hospicio 42, Zona Centro\nSan Miguel de Allende, Gto.","mapa":""},{"nombre":"Hotel Matilda","nota":"A 5 minutos de la parroquia","direccion":"Aldama 53, Zona Centro\nSan Miguel de Allende, Gto.","mapa":""}],"contactos":{"novia":"5215512345678","novio":"5215587654321"},"invitados":[{"nombre":"Familia López","pases":4,"mesa":"5"},{"nombre":"Ana y Luis Pérez","pases":2,"mesa":"3"},{"nombre":"Tía Carmen","pases":1,"mesa":"5"},{"nombre":"Familia Hernández","pases":5,"mesa":"8"}],"mesas":{"activo":true,"texto":"Al llegar, nuestro personal te guiará a tu lugar.","lista":[{"nombre":"1","lugares":10,"forma":"redonda","x":36.2,"y":20},{"nombre":"2","lugares":10,"forma":"redonda","x":49.8,"y":20},{"nombre":"3","lugares":10,"forma":"redonda","x":63.4,"y":20},{"nombre":"4","lugares":10,"forma":"redonda","x":22.6,"y":30},{"nombre":"5","lugares":10,"forma":"redonda","x":77,"y":30},{"nombre":"6","lugares":10,"forma":"redonda","x":22.6,"y":40},{"nombre":"7","lugares":10,"forma":"redonda","x":77,"y":40},{"nombre":"8","lugares":10,"forma":"redonda","x":22.6,"y":50},{"nombre":"9","lugares":10,"forma":"redonda","x":77,"y":50},{"nombre":"10","lugares":10,"forma":"redonda","x":22.6,"y":60},{"nombre":"11","lugares":10,"forma":"redonda","x":77,"y":60},{"nombre":"12","lugares":10,"forma":"redonda","x":36.2,"y":70},{"nombre":"13","lugares":10,"forma":"redonda","x":49.8,"y":70},{"nombre":"14","lugares":10,"forma":"redonda","x":63.4,"y":70}],"elementos":[{"tipo":"novios","x":30,"y":3,"w":40,"h":8},{"tipo":"pista","x":35,"y":34,"w":30,"h":26},{"tipo":"entrada","x":42,"y":92,"w":16,"h":7}]},"hashtag":"#ValeYSantiParaSiempre","nota":"Ceremonia y recepción solo para adultos. ¡Gracias por tu comprensión!","despedida":"Gracias por ser parte de nuestra historia","musica":"melodia","adornos":{},"ocultar":{},"evento":"boda","festejada":"","confirmaciones":{"url":"","boda":"","whatsapp":false},"encuadres":{},"_rutaAdornos":"plantillas/adornos/","_efecto":null,"_efectoColores":null});</script>
+  })({"evento":"xv","plantilla":"gala","festejada":"Sofía","iniciales":"","fecha":"2027-06-12","hora":"18:00","zonaHoraria":"-06:00","ciudad":"Guadalajara, Jalisco","introPortada":"Mis XV años","fotoPortada":"","frase":"Hay momentos que se esperan toda una vida; hoy celebro el mío rodeada de quienes más quiero.","fraseAutor":"","tituloFamilia":"Con la bendición de Dios y de mis padres","textoFamilia":"tengo el honor de invitarte a celebrar mis quince años","padresNovia":"Eduardo Ramírez Ochoa\nClaudia Herrera de Ramírez","padresNovio":"","padrinos":[{"rol":"Padrinos de velación","nombres":"Raúl & Gabriela Herrera"},{"rol":"Padrinos de anillo","nombres":"Miguel & Laura Ramírez"},{"rol":"Padrinos de la última muñeca","nombres":"Óscar & Diana Torres"},{"rol":"Chambelán de honor","nombres":"Emilio Ramírez"}],"itinerario":[{"hora":"18:00","evento":"Misa de acción de gracias","detalle":"Templo de San Francisco","icono":"iglesia"},{"hora":"20:00","evento":"Recepción","detalle":"Salón Cristal","icono":"copa"},{"hora":"20:45","evento":"Vals","detalle":"Con mis chambelanes","icono":"corona"},{"hora":"21:30","evento":"Cena","detalle":"","icono":"cena"},{"hora":"22:30","evento":"¡A bailar!","detalle":"","icono":"musica"},{"hora":"02:00","evento":"Fin de la fiesta","detalle":"Gracias por acompañarme","icono":"luna"}],"lugares":[{"tipo":"Misa","hora":"18:00","nombre":"Templo de San Francisco de Asís","direccion":"Av. 16 de Septiembre 289, Centro\nGuadalajara, Jal.","mapa":"","icono":"iglesia"},{"tipo":"Recepción","hora":"20:00","nombre":"Salón Cristal","direccion":"Av. López Mateos Sur 2375\nZapopan, Jal.","mapa":"","icono":"hacienda"}],"vestimenta":{"tipo":"Formal","texto":"Te sugerimos colores de noche y tonos pastel.","colores":["#1f3463","#7c5ea8","#b8c4d6","#c9a75c"],"nota":"El color rosa está reservado para la quinceañera."},"historia":{"titulo":"Mis momentos","texto":"Quince años de risas, aprendizajes y sueños. ¡Gracias por ser parte de ellos!","fotos":[{"src":"","pie":"Mi primer año"},{"src":"","pie":"Con mi familia"},{"src":"","pie":"Hoy"}]},"regalos":{"titulo":"Tu presencia es mi mejor regalo","texto":"pero si deseas obsequiarme algo, aquí algunas opciones","opciones":[{"nombre":"Liverpool","detalle":"Evento #50987654","enlace":"","icono":"regalo"},{"nombre":"Lluvia de sobres","detalle":"El día del evento","enlace":"","icono":"sobre"}],"banco":"","titular":"","clabe":""},"rsvp":{"whatsapp":"5213312345678","fechaLimite":"2027-05-20","pases":2,"texto":""},"hospedaje":[],"contactos":{"novia":"5213312345678","novio":""},"invitados":[{"nombre":"Familia Gómez","pases":4,"mesa":"2"},{"nombre":"Valentina Ruiz","pases":1,"mesa":"6"},{"nombre":"Familia Ortiz","pases":3,"mesa":"4"}],"mesas":{"activo":false,"texto":"","lista":[],"elementos":[]},"hashtag":"#LosXVdeSofi","nota":"","despedida":"Gracias por acompañarme en este día tan especial","musica":"melodia","adornos":{},"ocultar":{},"novia":"","novio":"","confirmaciones":{"url":"","boda":"","whatsapp":false},"encuadres":{},"_rutaAdornos":"plantillas/adornos/","_efecto":"estrellas","_efectoColores":["#eef2f8","#c3ccda","#a9c1ff","#ffffff"]});</script>
 </body>
 </html>

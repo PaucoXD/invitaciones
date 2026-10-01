@@ -13,7 +13,11 @@
   if (!datos) datos = JSON.parse(JSON.stringify(window.INVITACION));
   datos = Invitacion.normalizar(datos);
   const qp = new URLSearchParams(location.search);
-  if (qp.get('plantilla') && PL[qp.get('plantilla')]) datos.plantilla = qp.get('plantilla');
+  if (qp.get('plantilla') && PL[qp.get('plantilla')]) {
+    const evN = PL[qp.get('plantilla')].evento || 'boda';
+    if (evN !== (datos.evento || 'boda')) datos = Invitacion.normalizar(JSON.parse(JSON.stringify(evN === 'xv' ? window.INVITACION_XV : window.INVITACION)));
+    datos.plantilla = qp.get('plantilla');
+  }
 
   const obtener = (ruta) => ruta.split('.').reduce((o, k) => (o == null ? undefined : o[k]), datos);
   function poner(ruta, valor) {
@@ -84,7 +88,10 @@
     const a = el('a', { href: url, download: nombre }); document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
-  const slug = () => `${datos.novia}-y-${datos.novio}`.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'invitacion';
+  const xv = () => datos.evento === 'xv';
+  const evPl = (p) => p.evento || 'boda';
+  const quien = () => xv() ? `XV años de ${datos.festejada}` : `${datos.novia} & ${datos.novio}`;
+  const slug = () => (xv() ? `xv-${datos.festejada}` : `${datos.novia}-y-${datos.novio}`).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'invitacion';
 
   /** Reduce una imagen para que la invitación cargue rápido. */
   function leerImagen(file, max, png) {
@@ -118,7 +125,8 @@
   const ZONAS = [['-06:00', 'Centro de México (CDMX, Guadalajara, Monterrey)'], ['-05:00', 'Quintana Roo (Cancún, Tulum)'], ['-07:00', 'Sonora, Sinaloa, Nayarit, BCS'], ['-08:00', 'Baja California (Tijuana)'], ['-05:00 ', 'Colombia, Perú, Ecuador'], ['-03:00', 'Argentina, Chile (verano)'], ['+01:00', 'España (invierno)'], ['+02:00', 'España (verano)']];
 
   function campo(def, base) {
-    if (def.fila) return el('div', { class: 'fila' }, def.fila.map(x => campo(x, base)));
+    if (def.solo && def.solo !== (datos.evento || 'boda')) return null;
+    if (def.fila) return el('div', { class: 'fila' }, def.fila.map(x => campo(x, base)).filter(Boolean));
     const ruta = base ? `${base}.${def.k}` : def.k;
     const val = def.k ? obtener(ruta) : undefined;
     const set = (v) => poner(ruta, v);
@@ -126,9 +134,9 @@
     let control;
 
     if (t === 'text' || t === 'date' || t === 'time' || t === 'number' || t === 'url') {
-      control = el('input', { type: t, value: val == null ? '' : val, placeholder: def.ph || '', oninput: (e) => set(t === 'number' ? Number(e.target.value) : e.target.value) });
+      control = el('input', { type: t, value: val == null ? '' : val, placeholder: (xv() && def.phxv) || def.ph || '', oninput: (e) => set(t === 'number' ? Number(e.target.value) : e.target.value) });
     } else if (t === 'area') {
-      control = el('textarea', { placeholder: def.ph || '', oninput: (e) => set(e.target.value) }); control.value = val || '';
+      control = el('textarea', { placeholder: (xv() && def.phxv) || def.ph || '', oninput: (e) => set(e.target.value) }); control.value = val || '';
     } else if (t === 'select' || t === 'icono') {
       const ops = t === 'icono' ? (def.set === 'regalo' ? Invitacion.ICONOS_REGALO : Invitacion.ICONOS_EVENTO).map(k => [k, ETIQ_ICONOS[k] || k]) : (typeof def.ops === 'function' ? def.ops() : def.ops);
       control = el('select', { onchange: (e) => set(e.target.value.trim()) }, ops.map(([v, l]) => el('option', { value: v }, l)));
@@ -227,7 +235,7 @@
       const c = () => datos.confirmaciones || {};
       const marcar = (txt, ok) => { estado.textContent = txt; estado.className = 'conf-estado ' + (ok ? 'ok' : 'mal'); };
       const enlacePanel = () => {
-        const p = new URLSearchParams({ b: c().boda, k: c().clave, n: `${datos.novia} & ${datos.novio}` });
+        const p = new URLSearchParams({ b: c().boda, k: c().clave, n: quien() });
         if (!(window.NEGOCIO && NEGOCIO.hojaConfirmaciones === c().url)) p.set('u', c().url);
         const base = ($('#inv-base') && $('#inv-base').value.trim()) || '';
         if (base) p.set('l', base);
@@ -246,7 +254,7 @@
             const lista = (datos.invitados || []).filter(x => x.nombre).map(x => ({ nombre: x.nombre, pases: x.pases, mesa: datos.mesas && datos.mesas.activo ? x.mesa : '', tel: x.tel || '' }));
             marcar(`Enviando ${lista.length} invitaciones…`, true);
             try {
-              const r = await (await fetch(c().url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'invitados', boda: c().boda, clave: c().clave, info: { nombres: `${datos.novia} & ${datos.novio}`, fecha: datos.fecha }, invitados: lista }) })).json();
+              const r = await (await fetch(c().url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'invitados', boda: c().boda, clave: c().clave, info: { nombres: quien(), fecha: datos.fecha }, invitados: lista }) })).json();
               marcar(r.ok ? `✓ Lista sincronizada: ${r.invitados} invitaciones. El panel ya sabe quién falta por responder.`
                 : /clave/i.test(r.error || '') ? 'Ese ID de boda ya existe en tu hoja con otra clave. Abre los datos guardados de esta boda (botón “Abrir”) o cambia el ID de la boda.' : 'Error: ' + (r.error || ''), r.ok);
             } catch (e) { marcar('No se pudo sincronizar. Prueba la conexión primero.', false); }
@@ -256,9 +264,9 @@
             if (!listo()) return;
             if (location.protocol === 'file:') avisar('Para compartir el panel, usa el editor desde tu sitio publicado');
             const sitio = new URL('panel.html', location.href).href;
-            const msg = `¡Hola ${datos.novia} y ${datos.novio}! 💍 Aquí pueden ver en tiempo real quién confirmó su asistencia:\n\n👉 ${enlacePanel()}\n\nSi algún día lo necesitan, entren a ${sitio}\nCódigo: ${c().boda}\nClave: ${c().clave}\n\nTip: ábranlo y agréguenlo a la pantalla de inicio de su celular para tenerlo como app.`;
-            navigator.clipboard.writeText(msg).then(() => avisar('Mensaje con el acceso copiado ✓ Pégalo en WhatsApp a los novios'));
-          } }, '🔗 Copiar acceso para los novios'),
+            const msg = `¡Hola ${xv() ? datos.festejada : datos.novia + ' y ' + datos.novio}! ${xv() ? '👑' : '💍'} Aquí pueden ver en tiempo real quién confirmó su asistencia:\n\n👉 ${enlacePanel()}\n\nSi algún día lo necesitan, entren a ${sitio}\nCódigo: ${c().boda}\nClave: ${c().clave}\n\nTip: ábranlo y agréguenlo a la pantalla de inicio de su celular para tenerlo como app.`;
+            navigator.clipboard.writeText(msg).then(() => avisar(xv() ? 'Mensaje con el acceso copiado ✓ Pégalo en WhatsApp a la familia' : 'Mensaje con el acceso copiado ✓ Pégalo en WhatsApp a los novios'));
+          } }, xv() ? '🔗 Copiar acceso para la familia' : '🔗 Copiar acceso para los novios'),
           el('a', { class: 'b chico', href: 'panel.html?demo=1', target: '_blank', rel: 'noopener', style: 'text-decoration:none' }, '👀 Panel de ejemplo')),
         estado,
         el('p', { class: 'ayuda' }, 'Sincroniza otra vez si cambias la lista de invitados. La clave solo la usan los novios para ver su panel; no viaja dentro de la invitación. Para que el botón “Recordar” incluya el enlace de cada familia, escribe la dirección publicada en “Enlaces de invitados”.'));
@@ -275,7 +283,8 @@
     }
 
     if (!def.l && !def.ayuda && (t === 'adornos' || t === 'ocultar')) return control;
-    return el('div', { class: 'campo' }, def.l ? el('label', {}, def.l) : null, control, def.ayuda ? el('p', { class: 'ayuda' }, def.ayuda) : null);
+    const L = (xv() && def.lxv) || def.l, A = (xv() && def.ayudaxv) || def.ayuda;
+    return el('div', { class: 'campo' }, L ? el('label', {}, L) : null, control, A ? el('p', { class: 'ayuda' }, A) : null);
   }
 
   // ---------------------------------------------------------------------------
@@ -405,7 +414,7 @@
     function pintar() {
       plano.innerHTML = '';
       m.elementos.forEach((x, i) => {
-        const n = el('div', { class: `ed-el pl-${x.tipo}` + (seleccion && seleccion.tipo === 'el' && seleccion.i === i ? ' sel' : '') }, x.texto || ETQ_EL[x.tipo]);
+        const n = el('div', { class: `ed-el pl-${x.tipo}` + (seleccion && seleccion.tipo === 'el' && seleccion.i === i ? ' sel' : '') }, x.texto || (xv() && x.tipo === 'novios' ? 'Mesa de honor' : ETQ_EL[x.tipo]));
         const pos = () => { n.style.left = x.x + '%'; n.style.top = x.y + '%'; n.style.width = x.w + '%'; n.style.height = x.h + '%'; };
         pos();
         arrastrable(n, () => [x.x, x.y], (a, b) => { x.x = +Math.min(a, 100 - x.w).toFixed(1); x.y = +Math.min(b, 100 - x.h).toFixed(1); pos(); });
@@ -452,7 +461,7 @@
         const x = m.elementos[seleccion.i]; if (!x) { seleccion = null; return pintarPanel(); }
         const num = (k, l) => el('div', { class: 'campo' }, el('label', {}, l), el('input', { type: 'number', min: '3', max: '100', value: x[k], oninput: (e) => { x[k] = Math.min(100, Math.max(3, +e.target.value || 3)); guardar(); pintar(); } }));
         panel.append(el('div', { class: 'fila3' },
-          el('div', { class: 'campo' }, el('label', {}, 'Texto'), el('input', { type: 'text', value: x.texto || ETQ_EL[x.tipo], onchange: (e) => { x.texto = e.target.value; guardar(); pintar(); } })),
+          el('div', { class: 'campo' }, el('label', {}, 'Texto'), el('input', { type: 'text', value: x.texto || (xv() && x.tipo === 'novios' ? 'Mesa de honor' : ETQ_EL[x.tipo]), onchange: (e) => { x.texto = e.target.value; guardar(); pintar(); } })),
           num('w', 'Ancho %'), num('h', 'Alto %')),
           el('button', { class: 'b chico peligro', type: 'button', onclick: () => { m.elementos.splice(seleccion.i, 1); seleccion = null; guardar(); pintar(); } }, '🗑 Quitar'));
       }
@@ -473,7 +482,7 @@
     const tb = (txt, fn) => el('button', { class: 'b chico', type: 'button', onclick: fn }, txt);
     caja.append(
       el('div', { class: 'ed-barra' }, tb('✦ Generar mesas', generar), tb('+ Mesa redonda', () => nuevaMesa('redonda')), tb('+ Mesa rectangular', () => nuevaMesa('rectangular')),
-        tb('+ Pista', () => nuevoEl('pista')), tb('+ Novios', () => nuevoEl('novios')), tb('+ Entrada', () => nuevoEl('entrada')), tb('+ Barra', () => nuevoEl('barra')), tb('+ DJ', () => nuevoEl('dj'))),
+        tb('+ Pista', () => nuevoEl('pista')), tb(xv() ? '+ Mesa de honor' : '+ Novios', () => nuevoEl('novios')), tb('+ Entrada', () => nuevoEl('entrada')), tb('+ Barra', () => nuevoEl('barra')), tb('+ DJ', () => nuevoEl('dj'))),
       plano, panel, resumen,
       el('button', { class: 'b chico', type: 'button', onclick: descargarMesas }, '⬇ Lista por mesa (Excel/CSV)'));
     pintar();
@@ -491,21 +500,22 @@
   // Formulario
   // ---------------------------------------------------------------------------
   const FORM = [
-    { sec: 'Pareja y fecha', abierto: true, campos: [
-      { fila: [{ k: 'novia', l: 'Nombre de la novia' }, { k: 'novio', l: 'Nombre del novio' }] },
-      { k: 'iniciales', l: 'Iniciales del sello', ph: 'V & S', ayuda: 'Si lo dejas vacío se usan las iniciales de los nombres.' },
+    { sec: 'Pareja y fecha', secxv: 'Quinceañera y fecha', abierto: true, campos: [
+      { solo: 'boda', fila: [{ k: 'novia', l: 'Nombre de la novia' }, { k: 'novio', l: 'Nombre del novio' }] },
+      { solo: 'xv', k: 'festejada', l: 'Nombre de la quinceañera', ph: 'Sofía' },
+      { k: 'iniciales', l: 'Iniciales del sello', ph: 'V & S', phxv: 'XV', ayuda: 'Si lo dejas vacío se usan las iniciales de los nombres.', ayudaxv: 'Si lo dejas vacío el sello dice “XV”. Puedes poner su inicial, por ejemplo “S”.' },
       { fila: [{ k: 'fecha', t: 'date', l: 'Fecha' }, { k: 'hora', t: 'time', l: 'Hora de inicio' }] },
       { k: 'zonaHoraria', t: 'select', l: 'Zona horaria (para la cuenta regresiva)', ops: ZONAS },
       { k: 'ciudad', l: 'Ciudad', ph: 'San Miguel de Allende, Guanajuato' }] },
     { sec: 'Portada', campos: [
-      { k: 'introPortada', l: 'Texto de arriba', ph: 'Nos casamos' },
-      { k: 'fotoPortada', t: 'imagen', l: 'Foto de portada (opcional)', ayuda: 'Una foto vertical de la pareja se ve mejor.' }] },
+      { k: 'introPortada', l: 'Texto de arriba', ph: 'Nos casamos', phxv: 'Mis XV años' },
+      { k: 'fotoPortada', t: 'imagen', l: 'Foto de portada (opcional)', ayuda: 'Una foto vertical de la pareja se ve mejor.', ayudaxv: 'Una foto vertical de la quinceañera se ve mejor.' }] },
     { sec: 'Frase', campos: [{ k: 'frase', t: 'area', l: 'Frase o cita' }, { k: 'fraseAutor', l: 'Autor' }] },
     { sec: 'Padres y padrinos', campos: [
       { k: 'tituloFamilia', l: 'Título' }, { k: 'textoFamilia', t: 'area', l: 'Texto de invitación' },
-      { k: 'padresNovia', t: 'area', l: 'Padres de la novia', ayuda: 'Un nombre por renglón. Agrega † si alguno ya falleció.' },
-      { k: 'padresNovio', t: 'area', l: 'Padres del novio' },
-      { k: 'padrinos', t: 'lista', l: 'Padrinos', boton: 'Agregar padrinos', nuevo: { rol: '', nombres: '' }, item: [{ k: 'rol', l: 'De qué (velación, anillos, lazo, arras…)' }, { k: 'nombres', l: 'Nombres' }] }] },
+      { k: 'padresNovia', t: 'area', l: 'Padres de la novia', lxv: 'Mis padres', ayuda: 'Un nombre por renglón. Agrega † si alguno ya falleció.' },
+      { solo: 'boda', k: 'padresNovio', t: 'area', l: 'Padres del novio' },
+      { k: 'padrinos', t: 'lista', l: 'Padrinos', lxv: 'Padrinos y chambelanes', boton: 'Agregar padrinos', nuevo: { rol: '', nombres: '' }, item: [{ k: 'rol', l: 'De qué (velación, anillos, lazo, arras…)', lxv: 'De qué (velación, anillo, última muñeca, chambelán de honor…)' }, { k: 'nombres', l: 'Nombres' }] }] },
     { sec: 'Itinerario', campos: [
       { k: 'itinerario', t: 'lista', boton: 'Agregar momento', nuevo: { hora: '', evento: '', detalle: '', icono: 'corazon' }, item: [
         { fila: [{ k: 'hora', t: 'time', l: 'Hora' }, { k: 'icono', t: 'icono', l: 'Ícono' }] }, { k: 'evento', l: 'Evento' }, { k: 'detalle', l: 'Detalle (opcional)' }] }] },
@@ -517,10 +527,10 @@
         { k: 'icono', t: 'select', l: 'Ícono', ops: [['iglesia', 'Iglesia'], ['hacienda', 'Hacienda / salón'], ['anillos', 'Civil'], ['copa', 'Jardín / terraza']] }] }] },
     { sec: 'Código de vestimenta', campos: [
       { k: 'vestimenta.tipo', l: 'Tipo', ph: 'Formal, Etiqueta, Cóctel, Playa…' }, { k: 'vestimenta.texto', t: 'area', l: 'Sugerencia' },
-      { k: 'vestimenta.colores', t: 'colores', l: 'Colores sugeridos' }, { k: 'vestimenta.nota', l: 'Nota', ph: 'El color blanco está reservado para la novia.' }] },
+      { k: 'vestimenta.colores', t: 'colores', l: 'Colores sugeridos' }, { k: 'vestimenta.nota', l: 'Nota', ph: 'El color blanco está reservado para la novia.', phxv: 'El color rosa está reservado para la quinceañera.' }] },
     { sec: 'Historia y fotos', campos: [
       { k: 'historia.titulo', l: 'Título' }, { k: 'historia.texto', t: 'area', l: 'Texto' },
-      { k: 'historia.fotos', t: 'lista', l: 'Fotos', ayuda: 'Salen en la galería. En “Vino y Olivo” además se reparten por la invitación en este orden: 1 historia · 2 y 3 padrinos · 4 franja ancha · 5 buenos deseos · 6 fondo del cierre. La foto de portada solo va en la portada.', boton: 'Agregar foto', nuevo: { src: '', pie: '' }, item: [{ k: 'src', t: 'imagen', l: 'Foto' }, { k: 'pie', l: 'Texto sobre la foto (opcional)' }] }] },
+      { k: 'historia.fotos', t: 'lista', l: 'Fotos', ayudaxv: 'Salen en la galería de la invitación y del PDF. La foto de portada solo va en la portada.', ayuda: 'Salen en la galería. En “Vino y Olivo” además se reparten por la invitación en este orden: 1 historia · 2 y 3 padrinos · 4 franja ancha · 5 buenos deseos · 6 fondo del cierre. La foto de portada solo va en la portada.', boton: 'Agregar foto', nuevo: { src: '', pie: '' }, item: [{ k: 'src', t: 'imagen', l: 'Foto' }, { k: 'pie', l: 'Texto sobre la foto (opcional)' }] }] },
     { sec: 'Mesa de regalos', campos: [
       { k: 'regalos.titulo', l: 'Título' }, { k: 'regalos.texto', l: 'Texto' },
       { k: 'regalos.opciones', t: 'lista', l: 'Opciones', boton: 'Agregar opción', nuevo: { nombre: '', detalle: '', enlace: '', icono: 'regalo' }, item: [
@@ -544,37 +554,52 @@
     { sec: 'Confirmaciones automáticas ✦ paquete', campos: [
       { t: 'confAyuda' },
       { k: 'confirmaciones.url', t: 'url', l: 'Dirección de la app de Google (termina en /exec)', ph: 'https://script.google.com/macros/s/…/exec' },
-      { fila: [{ k: 'confirmaciones.boda', l: 'ID de la boda' }, { k: 'confirmaciones.clave', l: 'Clave del panel' }] },
+      { fila: [{ k: 'confirmaciones.boda', l: 'ID de la boda', lxv: 'ID del evento' }, { k: 'confirmaciones.clave', l: 'Clave del panel' }] },
       { k: 'confirmaciones.whatsapp', t: 'check', texto: 'Además abrir WhatsApp cuando el invitado confirme' },
       { t: 'confHerramientas' }] },
     { sec: 'Hospedaje', campos: [
       { k: 'hospedaje', t: 'lista', boton: 'Agregar hotel', nuevo: { nombre: '', nota: '', direccion: '', mapa: '' }, item: [
         { k: 'nombre', l: 'Hotel' }, { k: 'nota', l: 'Nota (tarifa, código, distancia)', ph: 'Código: BODAVS' }, { k: 'direccion', t: 'area', l: 'Dirección' }, { k: 'mapa', t: 'url', l: 'Enlace de Google Maps (opcional)' }] }] },
     { sec: 'Contactos', campos: [
-      { fila: [{ k: 'contactos.novia', l: 'WhatsApp de la novia', ph: '5215512345678' }, { k: 'contactos.novio', l: 'WhatsApp del novio' }] },
+      { fila: [{ k: 'contactos.novia', l: 'WhatsApp de la novia', lxv: 'WhatsApp de mamá', ph: '5215512345678' }, { k: 'contactos.novio', l: 'WhatsApp del novio', lxv: 'WhatsApp de papá' }] },
       { t: 'nota', texto: 'Los “Buenos deseos” y “Sugerencia de canciones” llegan al WhatsApp de confirmaciones.' }] },
-    { sec: 'Cierre', campos: [{ k: 'hashtag', l: 'Hashtag', ph: '#ValeYSanti' }, { k: 'nota', t: 'area', l: 'Nota', ph: 'Evento solo para adultos' }, { k: 'despedida', l: 'Frase de despedida' }] },
+    { sec: 'Cierre', campos: [{ k: 'hashtag', l: 'Hashtag', ph: '#ValeYSanti', phxv: '#LosXVdeSofi' }, { k: 'nota', t: 'area', l: 'Nota', ph: 'Evento solo para adultos' }, { k: 'despedida', l: 'Frase de despedida' }] },
     { sec: 'Música', campos: [{ k: 'musica', t: 'musica' }] },
     { sec: 'Adornos de la plantilla', id: 'sec-adornos', campos: [{ t: 'adornos' }] },
     { sec: 'Mostrar / ocultar secciones', campos: [{ t: 'ocultar' }] }
   ];
 
   const form = $('#formulario');
+  /** Cambia entre Boda y XV años: elige una plantilla de ese tipo y ajusta los textos que no se han editado. */
+  function cambiarEvento(ev) {
+    if ((datos.evento || 'boda') === ev) return;
+    const antes = Invitacion.normalizar({ evento: datos.evento || 'boda' }), desp = Invitacion.normalizar({ evento: ev });
+    ['introPortada', 'tituloFamilia', 'textoFamilia', 'despedida'].forEach(k => { if (datos[k] === antes[k]) datos[k] = desp[k]; });
+    ['historia', 'regalos'].forEach(k => { if (datos[k].titulo === antes[k].titulo) datos[k].titulo = desp[k].titulo; });
+    if (ev === 'xv' && !datos.festejada) datos.festejada = datos.novia && datos.novia !== 'Novia' ? datos.novia : 'Nombre';
+    if (ev === 'boda' && !datos.novia) { datos.novia = 'Nombre'; datos.novio = 'Nombre'; }
+    datos.evento = ev;
+    if (evPl(PL[datos.plantilla] || {}) !== ev) datos.plantilla = Object.values(PL).find(p => evPl(p) === ev).id;
+    cambio(); pintarFormulario();
+  }
   function pintarPlantillas() {
+    const ev = datos.evento || 'boda';
+    const tabs = el('div', { class: 'eventos' }, [['boda', '💍 Boda'], ['xv', '👑 XV años']].map(([v, t]) =>
+      el('button', { type: 'button', class: 'ev' + (v === ev ? ' on' : ''), onclick: () => cambiarEvento(v) }, t)));
     const cont = el('div', { class: 'plantillas' });
-    Object.values(PL).forEach(p => cont.append(el('button', { type: 'button', class: 'pl' + (p.id === datos.plantilla ? ' on' : ''), onclick: () => { datos.plantilla = p.id; cambio(); pintarFormulario(); } },
+    Object.values(PL).filter(p => evPl(p) === ev).forEach(p => cont.append(el('button', { type: 'button', class: 'pl' + (p.id === datos.plantilla ? ' on' : ''), onclick: () => { datos.plantilla = p.id; cambio(); pintarFormulario(); } },
       el('div', { class: 'sw' }, (p.colores || []).map(c => { const s = el('span'); s.style.background = c; return s; })),
       el('b', {}, p.nombre), el('small', {}, p.descripcion))));
-    return cont;
+    return [tabs, cont];
   }
   function pintarFormulario() {
     const abiertos = new Set([...form.querySelectorAll('details[open]')].map(d => d.dataset.sec));
     const scroll = form.scrollTop;
     form.innerHTML = '';
-    form.append(pintarPlantillas());
+    form.append(...pintarPlantillas());
     FORM.forEach(s => {
-      const det = el('details', { 'data-sec': s.sec }, el('summary', {}, s.sec),
-        el('div', { class: 'cuerpo' }, s.campos.map(c => campo(c))));
+      const det = el('details', { 'data-sec': s.sec }, el('summary', {}, (xv() && s.secxv) || s.sec),
+        el('div', { class: 'cuerpo' }, s.campos.map(c => campo(c)).filter(Boolean)));
       if (abiertos.size ? abiertos.has(s.sec) : s.abierto) det.open = true;
       form.append(det);
     });
@@ -587,12 +612,13 @@
   // ---------------------------------------------------------------------------
   $('#b-nueva').addEventListener('click', () => {
     if (!confirm('¿Empezar una invitación nueva? Se borrarán los datos actuales (guárdalos antes si los necesitas).')) return;
-    const base = JSON.parse(JSON.stringify(window.INVITACION));
+    const ev = datos.evento || 'boda';
+    const base = JSON.parse(JSON.stringify(ev === 'xv' && window.INVITACION_XV ? window.INVITACION_XV : window.INVITACION));
     datos = Invitacion.normalizar({
-      plantilla: datos.plantilla, novia: 'Nombre', novio: 'Nombre', fecha: base.fecha, hora: '17:00', zonaHoraria: '-06:00',
+      evento: ev, plantilla: datos.plantilla, novia: ev === 'xv' ? '' : 'Nombre', novio: ev === 'xv' ? '' : 'Nombre', festejada: ev === 'xv' ? 'Nombre' : '', fecha: base.fecha, hora: base.hora, zonaHoraria: '-06:00',
       itinerario: base.itinerario.map(x => Object.assign({}, x, { detalle: '' })),
       lugares: base.lugares.map(l => ({ tipo: l.tipo, hora: l.hora, nombre: '', direccion: '', mapa: '', icono: l.icono })),
-      padrinos: [], vestimenta: { tipo: 'Formal', colores: [] }, historia: { titulo: 'Nuestra historia', fotos: [] },
+      padrinos: [], vestimenta: { tipo: 'Formal', colores: [] }, historia: { titulo: base.historia.titulo, fotos: [] },
       regalos: { titulo: base.regalos.titulo, texto: base.regalos.texto, opciones: [] }, rsvp: { pases: 2 }, musica: 'melodia'
     });
     pintarFormulario(); cambio();
@@ -681,7 +707,9 @@
     datos.invitados = pref.lista.split('\n').map(l => l.trim()).filter(Boolean).map(l => { const [n, p] = l.split('|').map(x => (x || '').trim()); return { nombre: n, pases: parseInt(p, 10) || 2, mesa: '' }; });
     delete pref.lista; cambio();
   }
-  $('#inv-msg').value = pref.msg || '¡Hola {nombre}! 💌 Con mucho cariño te compartimos nuestra invitación de boda. Ábrela aquí: {enlace}';
+  const MSG_BODA = '¡Hola {nombre}! 💌 Con mucho cariño te compartimos nuestra invitación de boda. Ábrela aquí: {enlace}';
+  const MSG_XV = '¡Hola {nombre}! 👑 Con mucho cariño te compartimos la invitación a mis XV años. Ábrela aquí: {enlace}';
+  $('#inv-msg').value = pref.msg || MSG_BODA;
   let filas = [];
   function generar() {
     const base = $('#inv-base').value.trim(), msg = $('#inv-msg').value;
@@ -702,7 +730,11 @@
           el('a', { class: 'b chico', href: 'https://wa.me/?text=' + encodeURIComponent(f.mensaje), target: '_blank', rel: 'noopener', style: 'text-decoration:none' }, 'WhatsApp'))))));
   }
   ['#inv-base', '#inv-msg'].forEach(s => $(s).addEventListener('input', generar));
-  $('#b-invitados').addEventListener('click', () => { modal.classList.add('ver'); generar(); });
+  $('#b-invitados').addEventListener('click', () => {
+    const m = $('#inv-msg');
+    if (xv() && m.value === MSG_BODA) m.value = MSG_XV; else if (!xv() && m.value === MSG_XV) m.value = MSG_BODA;
+    modal.classList.add('ver'); generar();
+  });
   $('#inv-cerrar').addEventListener('click', () => modal.classList.remove('ver'));
   modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('ver'); });
   $('#inv-csv').addEventListener('click', () => {

@@ -187,7 +187,7 @@
                 ${b.no ? `<span class="d no">${b.no} no ${b.no === 1 ? 'asiste' : 'asisten'}</span>` : ''}
                 ${b.deseos ? `<span class="d">💌 ${b.deseos}</span>` : ''}${b.canciones ? `<span class="d">🎵 ${b.canciones}</span>` : ''}
               </div>
-              ${alerta ? `<p class="alerta">⚠ Faltan ${n} días y ${b.pendientes} invitaciones no han respondido. Recuérdales a los novios usar el botón “Recordar”.</p>` : ''}
+              ${alerta ? `<p class="alerta">⚠ Faltan ${n} días y ${b.pendientes} invitaciones no han respondido. Recuérdales usar el botón “Recordar” de su panel.</p>` : ''}
               ${!total ? '<p class="alerta" style="background:var(--pend-bg);color:var(--pend)">Sin lista de invitados: en el editor usa “Sincronizar lista de invitados”.</p>' : ''}
               <p class="ult">${esc(haceCuanto(b.ultima))}</p>
               <div class="acc">
@@ -210,8 +210,9 @@
     app.querySelectorAll('[data-copiar]').forEach(b => b.onclick = () => navigator.clipboard.writeText(b.dataset.copiar).then(() => avisar('Código copiado ✓')));
     app.querySelectorAll('[data-acceso]').forEach(btn => btn.onclick = () => {
       const b = bodas.find(x => x.boda === btn.dataset.acceso);
-      const nom = (b.nombres || '').split('&').map(s => s.trim()).filter(Boolean).join(' y ') || 'novios';
-      const msg = `¡Hola ${nom}! 💍 Aquí pueden ver en tiempo real quién confirmó su asistencia:\n\n👉 ${panelUrl(b)}\n\nSi algún día lo necesitan, entren a ${new URL('panel.html', location.href).href}\nCódigo: ${b.boda}\nClave: ${b.clave}\n\nTip: ábranlo y agréguenlo a la pantalla de inicio de su celular para tenerlo como app.`;
+      const esXV = /^XV años de /.test(b.nombres || '');
+      const nom = esXV ? b.nombres.replace(/^XV años de /, '') : (b.nombres || '').split('&').map(s => s.trim()).filter(Boolean).join(' y ') || 'novios';
+      const msg = `¡Hola ${nom}! ${esXV ? '👑' : '💍'} Aquí pueden ver en tiempo real quién confirmó su asistencia:\n\n👉 ${panelUrl(b)}\n\nSi algún día lo necesitan, entren a ${new URL('panel.html', location.href).href}\nCódigo: ${b.boda}\nClave: ${b.clave}\n\nTip: ábranlo y agréguenlo a la pantalla de inicio de su celular para tenerlo como app.`;
       navigator.clipboard.writeText(msg).then(() => avisar('Mensaje copiado ✓ Pégalo en WhatsApp'));
     });
   }

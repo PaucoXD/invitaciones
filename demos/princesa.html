@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sofía · Mis XV años</title>
+<meta name="description" content="Sábado 12 de junio de 2027 — Guadalajara, Jalisco">
+<meta property="og:title" content="Sofía · ¡Mis XV años!">
+<meta property="og:description" content="Sábado 12 de junio de 2027 — Guadalajara, Jalisco">
+
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&amp;family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&amp;family=Montserrat:wght@400;500&amp;family=Parisienne&amp;display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--fondo);color:var(--tinta);font-family:var(--f-texto);font-size:19px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body.bloqueado{overflow:hidden;height:100vh}
+img{max-width:100%;display:block}
+main{position:relative;z-index:1}
+.sec{padding:96px 24px;text-align:center;position:relative;overflow:hidden}
+.cont{max-width:760px;margin:0 auto;position:relative;z-index:2}
+.eyebrow{font-family:var(--f-etiqueta);font-size:11px;font-weight:500;letter-spacing:.4em;text-transform:uppercase;color:var(--acento);margin-bottom:14px}
+.titulo{font-family:var(--f-titulo);font-weight:400;font-size:clamp(44px,11vw,68px);color:var(--titulo,var(--tinta));line-height:1.1;margin-bottom:22px}
+.lead{font-size:21px;font-style:italic;color:var(--suave);max-width:560px;margin:0 auto}
+.nota{font-size:17px;font-style:italic;color:var(--suave);margin-top:14px}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--f-etiqueta);font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;padding:15px 30px;border-radius:var(--radio-btn,40px);text-decoration:none;cursor:pointer;border:1px solid var(--acento2);color:var(--acento2);background:transparent;transition:all .35s ease}
+.btn:hover{background:var(--acento2);color:var(--fondo)}
+.btn.solido{background:var(--acento2);color:var(--fondo)}
+.btn.solido:hover{filter:brightness(.9)}
+.btn svg{width:15px;height:15px}
+.oscura{background:var(--oscuro);color:var(--sobre-oscuro)}
+.oscura .titulo{color:var(--sobre-oscuro)}
+.oscura .btn{border-color:var(--acento);color:var(--acento)}
+.oscura .btn:hover{background:var(--acento);color:var(--oscuro)}
+.rv{opacity:0;transform:translateY(30px);transition:opacity 1.1s ease,transform 1.1s ease}
+.rv.vis{opacity:1;transform:none}
+.sin-anim .rv{opacity:1;transform:none;transition:none}
+.encuadre{display:block;overflow:hidden;width:100%;height:100%}
+.encuadre>img{width:100%;height:100%;object-fit:cover}
+.orn{display:block;pointer-events:none}
+.orn>img{width:100%;height:auto}
+.orn>img+.fb{display:none}
+.orn .fb svg{width:100%;height:auto;display:block}
+
+/* Sobre: 1) el sello se rompe  2) la solapa se abre en 3D  3) sale la carta  4) la carta se acerca y aparece la invitación */
+.sobre-pantalla{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;background:var(--fondo-sobre,var(--fondo));overflow:hidden}
+.sobre-pantalla.abierto{animation:pantallaFuera .7s ease 3s forwards;pointer-events:none}
+.sobre-pantalla.fin,.sin-sobre .sobre-pantalla{display:none}
+@keyframes pantallaFuera{to{opacity:0}}
+.sobre-para{font-style:italic;font-size:22px;color:var(--suave);text-align:center;padding:0 16px;position:relative;z-index:2;transition:opacity .6s ease,transform .6s ease}
+.sobre-para strong{display:block;font-family:var(--f-titulo);font-style:normal;font-weight:400;font-size:42px;color:var(--titulo,var(--tinta));line-height:1.25}
+.sobre-pista{font-family:var(--f-etiqueta);font-size:11px;letter-spacing:.35em;text-transform:uppercase;color:var(--suave);animation:pulso 2.4s ease-in-out infinite;position:relative;z-index:2;transition:opacity .4s ease}
+.abierto .sobre-para{opacity:0;transform:translateY(-20px)}
+.abierto .sobre-pista{opacity:0;animation:none}
+@keyframes pulso{0%,100%{opacity:.45}50%{opacity:1}}
+.sobre{position:relative;width:min(370px,86vw);aspect-ratio:1.45;cursor:pointer;z-index:2;perspective:1100px;animation:flotarSobre 3.2s ease-in-out infinite}
+.abierto .sobre{animation:none;cursor:default}
+@keyframes flotarSobre{0%,100%{transform:translateY(0) rotate(-.6deg)}50%{transform:translateY(-8px) rotate(.6deg)}}
+.sobre-atras{position:absolute;inset:0;background:var(--sobre-c1);border-radius:4px;box-shadow:0 26px 40px -12px rgba(40,25,10,.35),0 4px 10px rgba(40,25,10,.12)}
+.sobre-carta{position:absolute;left:6%;right:6%;top:6%;bottom:5%;z-index:2;background:var(--fondo);border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--titulo,var(--tinta));box-shadow:0 4px 18px rgba(40,25,10,.18);outline:1px solid var(--linea);outline-offset:-8px;opacity:0}
+.abierto .sobre-carta{opacity:1;transition:opacity .15s ease .5s}
+.sobre-carta span{font-family:var(--f-titulo);font-size:clamp(28px,8.5vw,40px);line-height:1.1}
+.sobre-carta small{font-family:var(--f-etiqueta);font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--acento)}
+.sobre-frente{position:absolute;inset:0;z-index:3;border-radius:4px;overflow:hidden;background:linear-gradient(to top right,var(--sobre-c2) 49.6%,transparent 50%) left/50.5% 100% no-repeat,linear-gradient(to top left,var(--sobre-c2) 49.6%,transparent 50%) right/50.5% 100% no-repeat}
+.sobre-frente::after{content:"";position:absolute;left:0;right:0;bottom:0;height:58%;background:var(--sobre-c3);clip-path:polygon(0 100%,50% 8%,100% 100%)}
+.sobre-solapa{position:absolute;left:0;right:0;top:0;height:62%;z-index:5;transform-origin:50% 0;transform-style:preserve-3d}
+.solapa-fuera,.solapa-dentro{position:absolute;inset:0;clip-path:polygon(0 0,100% 0,50% 100%);backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.solapa-fuera{background:var(--sobre-solapa,var(--sobre-c1));filter:drop-shadow(0 2px 2px rgba(0,0,0,.08))}
+.solapa-fuera::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(0,0,0,.06))}
+.solapa-dentro{transform:rotateY(180deg);background:var(--sobre-c3)}
+.solapa-dentro>svg{width:100%;height:100%;display:block}
+.sello{position:absolute;left:50%;top:62%;width:76px;height:76px;margin:-38px 0 0 -38px;z-index:6;font-family:var(--f-titulo);color:var(--sello-texto,#fff8e8);font-size:26px;white-space:nowrap;text-shadow:0 1px 1px rgba(0,0,0,.3)}
+.sello::before{content:"";position:absolute;inset:-5px;border-radius:47% 53% 50% 50%/52% 48% 52% 48%;background:var(--sello-borde,rgba(0,0,0,.15));box-shadow:0 3px 8px rgba(0,0,0,.25);transition:opacity .25s ease .3s}
+.sello::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--acento);opacity:0;animation:aro 2.4s ease-out infinite}
+@keyframes aro{0%{transform:scale(.9);opacity:.7}80%,100%{transform:scale(1.6);opacity:0}}
+.sello i{font-style:normal;font-size:.7em;margin:0 2px}
+.mitad{position:absolute;inset:0;border-radius:50%;background:var(--sello);box-shadow:inset 0 0 0 5px rgba(255,255,255,.08),inset 0 0 0 7px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center}
+.mitad-1{clip-path:polygon(0 0,52% 0,46% 22%,56% 40%,44% 60%,55% 78%,48% 100%,0 100%)}
+.mitad-2{clip-path:polygon(52% 0,100% 0,100% 100%,48% 100%,55% 78%,44% 60%,56% 40%,46% 22%)}
+.abierto .sello{animation:temblar .28s ease}
+.abierto .sello::before{opacity:0}
+.abierto .sello::after{animation:none;opacity:0}
+.abierto .mitad-1{animation:mitad1 .8s cubic-bezier(.3,.6,.5,1) .26s forwards}
+.abierto .mitad-2{animation:mitad2 .8s cubic-bezier(.3,.6,.5,1) .26s forwards}
+@keyframes temblar{20%{transform:rotate(-7deg)}45%{transform:rotate(6deg)}70%{transform:rotate(-3deg)}100%{transform:none}}
+@keyframes mitad1{to{transform:translate(-60px,70px) rotate(-50deg);opacity:0}}
+@keyframes mitad2{to{transform:translate(58px,80px) rotate(42deg);opacity:0}}
+.abierto .sobre-solapa{animation:abrirSolapa .85s cubic-bezier(.45,.05,.3,1) .45s forwards}
+@keyframes abrirSolapa{0%{transform:rotateX(0);z-index:5}55%{z-index:5}56%{z-index:1}100%{transform:rotateX(180deg);z-index:1}}
+.abierto .sobre-carta{animation:sacarCarta 2.3s ease-in-out 1.1s forwards}
+@keyframes sacarCarta{0%{transform:none;opacity:1}40%{transform:translateY(-64%)}68%{transform:translateY(-64%) scale(1.02);z-index:2;opacity:1}69%{z-index:7}100%{transform:translateY(-15%) scale(1.7);z-index:7;opacity:0}}
+.abierto .sobre-atras,.abierto .sobre-frente{animation:bajarSobre .8s ease-in 2.6s forwards}
+@keyframes bajarSobre{to{translate:0 70px;opacity:0}}
+.abierto .solapa-dentro{animation:bajarSobreDentro .8s ease-in 2.6s forwards}
+@keyframes bajarSobreDentro{to{transform:rotateY(180deg) translateY(-70px);opacity:0}}
+.chispa{position:absolute;left:50%;top:62%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--acento);z-index:8;pointer-events:none;animation:chispa .9s cubic-bezier(.2,.7,.4,1) forwards}
+@keyframes chispa{to{transform:translate(var(--x),var(--y)) scale(0);opacity:0}}
+
+.btn-musica{position:fixed;right:18px;bottom:18px;z-index:50;width:50px;height:50px;border-radius:50%;border:1px solid var(--acento);background:var(--fondo);color:var(--acento);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.btn-musica.ver{display:flex}
+.btn-musica svg{width:20px;height:20px}
+.btn-musica.sonando svg{animation:girar 6s linear infinite}
+@keyframes girar{to{transform:rotate(360deg)}}
+
+/* Portada */
+.portada{min-height:100vh;min-height:100svh;display:flex;align-items:center;justify-content:center;padding:70px 20px;position:relative;overflow:hidden;text-align:center}
+.nombres{font-family:var(--f-titulo);font-weight:400;color:var(--titulo,var(--tinta));font-size:clamp(60px,16vw,110px);line-height:1;margin:24px 0 12px}
+.nombres span{display:block}
+.nombres .amp{font-size:.45em;color:var(--acento);margin:6px 0}
+.fecha-bloque{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:28px}
+.fecha-bloque .lado{font-family:var(--f-etiqueta);font-size:11px;letter-spacing:.3em;text-transform:uppercase;padding:8px 0;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);width:100px}
+.fecha-bloque .dia{font-size:58px;font-weight:300;line-height:1}
+.fecha-bloque .dia small{display:block;font-family:var(--f-etiqueta);font-size:10px;letter-spacing:.3em;text-transform:uppercase;margin-top:6px}
+.bajar{position:absolute;bottom:22px;left:50%;color:var(--acento);animation:flotar 2.2s ease-in-out infinite;z-index:3}
+.bajar svg{width:24px;height:24px}
+@keyframes flotar{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
+
+/* Frase */
+.sec-frase blockquote{font-size:clamp(22px,5.4vw,30px);font-style:italic;font-weight:300;line-height:1.5;color:var(--titulo,var(--tinta))}
+.sec-frase cite{display:block;margin-top:18px;font-family:var(--f-etiqueta);font-style:normal;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--acento)}
+
+/* Familia */
+.padres{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:34px}
+.sec-familia h3{font-family:var(--f-etiqueta);font-size:11px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--acento);margin-bottom:10px}
+.padres p{font-size:21px;line-height:1.5}
+.padrinos{display:flex;flex-wrap:wrap;justify-content:center;gap:24px 40px;margin-top:44px;padding-top:38px;border-top:1px solid var(--linea)}
+.padrinos>div{min-width:160px}
+.padrinos p{font-size:18px}
+
+/* Cuenta */
+.reloj{display:flex;justify-content:center;align-items:flex-start;gap:clamp(8px,3.5vw,34px);margin:16px 0 40px}
+.reloj span{display:block;font-size:clamp(40px,11vw,68px);font-weight:300;line-height:1;font-variant-numeric:lining-nums tabular-nums}
+.reloj small{display:block;margin-top:10px;font-family:var(--f-etiqueta);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--acento)}
+.reloj b{font-weight:300;font-size:clamp(34px,9vw,54px);color:var(--acento);line-height:1}
+
+/* Itinerario */
+.linea{position:relative;max-width:580px;margin:40px auto 0}
+.linea::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(var(--linea),var(--linea) 88%,transparent)}
+.evento{display:grid;grid-template-columns:1fr 64px 1fr;align-items:center;margin-bottom:38px}
+.evento .hora{font-size:30px;font-weight:300;color:var(--titulo,var(--tinta));text-align:right}
+.evento .icono{width:54px;height:54px;margin:0 auto;border-radius:50%;position:relative;z-index:1;background:var(--fondo);border:1px solid var(--linea);color:var(--acento2);display:flex;align-items:center;justify-content:center}
+.evento .icono svg{width:24px;height:24px}
+.evento .que{text-align:left;font-size:20px;line-height:1.35}
+.evento .que small{display:block;font-family:var(--f-etiqueta);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--suave);margin-top:4px}
+.evento:nth-child(even) .hora{order:3;text-align:left}
+.evento:nth-child(even) .que{order:1;text-align:right}
+.evento:nth-child(even) .icono{order:2}
+
+/* Ubicación */
+.lugares{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:26px;margin-top:30px}
+.lugar{background:var(--tarjeta,var(--fondo));padding:42px 26px 34px;border:1px solid var(--linea);position:relative}
+.lugar-icono{width:60px;height:60px;margin:0 auto 14px;color:var(--acento)}
+.lugar-icono svg{width:100%;height:100%;stroke-width:.9}
+.lugar h3{font-family:var(--f-titulo);font-weight:400;font-size:40px;color:var(--titulo,var(--tinta));line-height:1.1}
+.lugar-hora{font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.25em;text-transform:uppercase;color:var(--acento);margin:6px 0 14px}
+.lugar-nombre{font-size:21px;font-weight:600}
+.lugar-dir{font-size:17px;color:var(--suave);margin:4px 0 24px}
+.lugar .btn{padding:13px 22px}
+
+/* Vestimenta */
+.figuras{display:flex;justify-content:center;gap:50px;margin:30px 0 24px;color:var(--acento2)}
+.figuras svg{width:70px;height:110px}
+.figuras figcaption{font-family:var(--f-etiqueta);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--suave);margin-top:8px}
+.paleta{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:20px}
+.paleta span{width:36px;height:36px;border-radius:50%;border:3px solid var(--fondo);box-shadow:0 0 0 1px var(--linea)}
+
+/* Galería */
+.galeria{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:36px auto 0;max-width:900px}
+.galeria.g1{grid-template-columns:1fr;max-width:520px}
+.galeria.g2,.galeria.g4{grid-template-columns:repeat(2,1fr)}
+.foto{position:relative;aspect-ratio:3/4;overflow:hidden;background:var(--fondo2);cursor:zoom-in}
+.foto img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s ease}
+.foto:hover img{transform:scale(1.05)}
+.foto figcaption{position:absolute;left:0;right:0;bottom:0;padding:30px 10px 12px;font-family:var(--f-titulo);font-size:24px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.45))}
+.foto.vacia{cursor:default;display:flex;align-items:center;justify-content:center;border:1px dashed var(--linea)}
+.foto-hueco{width:40px;color:var(--suave);opacity:.6}
+.foto.vacia figcaption{background:none;color:var(--suave)}
+.zoom{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+.zoom img{max-height:92vh;max-width:96vw;object-fit:contain}
+
+/* Regalos */
+.regalos{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;margin-top:34px}
+.regalo{display:block;padding:30px 16px;border:1px solid var(--linea);background:var(--tarjeta,var(--fondo));color:inherit;text-decoration:none;transition:transform .4s ease,box-shadow .4s ease}
+a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)}
+.regalo svg{width:36px;height:36px;color:var(--acento);margin:0 auto 12px}
+.regalo h4{font-family:var(--f-etiqueta);font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase}
+.regalo p{font-size:16px;color:var(--suave);margin-top:6px}
+.banco{margin-top:26px;font-size:17px;color:var(--suave)}
+.banco code{font-family:var(--f-etiqueta);font-size:14px;color:var(--tinta);letter-spacing:.06em}
+.copiar{background:none;border:none;color:var(--acento);cursor:pointer;font-family:var(--f-etiqueta);font-size:11px;letter-spacing:.15em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;margin-left:8px}
+
+/* RSVP */
+.pase{display:inline-block;margin:6px auto 30px;padding:18px 34px;border:1px dashed var(--acento);font-size:19px;background:var(--tarjeta,var(--fondo))}
+.pase strong{display:block;font-family:var(--f-titulo);font-weight:400;font-size:36px;color:var(--titulo,var(--tinta));line-height:1.25}
+.pase b{font-weight:600;color:var(--acento);font-size:24px}
+#form-rsvp{max-width:460px;margin:0 auto;text-align:left}
+#form-rsvp label{display:block;font-family:var(--f-etiqueta);font-size:10px;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--suave);margin:20px 0 8px}
+#form-rsvp input[type=text],#form-rsvp select,#form-rsvp textarea{width:100%;padding:13px 16px;font-family:var(--f-texto);font-size:19px;color:var(--tinta);background:var(--tarjeta,var(--fondo));border:1px solid var(--linea);border-radius:2px;outline:none}
+#form-rsvp input:focus,#form-rsvp select:focus,#form-rsvp textarea:focus{border-color:var(--acento)}
+#form-rsvp textarea{resize:vertical;min-height:90px}
+.opciones{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opciones input{position:absolute;opacity:0;pointer-events:none}
+#form-rsvp .opciones label{margin:0;padding:14px;text-align:center;border:1px solid var(--linea);background:var(--tarjeta,var(--fondo));cursor:pointer;font-size:11px;letter-spacing:.12em;color:var(--tinta);transition:all .3s}
+#form-rsvp .opciones input:checked+label{background:var(--acento2);border-color:var(--acento2);color:var(--fondo)}
+.opciones input:focus-visible+label{outline:2px solid var(--acento);outline-offset:2px}
+#form-rsvp .btn{width:100%;justify-content:center;margin-top:30px}
+.limite{font-size:16px;font-style:italic;color:var(--suave);text-align:center;margin-top:16px}
+
+/* Hospedaje, deseos, canciones, contactos */
+.hoteles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:28px}
+.hotel{border:1px solid var(--linea);background:var(--tarjeta,var(--fondo));padding:28px 20px}
+.hotel h4{font-family:var(--f-titulo);font-weight:400;font-size:30px;color:var(--titulo,var(--tinta));line-height:1.2}
+.hotel-nota{font-family:var(--f-etiqueta);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--acento);margin:6px 0}
+.hotel-dir{font-size:16px;color:var(--suave);margin-bottom:18px}
+.form-whats{max-width:440px;margin:26px auto 0;display:flex;flex-direction:column;gap:12px}
+.form-whats input,.form-whats textarea{width:100%;padding:13px 16px;font-family:var(--f-texto);font-size:18px;color:var(--tinta);background:var(--tarjeta,var(--fondo));border:1px solid var(--linea);border-radius:2px;outline:none}
+.form-whats textarea{min-height:100px;resize:vertical}
+.form-whats .btn{justify-content:center}
+.contactos{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:26px}
+
+/* Sobre como portada (se queda abierto) */
+.sobre-pantalla.en-portada{position:relative;inset:auto;z-index:2;min-height:100vh;min-height:100svh;background:none;overflow:visible}
+.sobre-pantalla.en-portada.abierto{animation:none;pointer-events:auto}
+.sin-sobre .sobre-pantalla.en-portada{display:flex}
+.en-portada.ya *,.en-portada.ya *::before,.en-portada.ya *::after{animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important;transition-delay:0s!important}
+.en-portada .sobre-atras,.en-portada .sobre-frente{animation:none!important}
+
+/* Respuesta registrada */
+.gracias{max-width:460px;margin:10px auto 0;padding:30px 24px;text-align:center;border:1px solid var(--linea);background:var(--tarjeta,var(--fondo))}
+.gracias-ico{display:inline-flex;width:54px;height:54px;border-radius:50%;align-items:center;justify-content:center;background:var(--acento2);color:var(--fondo);font-size:26px;margin-bottom:12px}
+.gracias strong{display:block;font-family:var(--f-titulo);font-weight:400;font-size:32px;line-height:1.2;color:var(--titulo,var(--tinta))}
+.gracias p{color:var(--suave);margin-top:6px}
+.gracias-otra{margin-top:16px;background:none;border:none;color:var(--acento);font-family:var(--f-etiqueta);font-size:11px;letter-spacing:.15em;text-transform:uppercase;text-decoration:underline;cursor:pointer}
+.ya-respondio{max-width:460px;margin:0 auto 14px;padding:10px 14px;font-size:15px;color:var(--acento2);border:1px dashed var(--acento2);text-align:center}
+
+/* Mesas */
+.sec-mesa.sin-mesa{display:none}
+.mesa-txt{font-style:italic;color:var(--suave)}
+.mesa-num{font-family:var(--f-titulo);font-size:clamp(46px,12vw,64px);line-height:1.1;color:var(--titulo,var(--tinta));margin:4px 0 14px}
+.pase-mesa{display:block;font-style:normal;font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.25em;text-transform:uppercase;color:var(--acento);margin-top:6px}
+.plano{position:relative;width:100%;max-width:520px;aspect-ratio:4/3;margin:24px auto 0;background:var(--tarjeta,var(--fondo));border:1px solid var(--linea);border-radius:6px;overflow:hidden;box-shadow:inset 0 0 0 6px var(--fondo2,transparent)}
+.pl-el{position:absolute;display:flex;align-items:center;justify-content:center;border:1px dashed var(--linea);background:var(--fondo2,rgba(0,0,0,.04));color:var(--suave);font-family:var(--f-etiqueta);font-size:10px;letter-spacing:.2em;text-transform:uppercase;border-radius:4px}
+.pl-pista{background:repeating-linear-gradient(45deg,var(--fondo2,#eee) 0 8px,var(--tarjeta,#fff) 8px 16px)}
+.pl-novios{border-style:solid;border-color:var(--acento);color:var(--acento)}
+.pl-mesa{position:absolute;width:9%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:1px solid var(--linea);background:var(--fondo);display:flex;align-items:center;justify-content:center;font-family:var(--f-etiqueta);font-size:clamp(8px,2.4vw,12px);color:var(--suave);transition:all .4s}
+.pl-mesa.rect{width:15%;aspect-ratio:2.1;border-radius:4px}
+.pl-mesa.tuya{background:var(--acento2);border-color:var(--acento2);color:var(--fondo);font-weight:600;z-index:2;animation:latido 1.6s ease-in-out infinite;box-shadow:0 0 0 0 var(--acento2)}
+@keyframes latido{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--acento2) 60%,transparent)}70%{box-shadow:0 0 0 14px transparent}100%{box-shadow:0 0 0 0 transparent}}
+
+/* Menú y botón para volver arriba */
+.menu-btn,.arriba-btn{position:fixed;z-index:60;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--acento2);color:var(--fondo);box-shadow:0 6px 16px rgba(0,0,0,.18);transition:opacity .3s,transform .3s}
+.menu-btn{top:14px;right:14px}
+.menu-btn svg,.arriba-btn svg{width:20px;height:20px}
+.arriba-btn{left:16px;bottom:18px;opacity:0;pointer-events:none;transform:translateY(10px)}
+.arriba-btn.ver{opacity:.9;pointer-events:auto;transform:none}
+.menu{position:fixed;inset:0;z-index:70;background:var(--fondo);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;opacity:0;pointer-events:none;transition:opacity .35s;overflow-y:auto;padding:70px 20px}
+.menu a{font-family:var(--f-texto);font-size:20px;letter-spacing:.18em;text-transform:uppercase;color:var(--titulo,var(--tinta));text-decoration:none}
+.menu-abierto .menu{opacity:1;pointer-events:auto}
+.menu-cerrar{position:absolute;top:14px;right:14px}
+.bloqueado .menu-btn{display:none}
+
+/* Cierre */
+.hashtag{font-family:var(--f-etiqueta);font-size:clamp(15px,4.4vw,22px);letter-spacing:.18em;color:var(--acento2);word-break:break-word}
+.pie{padding:90px 24px 110px;text-align:center;background:var(--oscuro);color:var(--sobre-oscuro);position:relative;overflow:hidden}
+.pie>p{font-style:italic;opacity:.85;position:relative;z-index:2}
+.pie .nombres{color:var(--sobre-oscuro);font-size:clamp(40px,11.5vw,80px);margin:12px 0;position:relative;z-index:2}
+.pie .nombres{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline}.pie .nombres span{display:inline}
+.pie .nombres .amp{margin:0 10px;color:var(--acento)}
+.pie .pie-fecha{font-family:var(--f-etiqueta);font-style:normal;font-size:11px;letter-spacing:.3em;color:var(--acento);margin-top:20px;opacity:1}
+
+.aviso{position:fixed;left:50%;bottom:28px;transform:translate(-50%,140px);z-index:300;background:var(--oscuro);color:var(--sobre-oscuro);padding:12px 24px;border-radius:30px;font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.08em;transition:transform .4s ease}
+.aviso.ver{transform:translate(-50%,0)}
+
+/* Efectos que caen (pétalos, hojas, destellos) */
+.efecto{position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden}
+.efecto i{position:absolute;top:-40px;display:block;animation:caer linear forwards}
+@keyframes caer{to{transform:translate(var(--dx),110vh) rotate(var(--rot))}}
+
+@media (max-width:640px){
+  body{font-size:18px}
+  .sec{padding:76px 18px}
+  .padres{grid-template-columns:1fr;gap:22px}
+  .fecha-bloque{gap:12px}.fecha-bloque .lado{width:80px;font-size:10px;letter-spacing:.2em}
+  .reloj small{font-size:8px;letter-spacing:.12em}
+  .evento{grid-template-columns:1fr 54px 1fr}.evento .hora{font-size:24px}.evento .que{font-size:17px}
+  .galeria{gap:6px}.foto figcaption{font-size:18px}
+  .galeria.g3{grid-template-columns:repeat(2,1fr)}.galeria.g3 .foto:first-child{grid-column:span 2;aspect-ratio:4/3}
+  .figuras{gap:30px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important;transition-delay:0s!important}
+  .rv{opacity:1;transform:none}
+  .efecto{display:none}
+}
+
+body.plantilla-princesa{--fondo:#fff8f9;--fondo2:#fcebef;--tinta:#4b3540;--suave:#93727e;--acento:#c99a4e;--acento2:#c0607a;--linea:#f0d3da;--oscuro:#7a3550;--sobre-oscuro:#fff1f4;--titulo:#b25674;--tarjeta:#fffdfd;
+  --f-titulo:'Parisienne',cursive;--f-texto:'Cormorant Garamond',Georgia,serif;--f-etiqueta:'Montserrat',system-ui,sans-serif;
+  --fondo-sobre:radial-gradient(ellipse at center,#fff6f8 0%,#f6d3dc 100%);--sobre-c1:#f0b9c7;--sobre-c2:#f6ccd6;--sobre-c3:#f9d8e0;--sello:radial-gradient(circle at 35% 30%,#f4dc9b,#d1a556 55%,#a87a30);--sello-texto:#6b3a20;--sello-borde:#b98a3e}
+.plantilla-princesa::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 12% 8%,rgba(236,159,179,.18),transparent 40%),radial-gradient(circle at 88% 85%,rgba(209,165,86,.14),transparent 40%)}
+.plantilla-princesa .sello{font-family:'Cinzel',serif;letter-spacing:.05em}
+.plantilla-princesa .sello-corona{position:absolute;width:60%;left:20%;top:-34%;z-index:3}
+.plantilla-princesa .alt{background:var(--fondo2)}
+.plantilla-princesa .titulo{font-size:clamp(46px,11vw,70px)}
+.plantilla-princesa .esq{position:absolute;width:290px;z-index:1}
+.plantilla-princesa .esq.tl{top:-24px;left:-24px}
+.plantilla-princesa .esq.tr{top:-24px;right:-24px;transform:scaleX(-1)}
+.plantilla-princesa .esq.br{bottom:-24px;right:-24px;transform:rotate(180deg)}
+.plantilla-princesa .esq.bl{bottom:-24px;left:-24px;transform:scaleY(-1)}
+.plantilla-princesa .esq.chica{width:180px}
+.plantilla-princesa .esq.tenue{opacity:.3}
+.plantilla-princesa .medallon{position:relative;width:min(470px,100%);padding:110px 32px 64px;border:1.5px solid var(--acento);border-radius:240px 240px 24px 24px;outline:1px solid rgba(201,154,78,.45);outline-offset:8px;background:rgba(255,253,253,.8);z-index:2}
+.plantilla-princesa .corona{position:absolute;top:-62px;left:50%;width:210px;transform:translateX(-50%);filter:drop-shadow(0 6px 10px rgba(168,122,48,.25));animation:brillar 4s ease-in-out infinite}
+@keyframes brillar{0%,100%{filter:drop-shadow(0 6px 10px rgba(168,122,48,.25))}50%{filter:drop-shadow(0 0 16px rgba(244,220,155,.9))}}
+.plantilla-princesa .medallon.con-foto{padding-top:90px}
+.plantilla-princesa .ovalo{width:min(260px,74%);aspect-ratio:3/4;margin:0 auto 26px;border-radius:50%;overflow:hidden;border:5px solid #fff;box-shadow:0 0 0 2px var(--acento),0 14px 30px rgba(168,68,95,.18)}
+.plantilla-princesa .ovalo img{width:100%;height:100%;object-fit:cover}
+.plantilla-princesa .intro{font-family:var(--f-etiqueta);font-size:11px;letter-spacing:.45em;text-transform:uppercase;color:var(--suave)}
+.plantilla-princesa .xv{font-family:'Cinzel',serif;font-weight:600;font-size:clamp(76px,22vw,120px);line-height:1;margin:6px 0 -34px;opacity:.9;
+  background:linear-gradient(100deg,#b98a3e 0%,#f4dc9b 25%,#d1a556 45%,#fff3d2 52%,#d1a556 60%,#f4dc9b 80%,#b98a3e 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:foilP 6s ease-in-out infinite}
+@keyframes foilP{0%,100%{background-position:0 0}50%{background-position:100% 0}}
+.plantilla-princesa .nombres{font-size:clamp(64px,18vw,104px);position:relative;text-shadow:0 2px 0 #fff,0 0 18px #fff}
+.plantilla-princesa .ciudad{margin-top:22px;font-style:italic;font-size:20px;color:var(--acento2)}
+.plantilla-princesa .separador{width:230px;margin:0 auto 24px}
+.plantilla-princesa .corona-chica{width:120px;margin:0 auto 18px}
+.plantilla-princesa .corona-pie{width:130px;margin:0 auto 20px}
+.plantilla-princesa .lugar{border-radius:150px 150px 14px 14px;padding-top:56px}
+.plantilla-princesa .lugar::before{content:"";position:absolute;inset:8px;border:1px solid var(--linea);border-radius:142px 142px 10px 10px;pointer-events:none}
+.plantilla-princesa .lugar .btn{position:relative;z-index:1}
+.plantilla-princesa .foto{border-radius:16px;border:6px solid #fff;box-shadow:0 10px 30px rgba(168,68,95,.14)}
+.plantilla-princesa .foto:nth-child(odd){transform:rotate(-1.5deg)}.plantilla-princesa .foto:nth-child(even){transform:rotate(1.5deg)}
+.plantilla-princesa .evento .icono{border-color:var(--acento);color:var(--acento2)}
+.plantilla-princesa .reloj span{font-family:'Cinzel',serif;font-weight:400}
+.plantilla-princesa .btn.solido{background:linear-gradient(100deg,#c0607a,#d97a95);border:none}
+.plantilla-princesa .pie{background:linear-gradient(180deg,#7a3550,#5b2439)}
+.plantilla-princesa .pie .nombres{text-shadow:none}
+@media (max-width:640px){
+  .plantilla-princesa .esq{width:190px}.plantilla-princesa .esq.chica{width:120px}
+  .plantilla-princesa .medallon{padding:96px 18px 54px}
+  .plantilla-princesa .corona{width:170px;top:-50px}
+}</style>
+</head>
+<body class="plantilla-princesa">
+
+
+<div id="sobre" class="sobre-pantalla" role="dialog" aria-label="Abrir invitación">
+  
+  <p class="sobre-para">Una invitación especial para<strong data-invitado-nombre>ti</strong></p>
+  <div class="sobre" tabindex="0" role="button" aria-label="Abrir sobre">
+    <div class="sobre-atras"></div>
+    <div class="sobre-carta"><small>Mis XV años</small><span>XV</span><small>12 · 06 · 2027</small></div>
+    <div class="sobre-frente"></div>
+    <div class="sobre-solapa"><div class="solapa-fuera"></div><div class="solapa-dentro"><svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 60">
+    <defs><pattern id="pr-forro-2" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M6 3L7 6L6 9L5 6Z" fill="#d1a556" opacity=".7"/><circle cx="0" cy="0" r="1.3" fill="#ec9fb3"/><circle cx="12" cy="12" r="1.3" fill="#ec9fb3"/></pattern></defs>
+    <rect width="100" height="60" fill="#fbe3e9"/><rect width="100" height="60" fill="url(#pr-forro-2)"/></svg></div></div>
+    <div class="sello"><span class="orn orn-corona sello-corona" aria-hidden="true"><img src="plantillas/adornos/princesa-corona.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 240 150"><defs><linearGradient id="pr-oro-3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b98a3e"/><stop offset=".45" stop-color="#f4dc9b"/><stop offset=".7" stop-color="#d1a556"/><stop offset="1" stop-color="#a87a30"/></linearGradient></defs>
+    <path d="M28 116Q120 140 212 116L216 130Q120 156 24 130Z" fill="url(#pr-oro-3)"/>
+    <path d="M32 116L46 64L64 96L82 46L101 88L120 16L139 88L158 46L176 96L194 64L208 116" fill="none" stroke="url(#pr-oro-3)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+    <g fill="none" stroke="url(#pr-oro-3)" stroke-width="2" stroke-linecap="round">
+      <path d="M50 110c0-14 8-22 14-14M78 110c0-20 4-34 4-34M120 108c-10-10-10-26 0-32 10 6 10 22 0 32M162 110c0-20-4-34-4-34M190 110c0-14-8-22-14-14"/>
+      <path d="M96 104c-4-8 2-14 7-10M144 104c4-8-2-14-7-10"/>
+    </g>
+    <g fill="#fff8f0" stroke="#d1a556" stroke-width="1.5"><circle cx="46" cy="60" r="6"/><circle cx="82" cy="42" r="6.5"/><circle cx="158" cy="42" r="6.5"/><circle cx="194" cy="60" r="6"/><circle cx="120" cy="12" r="7"/></g>
+    <path d="M120 44c9 10 12 18 12 24a12 12 0 01-24 0c0-6 3-14 12-24z" fill="#e58aa3" stroke="#d1a556" stroke-width="2"/>
+    <path d="M116 56c-2 4-2 9 1 12" stroke="#fff" stroke-opacity=".7" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <g fill="#f3b3c4" stroke="#d1a556" stroke-width="1.2"><circle cx="62" cy="124" r="4.5"/><circle cx="92" cy="129" r="4.5"/><circle cx="148" cy="129" r="4.5"/><circle cx="178" cy="124" r="4.5"/></g>
+    <g fill="#fff"><circle cx="120" cy="131" r="3.5"/><circle cx="76" cy="127" r="2.5"/><circle cx="105" cy="131" r="2.5"/><circle cx="135" cy="131" r="2.5"/><circle cx="164" cy="127" r="2.5"/><circle cx="44" cy="120" r="2.5"/><circle cx="196" cy="120" r="2.5"/></g>
+  </svg></span></span><span class="mitad mitad-1">XV</span><span class="mitad mitad-2">XV</span></div>
+  </div>
+  <p class="sobre-pista">Toca el sello para abrir</p>
+</div>
+<button id="btn-musica" class="btn-musica" aria-label="Pausar o reproducir música"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></button>
+<main>
+  <section class="portada">
+    <span class="orn orn-ramo esq tl" aria-hidden="true"><img src="plantillas/adornos/princesa-ramo.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 300 300">
+    <g transform="translate(80 80) rotate(8)"><path d="M0 0Q60 -36 120 0Q60 36 0 0Z" fill="#86997a"/><path d="M9.6 0L108 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(80)"><path d="M0 0Q55 -33 110 0Q55 33 0 0Z" fill="#a7b89a"/><path d="M8.8 0L99 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(35)"><path d="M0 0Q47.5 -28.5 95 0Q47.5 28.5 0 0Z" fill="#c3d0b6"/><path d="M7.6000000000000005 0L85.5 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(58)"><path d="M0 0Q46 -27.599999999999998 92 0Q46 27.599999999999998 0 0Z" fill="#86997a"/><path d="M7.36 0L82.8 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(70 70) rotate(-40)"><path d="M0 0Q40 -24 80 0Q40 24 0 0Z" fill="#a7b89a"/><path d="M6.4 0L72 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(70 70) rotate(130)"><path d="M0 0Q40 -24 80 0Q40 24 0 0Z" fill="#c3d0b6"/><path d="M6.4 0L72 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g>
+    <g transform="translate(160 60) rotate(20)"><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="17.28" fill="#ec9fb3"/><circle r="14.399999999999999" fill="#a8445f" opacity=".14"/><path d="M-13.200000000000001 3.5999999999999996A13.200000000000001 13.200000000000001 0 0 1 10.8 -7.199999999999999" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.45"/><path d="M9.600000000000001 7.199999999999999A10.08 10.08 0 0 1 -9.600000000000001 -2.88" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.4"/><path d="M-6 -6A6.720000000000001 6.720000000000001 0 0 1 6 2.88" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.5"/><path d="M2.88 3.3600000000000003A3.3600000000000003 3.3600000000000003 0 0 1 -2.88 -1.44" fill="none" stroke="#a8445f" stroke-width="1.08" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(60 160) rotate(-15)"><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="17.28" fill="#fbe9e4"/><circle r="14.399999999999999" fill="#c9a58c" opacity=".14"/><path d="M-13.200000000000001 3.5999999999999996A13.200000000000001 13.200000000000001 0 0 1 10.8 -7.199999999999999" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.45"/><path d="M9.600000000000001 7.199999999999999A10.08 10.08 0 0 1 -9.600000000000001 -2.88" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.4"/><path d="M-6 -6A6.720000000000001 6.720000000000001 0 0 1 6 2.88" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.5"/><path d="M2.88 3.3600000000000003A3.3600000000000003 3.3600000000000003 0 0 1 -2.88 -1.44" fill="none" stroke="#c9a58c" stroke-width="1.08" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(196 34) rotate(0)"><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="9.36" fill="#d76c8c"/><circle r="7.8" fill="#a8445f" opacity=".14"/><path d="M-7.15 1.95A7.15 7.15 0 0 1 5.8500000000000005 -3.9" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.45"/><path d="M5.2 3.9A5.46 5.46 0 0 1 -5.2 -1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.4"/><path d="M-3.25 -3.25A3.6400000000000006 3.6400000000000006 0 0 1 3.25 1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.5"/><path d="M1.56 1.8200000000000003A1.8200000000000003 1.8200000000000003 0 0 1 -1.56 -0.78" fill="none" stroke="#a8445f" stroke-width="0.585" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(34 196) rotate(0)"><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="9.36" fill="#f8d3db"/><circle r="7.8" fill="#a8445f" opacity=".14"/><path d="M-7.15 1.95A7.15 7.15 0 0 1 5.8500000000000005 -3.9" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.45"/><path d="M5.2 3.9A5.46 5.46 0 0 1 -5.2 -1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.4"/><path d="M-3.25 -3.25A3.6400000000000006 3.6400000000000006 0 0 1 3.25 1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.5"/><path d="M1.56 1.8200000000000003A1.8200000000000003 1.8200000000000003 0 0 1 -1.56 -0.78" fill="none" stroke="#a8445f" stroke-width="0.585" stroke-linecap="round" opacity="0.6"/></g>
+    <g transform="translate(100 96) rotate(0)"><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="28.799999999999997" fill="#f8d3db"/><circle r="24" fill="#a8445f" opacity=".14"/><path d="M-22 6A22 22 0 0 1 18 -12" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.45"/><path d="M16 12A16.8 16.8 0 0 1 -16 -4.8" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.4"/><path d="M-10 -10A11.200000000000001 11.200000000000001 0 0 1 10 4.8" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.5"/><path d="M4.8 5.6000000000000005A5.6000000000000005 5.6000000000000005 0 0 1 -4.8 -2.4" fill="none" stroke="#a8445f" stroke-width="1.7999999999999998" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(150 128) rotate(40)"><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="12.959999999999999" fill="#d76c8c"/><circle r="10.799999999999999" fill="#a8445f" opacity=".14"/><path d="M-9.9 2.6999999999999997A9.9 9.9 0 0 1 8.1 -5.3999999999999995" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.45"/><path d="M7.2 5.3999999999999995A7.56 7.56 0 0 1 -7.2 -2.16" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.4"/><path d="M-4.5 -4.5A5.040000000000001 5.040000000000001 0 0 1 4.5 2.16" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.5"/><path d="M2.16 2.5200000000000005A2.5200000000000005 2.5200000000000005 0 0 1 -2.16 -1.08" fill="none" stroke="#a8445f" stroke-width="0.8099999999999999" stroke-linecap="round" opacity="0.6"/></g>
+    <path transform="translate(215 92)" d="M0 -9L1.98 -1.98L9 0L1.98 1.98L0 9L-1.98 1.98L-9 0L-1.98 -1.98Z" fill="#e6c27a"/><path transform="translate(92 214)" d="M0 -9L1.98 -1.98L9 0L1.98 1.98L0 9L-1.98 1.98L-9 0L-1.98 -1.98Z" fill="#e6c27a"/><path transform="translate(190 140)" d="M0 -6L1.32 -1.32L6 0L1.32 1.32L0 6L-1.32 1.32L-6 0L-1.32 -1.32Z" fill="#e6c27a"/><path transform="translate(140 186)" d="M0 -6L1.32 -1.32L6 0L1.32 1.32L0 6L-1.32 1.32L-6 0L-1.32 -1.32Z" fill="#e6c27a"/><path transform="translate(232 50)" d="M0 -5L1.1 -1.1L5 0L1.1 1.1L0 5L-1.1 1.1L-5 0L-1.1 -1.1Z" fill="#e6c27a"/>
+  </svg></span></span><span class="orn orn-ramo esq br" aria-hidden="true"><img src="plantillas/adornos/princesa-ramo.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 300 300">
+    <g transform="translate(80 80) rotate(8)"><path d="M0 0Q60 -36 120 0Q60 36 0 0Z" fill="#86997a"/><path d="M9.6 0L108 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(80)"><path d="M0 0Q55 -33 110 0Q55 33 0 0Z" fill="#a7b89a"/><path d="M8.8 0L99 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(35)"><path d="M0 0Q47.5 -28.5 95 0Q47.5 28.5 0 0Z" fill="#c3d0b6"/><path d="M7.6000000000000005 0L85.5 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(58)"><path d="M0 0Q46 -27.599999999999998 92 0Q46 27.599999999999998 0 0Z" fill="#86997a"/><path d="M7.36 0L82.8 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(70 70) rotate(-40)"><path d="M0 0Q40 -24 80 0Q40 24 0 0Z" fill="#a7b89a"/><path d="M6.4 0L72 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(70 70) rotate(130)"><path d="M0 0Q40 -24 80 0Q40 24 0 0Z" fill="#c3d0b6"/><path d="M6.4 0L72 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g>
+    <g transform="translate(160 60) rotate(20)"><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="17.28" fill="#ec9fb3"/><circle r="14.399999999999999" fill="#a8445f" opacity=".14"/><path d="M-13.200000000000001 3.5999999999999996A13.200000000000001 13.200000000000001 0 0 1 10.8 -7.199999999999999" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.45"/><path d="M9.600000000000001 7.199999999999999A10.08 10.08 0 0 1 -9.600000000000001 -2.88" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.4"/><path d="M-6 -6A6.720000000000001 6.720000000000001 0 0 1 6 2.88" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.5"/><path d="M2.88 3.3600000000000003A3.3600000000000003 3.3600000000000003 0 0 1 -2.88 -1.44" fill="none" stroke="#a8445f" stroke-width="1.08" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(60 160) rotate(-15)"><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="17.28" fill="#fbe9e4"/><circle r="14.399999999999999" fill="#c9a58c" opacity=".14"/><path d="M-13.200000000000001 3.5999999999999996A13.200000000000001 13.200000000000001 0 0 1 10.8 -7.199999999999999" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.45"/><path d="M9.600000000000001 7.199999999999999A10.08 10.08 0 0 1 -9.600000000000001 -2.88" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.4"/><path d="M-6 -6A6.720000000000001 6.720000000000001 0 0 1 6 2.88" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.5"/><path d="M2.88 3.3600000000000003A3.3600000000000003 3.3600000000000003 0 0 1 -2.88 -1.44" fill="none" stroke="#c9a58c" stroke-width="1.08" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(196 34) rotate(0)"><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="9.36" fill="#d76c8c"/><circle r="7.8" fill="#a8445f" opacity=".14"/><path d="M-7.15 1.95A7.15 7.15 0 0 1 5.8500000000000005 -3.9" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.45"/><path d="M5.2 3.9A5.46 5.46 0 0 1 -5.2 -1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.4"/><path d="M-3.25 -3.25A3.6400000000000006 3.6400000000000006 0 0 1 3.25 1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.5"/><path d="M1.56 1.8200000000000003A1.8200000000000003 1.8200000000000003 0 0 1 -1.56 -0.78" fill="none" stroke="#a8445f" stroke-width="0.585" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(34 196) rotate(0)"><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="9.36" fill="#f8d3db"/><circle r="7.8" fill="#a8445f" opacity=".14"/><path d="M-7.15 1.95A7.15 7.15 0 0 1 5.8500000000000005 -3.9" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.45"/><path d="M5.2 3.9A5.46 5.46 0 0 1 -5.2 -1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.4"/><path d="M-3.25 -3.25A3.6400000000000006 3.6400000000000006 0 0 1 3.25 1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.5"/><path d="M1.56 1.8200000000000003A1.8200000000000003 1.8200000000000003 0 0 1 -1.56 -0.78" fill="none" stroke="#a8445f" stroke-width="0.585" stroke-linecap="round" opacity="0.6"/></g>
+    <g transform="translate(100 96) rotate(0)"><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="28.799999999999997" fill="#f8d3db"/><circle r="24" fill="#a8445f" opacity=".14"/><path d="M-22 6A22 22 0 0 1 18 -12" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.45"/><path d="M16 12A16.8 16.8 0 0 1 -16 -4.8" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.4"/><path d="M-10 -10A11.200000000000001 11.200000000000001 0 0 1 10 4.8" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.5"/><path d="M4.8 5.6000000000000005A5.6000000000000005 5.6000000000000005 0 0 1 -4.8 -2.4" fill="none" stroke="#a8445f" stroke-width="1.7999999999999998" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(150 128) rotate(40)"><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="12.959999999999999" fill="#d76c8c"/><circle r="10.799999999999999" fill="#a8445f" opacity=".14"/><path d="M-9.9 2.6999999999999997A9.9 9.9 0 0 1 8.1 -5.3999999999999995" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.45"/><path d="M7.2 5.3999999999999995A7.56 7.56 0 0 1 -7.2 -2.16" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.4"/><path d="M-4.5 -4.5A5.040000000000001 5.040000000000001 0 0 1 4.5 2.16" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.5"/><path d="M2.16 2.5200000000000005A2.5200000000000005 2.5200000000000005 0 0 1 -2.16 -1.08" fill="none" stroke="#a8445f" stroke-width="0.8099999999999999" stroke-linecap="round" opacity="0.6"/></g>
+    <path transform="translate(215 92)" d="M0 -9L1.98 -1.98L9 0L1.98 1.98L0 9L-1.98 1.98L-9 0L-1.98 -1.98Z" fill="#e6c27a"/><path transform="translate(92 214)" d="M0 -9L1.98 -1.98L9 0L1.98 1.98L0 9L-1.98 1.98L-9 0L-1.98 -1.98Z" fill="#e6c27a"/><path transform="translate(190 140)" d="M0 -6L1.32 -1.32L6 0L1.32 1.32L0 6L-1.32 1.32L-6 0L-1.32 -1.32Z" fill="#e6c27a"/><path transform="translate(140 186)" d="M0 -6L1.32 -1.32L6 0L1.32 1.32L0 6L-1.32 1.32L-6 0L-1.32 -1.32Z" fill="#e6c27a"/><path transform="translate(232 50)" d="M0 -5L1.1 -1.1L5 0L1.1 1.1L0 5L-1.1 1.1L-5 0L-1.1 -1.1Z" fill="#e6c27a"/>
+  </svg></span></span>
+    <div class="medallon rv ">
+      <span class="orn orn-corona corona" aria-hidden="true"><img src="plantillas/adornos/princesa-corona.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 240 150"><defs><linearGradient id="pr-oro-6" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b98a3e"/><stop offset=".45" stop-color="#f4dc9b"/><stop offset=".7" stop-color="#d1a556"/><stop offset="1" stop-color="#a87a30"/></linearGradient></defs>
+    <path d="M28 116Q120 140 212 116L216 130Q120 156 24 130Z" fill="url(#pr-oro-6)"/>
+    <path d="M32 116L46 64L64 96L82 46L101 88L120 16L139 88L158 46L176 96L194 64L208 116" fill="none" stroke="url(#pr-oro-6)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+    <g fill="none" stroke="url(#pr-oro-6)" stroke-width="2" stroke-linecap="round">
+      <path d="M50 110c0-14 8-22 14-14M78 110c0-20 4-34 4-34M120 108c-10-10-10-26 0-32 10 6 10 22 0 32M162 110c0-20-4-34-4-34M190 110c0-14-8-22-14-14"/>
+      <path d="M96 104c-4-8 2-14 7-10M144 104c4-8-2-14-7-10"/>
+    </g>
+    <g fill="#fff8f0" stroke="#d1a556" stroke-width="1.5"><circle cx="46" cy="60" r="6"/><circle cx="82" cy="42" r="6.5"/><circle cx="158" cy="42" r="6.5"/><circle cx="194" cy="60" r="6"/><circle cx="120" cy="12" r="7"/></g>
+    <path d="M120 44c9 10 12 18 12 24a12 12 0 01-24 0c0-6 3-14 12-24z" fill="#e58aa3" stroke="#d1a556" stroke-width="2"/>
+    <path d="M116 56c-2 4-2 9 1 12" stroke="#fff" stroke-opacity=".7" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <g fill="#f3b3c4" stroke="#d1a556" stroke-width="1.2"><circle cx="62" cy="124" r="4.5"/><circle cx="92" cy="129" r="4.5"/><circle cx="148" cy="129" r="4.5"/><circle cx="178" cy="124" r="4.5"/></g>
+    <g fill="#fff"><circle cx="120" cy="131" r="3.5"/><circle cx="76" cy="127" r="2.5"/><circle cx="105" cy="131" r="2.5"/><circle cx="135" cy="131" r="2.5"/><circle cx="164" cy="127" r="2.5"/><circle cx="44" cy="120" r="2.5"/><circle cx="196" cy="120" r="2.5"/></g>
+  </svg></span></span>
+      
+      <p class="intro">Mis XV años</p>
+      <div class="xv" aria-hidden="true">XV</div>
+      <h1 class="nombres nombre-xv"><span class="n1">Sofía</span></h1>
+      <div class="fecha-bloque"><span class="lado">Sábado</span><span class="dia">12<small>Junio</small></span><span class="lado">2027</span></div>
+      <p class="ciudad">Guadalajara, Jalisco</p>
+    </div>
+    <a href="#frase" class="bajar" aria-label="Bajar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M6 9l6 6 6-6"/></svg></a>
+  </section>
+  <section id="frase" class="sec sec-frase alt"><div class="cont"><span class="orn orn-separador separador rv" aria-hidden="true"><img src="plantillas/adornos/princesa-separador.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 260 40"><defs><linearGradient id="pr-oro2-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b98a3e"/><stop offset=".45" stop-color="#f4dc9b"/><stop offset=".7" stop-color="#d1a556"/><stop offset="1" stop-color="#a87a30"/></linearGradient></defs><path d="M10 22H96M164 22H250" stroke="url(#pr-oro2-1)" stroke-width="1.2"/>
+    <path d="M108 30L112 14L120 22L130 8L140 22L148 14L152 30Z" fill="none" stroke="url(#pr-oro2-1)" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M106 32H154" stroke="url(#pr-oro2-1)" stroke-width="2.4"/><circle cx="130" cy="6" r="2.6" fill="#ec9fb3"/>
+    <path transform="translate(80 22)" d="M0 -5L1.1 -1.1L5 0L1.1 1.1L0 5L-1.1 1.1L-5 0L-1.1 -1.1Z" fill="#e6c27a"/><path transform="translate(180 22)" d="M0 -5L1.1 -1.1L5 0L1.1 1.1L0 5L-1.1 1.1L-5 0L-1.1 -1.1Z" fill="#e6c27a"/></svg></span></span><blockquote class="rv">“Hay momentos que se esperan toda una vida; hoy celebro el mío rodeada de quienes más quiero.”</blockquote></div></section>
+  <section id="familia" class="sec sec-familia "><div class="cont"><span class="orn orn-corona corona-chica rv" aria-hidden="true"><img src="plantillas/adornos/princesa-corona.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 240 150"><defs><linearGradient id="pr-oro-7" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b98a3e"/><stop offset=".45" stop-color="#f4dc9b"/><stop offset=".7" stop-color="#d1a556"/><stop offset="1" stop-color="#a87a30"/></linearGradient></defs>
+    <path d="M28 116Q120 140 212 116L216 130Q120 156 24 130Z" fill="url(#pr-oro-7)"/>
+    <path d="M32 116L46 64L64 96L82 46L101 88L120 16L139 88L158 46L176 96L194 64L208 116" fill="none" stroke="url(#pr-oro-7)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+    <g fill="none" stroke="url(#pr-oro-7)" stroke-width="2" stroke-linecap="round">
+      <path d="M50 110c0-14 8-22 14-14M78 110c0-20 4-34 4-34M120 108c-10-10-10-26 0-32 10 6 10 22 0 32M162 110c0-20-4-34-4-34M190 110c0-14-8-22-14-14"/>
+      <path d="M96 104c-4-8 2-14 7-10M144 104c4-8-2-14-7-10"/>
+    </g>
+    <g fill="#fff8f0" stroke="#d1a556" stroke-width="1.5"><circle cx="46" cy="60" r="6"/><circle cx="82" cy="42" r="6.5"/><circle cx="158" cy="42" r="6.5"/><circle cx="194" cy="60" r="6"/><circle cx="120" cy="12" r="7"/></g>
+    <path d="M120 44c9 10 12 18 12 24a12 12 0 01-24 0c0-6 3-14 12-24z" fill="#e58aa3" stroke="#d1a556" stroke-width="2"/>
+    <path d="M116 56c-2 4-2 9 1 12" stroke="#fff" stroke-opacity=".7" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <g fill="#f3b3c4" stroke="#d1a556" stroke-width="1.2"><circle cx="62" cy="124" r="4.5"/><circle cx="92" cy="129" r="4.5"/><circle cx="148" cy="129" r="4.5"/><circle cx="178" cy="124" r="4.5"/></g>
+    <g fill="#fff"><circle cx="120" cy="131" r="3.5"/><circle cx="76" cy="127" r="2.5"/><circle cx="105" cy="131" r="2.5"/><circle cx="135" cy="131" r="2.5"/><circle cx="164" cy="127" r="2.5"/><circle cx="44" cy="120" r="2.5"/><circle cx="196" cy="120" r="2.5"/></g>
+  </svg></span></span><p class="eyebrow rv">Con la bendición de Dios</p><h2 class="titulo rv">y de mis padres</h2><p class="lead rv">tengo el honor de invitarte a celebrar mis quince años</p><div class="padres">
+        <div class="rv"><h3>Mis padres</h3><p>Eduardo Ramírez Ochoa<br>Claudia Herrera de Ramírez</p></div>
+        
+      </div><div class="padrinos"><div class="rv"><h3>Padrinos de velación</h3><p>Raúl &amp; Gabriela Herrera</p></div><div class="rv"><h3>Padrinos de anillo</h3><p>Miguel &amp; Laura Ramírez</p></div><div class="rv"><h3>Padrinos de la última muñeca</h3><p>Óscar &amp; Diana Torres</p></div><div class="rv"><h3>Chambelán de honor</h3><p>Emilio Ramírez</p></div></div></div></section>
+  <section id="cuenta" class="sec sec-cuenta oscura"><span class="orn orn-ramo esq tl chica tenue" aria-hidden="true"><img src="plantillas/adornos/princesa-ramo.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 300 300">
+    <g transform="translate(80 80) rotate(8)"><path d="M0 0Q60 -36 120 0Q60 36 0 0Z" fill="#86997a"/><path d="M9.6 0L108 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(80)"><path d="M0 0Q55 -33 110 0Q55 33 0 0Z" fill="#a7b89a"/><path d="M8.8 0L99 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(35)"><path d="M0 0Q47.5 -28.5 95 0Q47.5 28.5 0 0Z" fill="#c3d0b6"/><path d="M7.6000000000000005 0L85.5 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(58)"><path d="M0 0Q46 -27.599999999999998 92 0Q46 27.599999999999998 0 0Z" fill="#86997a"/><path d="M7.36 0L82.8 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(70 70) rotate(-40)"><path d="M0 0Q40 -24 80 0Q40 24 0 0Z" fill="#a7b89a"/><path d="M6.4 0L72 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(70 70) rotate(130)"><path d="M0 0Q40 -24 80 0Q40 24 0 0Z" fill="#c3d0b6"/><path d="M6.4 0L72 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g>
+    <g transform="translate(160 60) rotate(20)"><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="17.28" fill="#ec9fb3"/><circle r="14.399999999999999" fill="#a8445f" opacity=".14"/><path d="M-13.200000000000001 3.5999999999999996A13.200000000000001 13.200000000000001 0 0 1 10.8 -7.199999999999999" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.45"/><path d="M9.600000000000001 7.199999999999999A10.08 10.08 0 0 1 -9.600000000000001 -2.88" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.4"/><path d="M-6 -6A6.720000000000001 6.720000000000001 0 0 1 6 2.88" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.5"/><path d="M2.88 3.3600000000000003A3.3600000000000003 3.3600000000000003 0 0 1 -2.88 -1.44" fill="none" stroke="#a8445f" stroke-width="1.08" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(60 160) rotate(-15)"><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="17.28" fill="#fbe9e4"/><circle r="14.399999999999999" fill="#c9a58c" opacity=".14"/><path d="M-13.200000000000001 3.5999999999999996A13.200000000000001 13.200000000000001 0 0 1 10.8 -7.199999999999999" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.45"/><path d="M9.600000000000001 7.199999999999999A10.08 10.08 0 0 1 -9.600000000000001 -2.88" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.4"/><path d="M-6 -6A6.720000000000001 6.720000000000001 0 0 1 6 2.88" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.5"/><path d="M2.88 3.3600000000000003A3.3600000000000003 3.3600000000000003 0 0 1 -2.88 -1.44" fill="none" stroke="#c9a58c" stroke-width="1.08" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(196 34) rotate(0)"><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="9.36" fill="#d76c8c"/><circle r="7.8" fill="#a8445f" opacity=".14"/><path d="M-7.15 1.95A7.15 7.15 0 0 1 5.8500000000000005 -3.9" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.45"/><path d="M5.2 3.9A5.46 5.46 0 0 1 -5.2 -1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.4"/><path d="M-3.25 -3.25A3.6400000000000006 3.6400000000000006 0 0 1 3.25 1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.5"/><path d="M1.56 1.8200000000000003A1.8200000000000003 1.8200000000000003 0 0 1 -1.56 -0.78" fill="none" stroke="#a8445f" stroke-width="0.585" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(34 196) rotate(0)"><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="9.36" fill="#f8d3db"/><circle r="7.8" fill="#a8445f" opacity=".14"/><path d="M-7.15 1.95A7.15 7.15 0 0 1 5.8500000000000005 -3.9" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.45"/><path d="M5.2 3.9A5.46 5.46 0 0 1 -5.2 -1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.4"/><path d="M-3.25 -3.25A3.6400000000000006 3.6400000000000006 0 0 1 3.25 1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.5"/><path d="M1.56 1.8200000000000003A1.8200000000000003 1.8200000000000003 0 0 1 -1.56 -0.78" fill="none" stroke="#a8445f" stroke-width="0.585" stroke-linecap="round" opacity="0.6"/></g>
+    <g transform="translate(100 96) rotate(0)"><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="28.799999999999997" fill="#f8d3db"/><circle r="24" fill="#a8445f" opacity=".14"/><path d="M-22 6A22 22 0 0 1 18 -12" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.45"/><path d="M16 12A16.8 16.8 0 0 1 -16 -4.8" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.4"/><path d="M-10 -10A11.200000000000001 11.200000000000001 0 0 1 10 4.8" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.5"/><path d="M4.8 5.6000000000000005A5.6000000000000005 5.6000000000000005 0 0 1 -4.8 -2.4" fill="none" stroke="#a8445f" stroke-width="1.7999999999999998" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(150 128) rotate(40)"><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="12.959999999999999" fill="#d76c8c"/><circle r="10.799999999999999" fill="#a8445f" opacity=".14"/><path d="M-9.9 2.6999999999999997A9.9 9.9 0 0 1 8.1 -5.3999999999999995" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.45"/><path d="M7.2 5.3999999999999995A7.56 7.56 0 0 1 -7.2 -2.16" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.4"/><path d="M-4.5 -4.5A5.040000000000001 5.040000000000001 0 0 1 4.5 2.16" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.5"/><path d="M2.16 2.5200000000000005A2.5200000000000005 2.5200000000000005 0 0 1 -2.16 -1.08" fill="none" stroke="#a8445f" stroke-width="0.8099999999999999" stroke-linecap="round" opacity="0.6"/></g>
+    <path transform="translate(215 92)" d="M0 -9L1.98 -1.98L9 0L1.98 1.98L0 9L-1.98 1.98L-9 0L-1.98 -1.98Z" fill="#e6c27a"/><path transform="translate(92 214)" d="M0 -9L1.98 -1.98L9 0L1.98 1.98L0 9L-1.98 1.98L-9 0L-1.98 -1.98Z" fill="#e6c27a"/><path transform="translate(190 140)" d="M0 -6L1.32 -1.32L6 0L1.32 1.32L0 6L-1.32 1.32L-6 0L-1.32 -1.32Z" fill="#e6c27a"/><path transform="translate(140 186)" d="M0 -6L1.32 -1.32L6 0L1.32 1.32L0 6L-1.32 1.32L-6 0L-1.32 -1.32Z" fill="#e6c27a"/><path transform="translate(232 50)" d="M0 -5L1.1 -1.1L5 0L1.1 1.1L0 5L-1.1 1.1L-5 0L-1.1 -1.1Z" fill="#e6c27a"/>
+  </svg></span></span><span class="orn orn-ramo esq br chica tenue" aria-hidden="true"><img src="plantillas/adornos/princesa-ramo.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 300 300">
+    <g transform="translate(80 80) rotate(8)"><path d="M0 0Q60 -36 120 0Q60 36 0 0Z" fill="#86997a"/><path d="M9.6 0L108 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(80)"><path d="M0 0Q55 -33 110 0Q55 33 0 0Z" fill="#a7b89a"/><path d="M8.8 0L99 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(35)"><path d="M0 0Q47.5 -28.5 95 0Q47.5 28.5 0 0Z" fill="#c3d0b6"/><path d="M7.6000000000000005 0L85.5 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(58)"><path d="M0 0Q46 -27.599999999999998 92 0Q46 27.599999999999998 0 0Z" fill="#86997a"/><path d="M7.36 0L82.8 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(70 70) rotate(-40)"><path d="M0 0Q40 -24 80 0Q40 24 0 0Z" fill="#a7b89a"/><path d="M6.4 0L72 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(70 70) rotate(130)"><path d="M0 0Q40 -24 80 0Q40 24 0 0Z" fill="#c3d0b6"/><path d="M6.4 0L72 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g>
+    <g transform="translate(160 60) rotate(20)"><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="17.28" fill="#ec9fb3"/><circle r="14.399999999999999" fill="#a8445f" opacity=".14"/><path d="M-13.200000000000001 3.5999999999999996A13.200000000000001 13.200000000000001 0 0 1 10.8 -7.199999999999999" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.45"/><path d="M9.600000000000001 7.199999999999999A10.08 10.08 0 0 1 -9.600000000000001 -2.88" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.4"/><path d="M-6 -6A6.720000000000001 6.720000000000001 0 0 1 6 2.88" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.5"/><path d="M2.88 3.3600000000000003A3.3600000000000003 3.3600000000000003 0 0 1 -2.88 -1.44" fill="none" stroke="#a8445f" stroke-width="1.08" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(60 160) rotate(-15)"><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="17.28" fill="#fbe9e4"/><circle r="14.399999999999999" fill="#c9a58c" opacity=".14"/><path d="M-13.200000000000001 3.5999999999999996A13.200000000000001 13.200000000000001 0 0 1 10.8 -7.199999999999999" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.45"/><path d="M9.600000000000001 7.199999999999999A10.08 10.08 0 0 1 -9.600000000000001 -2.88" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.4"/><path d="M-6 -6A6.720000000000001 6.720000000000001 0 0 1 6 2.88" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.5"/><path d="M2.88 3.3600000000000003A3.3600000000000003 3.3600000000000003 0 0 1 -2.88 -1.44" fill="none" stroke="#c9a58c" stroke-width="1.08" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(196 34) rotate(0)"><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="9.36" fill="#d76c8c"/><circle r="7.8" fill="#a8445f" opacity=".14"/><path d="M-7.15 1.95A7.15 7.15 0 0 1 5.8500000000000005 -3.9" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.45"/><path d="M5.2 3.9A5.46 5.46 0 0 1 -5.2 -1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.4"/><path d="M-3.25 -3.25A3.6400000000000006 3.6400000000000006 0 0 1 3.25 1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.5"/><path d="M1.56 1.8200000000000003A1.8200000000000003 1.8200000000000003 0 0 1 -1.56 -0.78" fill="none" stroke="#a8445f" stroke-width="0.585" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(34 196) rotate(0)"><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="9.36" fill="#f8d3db"/><circle r="7.8" fill="#a8445f" opacity=".14"/><path d="M-7.15 1.95A7.15 7.15 0 0 1 5.8500000000000005 -3.9" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.45"/><path d="M5.2 3.9A5.46 5.46 0 0 1 -5.2 -1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.4"/><path d="M-3.25 -3.25A3.6400000000000006 3.6400000000000006 0 0 1 3.25 1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.5"/><path d="M1.56 1.8200000000000003A1.8200000000000003 1.8200000000000003 0 0 1 -1.56 -0.78" fill="none" stroke="#a8445f" stroke-width="0.585" stroke-linecap="round" opacity="0.6"/></g>
+    <g transform="translate(100 96) rotate(0)"><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="28.799999999999997" fill="#f8d3db"/><circle r="24" fill="#a8445f" opacity=".14"/><path d="M-22 6A22 22 0 0 1 18 -12" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.45"/><path d="M16 12A16.8 16.8 0 0 1 -16 -4.8" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.4"/><path d="M-10 -10A11.200000000000001 11.200000000000001 0 0 1 10 4.8" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.5"/><path d="M4.8 5.6000000000000005A5.6000000000000005 5.6000000000000005 0 0 1 -4.8 -2.4" fill="none" stroke="#a8445f" stroke-width="1.7999999999999998" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(150 128) rotate(40)"><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="12.959999999999999" fill="#d76c8c"/><circle r="10.799999999999999" fill="#a8445f" opacity=".14"/><path d="M-9.9 2.6999999999999997A9.9 9.9 0 0 1 8.1 -5.3999999999999995" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.45"/><path d="M7.2 5.3999999999999995A7.56 7.56 0 0 1 -7.2 -2.16" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.4"/><path d="M-4.5 -4.5A5.040000000000001 5.040000000000001 0 0 1 4.5 2.16" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.5"/><path d="M2.16 2.5200000000000005A2.5200000000000005 2.5200000000000005 0 0 1 -2.16 -1.08" fill="none" stroke="#a8445f" stroke-width="0.8099999999999999" stroke-linecap="round" opacity="0.6"/></g>
+    <path transform="translate(215 92)" d="M0 -9L1.98 -1.98L9 0L1.98 1.98L0 9L-1.98 1.98L-9 0L-1.98 -1.98Z" fill="#e6c27a"/><path transform="translate(92 214)" d="M0 -9L1.98 -1.98L9 0L1.98 1.98L0 9L-1.98 1.98L-9 0L-1.98 -1.98Z" fill="#e6c27a"/><path transform="translate(190 140)" d="M0 -6L1.32 -1.32L6 0L1.32 1.32L0 6L-1.32 1.32L-6 0L-1.32 -1.32Z" fill="#e6c27a"/><path transform="translate(140 186)" d="M0 -6L1.32 -1.32L6 0L1.32 1.32L0 6L-1.32 1.32L-6 0L-1.32 -1.32Z" fill="#e6c27a"/><path transform="translate(232 50)" d="M0 -5L1.1 -1.1L5 0L1.1 1.1L0 5L-1.1 1.1L-5 0L-1.1 -1.1Z" fill="#e6c27a"/>
+  </svg></span></span><div class="cont"><p class="eyebrow rv">Faltan</p><h2 class="titulo rv">para el gran día</h2>
+        <div class="reloj rv"><div><span data-cd="d">00</span><small>Días</small></div><b>:</b><div><span data-cd="h">00</span><small>Horas</small></div><b>:</b><div><span data-cd="m">00</span><small>Minutos</small></div><b>:</b><div><span data-cd="s">00</span><small>Segundos</small></div></div>
+        <a class="btn rv" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=XV+a%C3%B1os+de+Sof%C3%ADa&amp;dates=20270613T000000Z%2F20270613T090000Z&amp;location=Sal%C3%B3n+Cristal%2C+Av.+L%C3%B3pez+Mateos+Sur+2375+Zapopan%2C+Jal.&amp;details=%C2%A1Te+esperamos%21"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Agendar en calendario</a></div></section>
+  <section id="itinerario" class="sec sec-itinerario "><div class="cont"><p class="eyebrow rv">Itinerario</p><h2 class="titulo rv">Programa del día</h2>
+        <div class="linea"><div class="evento rv">
+          <div class="hora">18:00</div>
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 2v4M10 4h4M5 22V11l7-5 7 5v11M9 22v-6a3 3 0 016 0v6M3 22h18"/></svg></div>
+          <div class="que">Misa de acción de gracias<small>Templo de San Francisco</small></div>
+        </div><div class="evento rv">
+          <div class="hora">20:00</div>
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M8 2h8l-1 7a3 3 0 01-6 0zM12 12v8M8 22h8"/></svg></div>
+          <div class="que">Recepción<small>Salón Cristal</small></div>
+        </div><div class="evento rv">
+          <div class="hora">20:45</div>
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 18h18M4 18L3 8l5 4 4-7 4 7 5-4-1 10"/><circle cx="12" cy="4" r="1"/><circle cx="3" cy="7.5" r=".8"/><circle cx="21" cy="7.5" r=".8"/></svg></div>
+          <div class="que">Vals<small>Con mis chambelanes</small></div>
+        </div><div class="evento rv">
+          <div class="hora">21:30</div>
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 11h18M5 11a7 7 0 0114 0M12 4V2M4 15h16M7 15v5M17 15v5"/></svg></div>
+          <div class="que">Cena</div>
+        </div><div class="evento rv">
+          <div class="hora">22:30</div>
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+          <div class="que">¡A bailar!</div>
+        </div><div class="evento rv">
+          <div class="hora">02:00</div>
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg></div>
+          <div class="que">Fin de la fiesta<small>Gracias por acompañarme</small></div>
+        </div></div></div></section>
+  <section id="ubicacion" class="sec sec-ubicacion alt"><div class="cont"><p class="eyebrow rv">Dónde</p><h2 class="titulo rv">Ubicación</h2>
+        <div class="lugares n2"><div class="lugar rv">
+          <div class="lugar-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 2v4M10 4h4M5 22V11l7-5 7 5v11M9 22v-6a3 3 0 016 0v6M3 22h18"/></svg></div>
+          <h3>Misa</h3>
+          <p class="lugar-hora">18:00 hrs</p>
+          <p class="lugar-nombre">Templo de San Francisco de Asís</p>
+          <p class="lugar-dir">Av. 16 de Septiembre 289, Centro<br>Guadalajara, Jal.</p>
+          <a class="btn" target="_blank" rel="noopener" href="https://maps.google.com/?q=Templo%20de%20San%20Francisco%20de%20As%C3%ADs%20Av.%2016%20de%20Septiembre%20289%2C%20Centro%20Guadalajara%2C%20Jal."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 22s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Ver mapa</a>
+        </div><div class="lugar rv">
+          <div class="lugar-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M2 21h20M4 21V10h16v11M2 10l10-6 10 6M8 21v-5a2 2 0 014 0v5M14 14h3v3h-3z"/></svg></div>
+          <h3>Recepción</h3>
+          <p class="lugar-hora">20:00 hrs</p>
+          <p class="lugar-nombre">Salón Cristal</p>
+          <p class="lugar-dir">Av. López Mateos Sur 2375<br>Zapopan, Jal.</p>
+          <a class="btn" target="_blank" rel="noopener" href="https://maps.google.com/?q=Sal%C3%B3n%20Cristal%20Av.%20L%C3%B3pez%20Mateos%20Sur%202375%20Zapopan%2C%20Jal."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 22s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Ver mapa</a>
+        </div></div></div></section>
+  <section id="vestimenta" class="sec sec-vestimenta "><div class="cont"><p class="eyebrow rv">Código de vestimenta</p><h2 class="titulo rv">Formal</h2>
+        <div class="figuras rv"><figure><svg viewBox="0 0 70 110" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M27 6l8 8 8-8M27 6l-11 6-4 28 8 2 2 64h26l2-64 8-2-4-28-11-6"/><path d="M35 14l-5 16 5 6 5-6-5-16M31 20l4 3 4-3"/><circle cx="35" cy="48" r="1"/><circle cx="35" cy="58" r="1"/></svg><figcaption>Traje</figcaption></figure><figure><svg viewBox="0 0 70 110" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M28 6c0 8 2 14 7 18 5-4 7-10 7-18"/><path d="M28 6l-4 2 3 26-4 6-13 66h50L47 40l-4-6 3-26-4-2"/><path d="M24 40h22"/></svg><figcaption>Vestido largo</figcaption></figure></div>
+        <p class="rv">Te sugerimos colores de noche y tonos pastel.</p>
+        <div class="paleta rv"><span style="background:#1f3463"></span><span style="background:#7c5ea8"></span><span style="background:#b8c4d6"></span><span style="background:#c9a75c"></span></div>
+        <p class="nota rv">El color rosa está reservado para la quinceañera.</p></div></section>
+  <section id="historia" class="sec sec-historia alt"><span class="orn orn-ramo esq tr chica" aria-hidden="true"><img src="plantillas/adornos/princesa-ramo.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 300 300">
+    <g transform="translate(80 80) rotate(8)"><path d="M0 0Q60 -36 120 0Q60 36 0 0Z" fill="#86997a"/><path d="M9.6 0L108 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(80)"><path d="M0 0Q55 -33 110 0Q55 33 0 0Z" fill="#a7b89a"/><path d="M8.8 0L99 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(35)"><path d="M0 0Q47.5 -28.5 95 0Q47.5 28.5 0 0Z" fill="#c3d0b6"/><path d="M7.6000000000000005 0L85.5 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(58)"><path d="M0 0Q46 -27.599999999999998 92 0Q46 27.599999999999998 0 0Z" fill="#86997a"/><path d="M7.36 0L82.8 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(70 70) rotate(-40)"><path d="M0 0Q40 -24 80 0Q40 24 0 0Z" fill="#a7b89a"/><path d="M6.4 0L72 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(70 70) rotate(130)"><path d="M0 0Q40 -24 80 0Q40 24 0 0Z" fill="#c3d0b6"/><path d="M6.4 0L72 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g>
+    <g transform="translate(160 60) rotate(20)"><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="17.28" fill="#ec9fb3"/><circle r="14.399999999999999" fill="#a8445f" opacity=".14"/><path d="M-13.200000000000001 3.5999999999999996A13.200000000000001 13.200000000000001 0 0 1 10.8 -7.199999999999999" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.45"/><path d="M9.600000000000001 7.199999999999999A10.08 10.08 0 0 1 -9.600000000000001 -2.88" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.4"/><path d="M-6 -6A6.720000000000001 6.720000000000001 0 0 1 6 2.88" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.5"/><path d="M2.88 3.3600000000000003A3.3600000000000003 3.3600000000000003 0 0 1 -2.88 -1.44" fill="none" stroke="#a8445f" stroke-width="1.08" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(60 160) rotate(-15)"><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="17.28" fill="#fbe9e4"/><circle r="14.399999999999999" fill="#c9a58c" opacity=".14"/><path d="M-13.200000000000001 3.5999999999999996A13.200000000000001 13.200000000000001 0 0 1 10.8 -7.199999999999999" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.45"/><path d="M9.600000000000001 7.199999999999999A10.08 10.08 0 0 1 -9.600000000000001 -2.88" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.4"/><path d="M-6 -6A6.720000000000001 6.720000000000001 0 0 1 6 2.88" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.5"/><path d="M2.88 3.3600000000000003A3.3600000000000003 3.3600000000000003 0 0 1 -2.88 -1.44" fill="none" stroke="#c9a58c" stroke-width="1.08" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(196 34) rotate(0)"><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="9.36" fill="#d76c8c"/><circle r="7.8" fill="#a8445f" opacity=".14"/><path d="M-7.15 1.95A7.15 7.15 0 0 1 5.8500000000000005 -3.9" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.45"/><path d="M5.2 3.9A5.46 5.46 0 0 1 -5.2 -1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.4"/><path d="M-3.25 -3.25A3.6400000000000006 3.6400000000000006 0 0 1 3.25 1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.5"/><path d="M1.56 1.8200000000000003A1.8200000000000003 1.8200000000000003 0 0 1 -1.56 -0.78" fill="none" stroke="#a8445f" stroke-width="0.585" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(34 196) rotate(0)"><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="9.36" fill="#f8d3db"/><circle r="7.8" fill="#a8445f" opacity=".14"/><path d="M-7.15 1.95A7.15 7.15 0 0 1 5.8500000000000005 -3.9" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.45"/><path d="M5.2 3.9A5.46 5.46 0 0 1 -5.2 -1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.4"/><path d="M-3.25 -3.25A3.6400000000000006 3.6400000000000006 0 0 1 3.25 1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.5"/><path d="M1.56 1.8200000000000003A1.8200000000000003 1.8200000000000003 0 0 1 -1.56 -0.78" fill="none" stroke="#a8445f" stroke-width="0.585" stroke-linecap="round" opacity="0.6"/></g>
+    <g transform="translate(100 96) rotate(0)"><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="28.799999999999997" fill="#f8d3db"/><circle r="24" fill="#a8445f" opacity=".14"/><path d="M-22 6A22 22 0 0 1 18 -12" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.45"/><path d="M16 12A16.8 16.8 0 0 1 -16 -4.8" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.4"/><path d="M-10 -10A11.200000000000001 11.200000000000001 0 0 1 10 4.8" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.5"/><path d="M4.8 5.6000000000000005A5.6000000000000005 5.6000000000000005 0 0 1 -4.8 -2.4" fill="none" stroke="#a8445f" stroke-width="1.7999999999999998" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(150 128) rotate(40)"><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="12.959999999999999" fill="#d76c8c"/><circle r="10.799999999999999" fill="#a8445f" opacity=".14"/><path d="M-9.9 2.6999999999999997A9.9 9.9 0 0 1 8.1 -5.3999999999999995" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.45"/><path d="M7.2 5.3999999999999995A7.56 7.56 0 0 1 -7.2 -2.16" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.4"/><path d="M-4.5 -4.5A5.040000000000001 5.040000000000001 0 0 1 4.5 2.16" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.5"/><path d="M2.16 2.5200000000000005A2.5200000000000005 2.5200000000000005 0 0 1 -2.16 -1.08" fill="none" stroke="#a8445f" stroke-width="0.8099999999999999" stroke-linecap="round" opacity="0.6"/></g>
+    <path transform="translate(215 92)" d="M0 -9L1.98 -1.98L9 0L1.98 1.98L0 9L-1.98 1.98L-9 0L-1.98 -1.98Z" fill="#e6c27a"/><path transform="translate(92 214)" d="M0 -9L1.98 -1.98L9 0L1.98 1.98L0 9L-1.98 1.98L-9 0L-1.98 -1.98Z" fill="#e6c27a"/><path transform="translate(190 140)" d="M0 -6L1.32 -1.32L6 0L1.32 1.32L0 6L-1.32 1.32L-6 0L-1.32 -1.32Z" fill="#e6c27a"/><path transform="translate(140 186)" d="M0 -6L1.32 -1.32L6 0L1.32 1.32L0 6L-1.32 1.32L-6 0L-1.32 -1.32Z" fill="#e6c27a"/><path transform="translate(232 50)" d="M0 -5L1.1 -1.1L5 0L1.1 1.1L0 5L-1.1 1.1L-5 0L-1.1 -1.1Z" fill="#e6c27a"/>
+  </svg></span></span><div class="cont"><p class="eyebrow rv">Momentos</p><h2 class="titulo rv">Mis momentos</h2><p class="lead rv">Quince años de risas, aprendizajes y sueños. ¡Gracias por ser parte de ellos!</p>
+        <div class="galeria g3"><figure class="foto rv vacia" >
+          <span class="foto-hueco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="4"/></svg></span>
+          <figcaption>Mi primer año</figcaption>
+        </figure><figure class="foto rv vacia" >
+          <span class="foto-hueco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="4"/></svg></span>
+          <figcaption>Con mi familia</figcaption>
+        </figure><figure class="foto rv vacia" >
+          <span class="foto-hueco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="4"/></svg></span>
+          <figcaption>Hoy</figcaption>
+        </figure></div></div></section>
+  <section id="regalos" class="sec sec-regalos "><div class="cont"><p class="eyebrow rv">Mesa de regalos</p><h2 class="titulo rv">Tu presencia es mi mejor regalo</h2><p class="lead rv">pero si deseas obsequiarme algo, aquí algunas opciones</p>
+        <div class="regalos n2"><div class="regalo rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 9h18v4H3zM5 13v8h14v-8M12 9v12M12 9c-2-4-7-4-6-1 1 2 6 1 6 1zm0 0c2-4 7-4 6-1-1 2-6 1-6 1z"/></svg><h4>Liverpool</h4><p>Evento #50987654</p></div><div class="regalo rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 7l9 6 9-6"/></svg><h4>Lluvia de sobres</h4><p>El día del evento</p></div></div>
+        </div></section>
+  <section id="rsvp" class="sec sec-rsvp alt"><span class="orn orn-ramo esq bl chica" aria-hidden="true"><img src="plantillas/adornos/princesa-ramo.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 300 300">
+    <g transform="translate(80 80) rotate(8)"><path d="M0 0Q60 -36 120 0Q60 36 0 0Z" fill="#86997a"/><path d="M9.6 0L108 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(80)"><path d="M0 0Q55 -33 110 0Q55 33 0 0Z" fill="#a7b89a"/><path d="M8.8 0L99 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(35)"><path d="M0 0Q47.5 -28.5 95 0Q47.5 28.5 0 0Z" fill="#c3d0b6"/><path d="M7.6000000000000005 0L85.5 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(80 80) rotate(58)"><path d="M0 0Q46 -27.599999999999998 92 0Q46 27.599999999999998 0 0Z" fill="#86997a"/><path d="M7.36 0L82.8 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(70 70) rotate(-40)"><path d="M0 0Q40 -24 80 0Q40 24 0 0Z" fill="#a7b89a"/><path d="M6.4 0L72 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g><g transform="translate(70 70) rotate(130)"><path d="M0 0Q40 -24 80 0Q40 24 0 0Z" fill="#c3d0b6"/><path d="M6.4 0L72 0" stroke="#fff" stroke-opacity=".35" stroke-width="1"/></g>
+    <g transform="translate(160 60) rotate(20)"><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#ec9fb3" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="17.28" fill="#ec9fb3"/><circle r="14.399999999999999" fill="#a8445f" opacity=".14"/><path d="M-13.200000000000001 3.5999999999999996A13.200000000000001 13.200000000000001 0 0 1 10.8 -7.199999999999999" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.45"/><path d="M9.600000000000001 7.199999999999999A10.08 10.08 0 0 1 -9.600000000000001 -2.88" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.4"/><path d="M-6 -6A6.720000000000001 6.720000000000001 0 0 1 6 2.88" fill="none" stroke="#a8445f" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.5"/><path d="M2.88 3.3600000000000003A3.3600000000000003 3.3600000000000003 0 0 1 -2.88 -1.44" fill="none" stroke="#a8445f" stroke-width="1.08" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(60 160) rotate(-15)"><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-13.200000000000001" rx="14.879999999999999" ry="11.52" fill="#fbe9e4" stroke="#c9a58c" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="17.28" fill="#fbe9e4"/><circle r="14.399999999999999" fill="#c9a58c" opacity=".14"/><path d="M-13.200000000000001 3.5999999999999996A13.200000000000001 13.200000000000001 0 0 1 10.8 -7.199999999999999" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.45"/><path d="M9.600000000000001 7.199999999999999A10.08 10.08 0 0 1 -9.600000000000001 -2.88" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.4"/><path d="M-6 -6A6.720000000000001 6.720000000000001 0 0 1 6 2.88" fill="none" stroke="#c9a58c" stroke-width="1.2000000000000002" stroke-linecap="round" opacity="0.5"/><path d="M2.88 3.3600000000000003A3.3600000000000003 3.3600000000000003 0 0 1 -2.88 -1.44" fill="none" stroke="#c9a58c" stroke-width="1.08" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(196 34) rotate(0)"><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="9.36" fill="#d76c8c"/><circle r="7.8" fill="#a8445f" opacity=".14"/><path d="M-7.15 1.95A7.15 7.15 0 0 1 5.8500000000000005 -3.9" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.45"/><path d="M5.2 3.9A5.46 5.46 0 0 1 -5.2 -1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.4"/><path d="M-3.25 -3.25A3.6400000000000006 3.6400000000000006 0 0 1 3.25 1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.5"/><path d="M1.56 1.8200000000000003A1.8200000000000003 1.8200000000000003 0 0 1 -1.56 -0.78" fill="none" stroke="#a8445f" stroke-width="0.585" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(34 196) rotate(0)"><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-7.15" rx="8.06" ry="6.24" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="9.36" fill="#f8d3db"/><circle r="7.8" fill="#a8445f" opacity=".14"/><path d="M-7.15 1.95A7.15 7.15 0 0 1 5.8500000000000005 -3.9" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.45"/><path d="M5.2 3.9A5.46 5.46 0 0 1 -5.2 -1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.4"/><path d="M-3.25 -3.25A3.6400000000000006 3.6400000000000006 0 0 1 3.25 1.56" fill="none" stroke="#a8445f" stroke-width="0.65" stroke-linecap="round" opacity="0.5"/><path d="M1.56 1.8200000000000003A1.8200000000000003 1.8200000000000003 0 0 1 -1.56 -0.78" fill="none" stroke="#a8445f" stroke-width="0.585" stroke-linecap="round" opacity="0.6"/></g>
+    <g transform="translate(100 96) rotate(0)"><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-22" rx="24.8" ry="19.2" fill="#f8d3db" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="28.799999999999997" fill="#f8d3db"/><circle r="24" fill="#a8445f" opacity=".14"/><path d="M-22 6A22 22 0 0 1 18 -12" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.45"/><path d="M16 12A16.8 16.8 0 0 1 -16 -4.8" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.4"/><path d="M-10 -10A11.200000000000001 11.200000000000001 0 0 1 10 4.8" fill="none" stroke="#a8445f" stroke-width="2" stroke-linecap="round" opacity="0.5"/><path d="M4.8 5.6000000000000005A5.6000000000000005 5.6000000000000005 0 0 1 -4.8 -2.4" fill="none" stroke="#a8445f" stroke-width="1.7999999999999998" stroke-linecap="round" opacity="0.6"/></g><g transform="translate(150 128) rotate(40)"><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(0)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(72)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(144)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(216)"/><ellipse cy="-9.9" rx="11.16" ry="8.64" fill="#d76c8c" stroke="#a8445f" stroke-opacity=".3" stroke-width="1" transform="rotate(288)"/><circle r="12.959999999999999" fill="#d76c8c"/><circle r="10.799999999999999" fill="#a8445f" opacity=".14"/><path d="M-9.9 2.6999999999999997A9.9 9.9 0 0 1 8.1 -5.3999999999999995" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.45"/><path d="M7.2 5.3999999999999995A7.56 7.56 0 0 1 -7.2 -2.16" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.4"/><path d="M-4.5 -4.5A5.040000000000001 5.040000000000001 0 0 1 4.5 2.16" fill="none" stroke="#a8445f" stroke-width="0.9" stroke-linecap="round" opacity="0.5"/><path d="M2.16 2.5200000000000005A2.5200000000000005 2.5200000000000005 0 0 1 -2.16 -1.08" fill="none" stroke="#a8445f" stroke-width="0.8099999999999999" stroke-linecap="round" opacity="0.6"/></g>
+    <path transform="translate(215 92)" d="M0 -9L1.98 -1.98L9 0L1.98 1.98L0 9L-1.98 1.98L-9 0L-1.98 -1.98Z" fill="#e6c27a"/><path transform="translate(92 214)" d="M0 -9L1.98 -1.98L9 0L1.98 1.98L0 9L-1.98 1.98L-9 0L-1.98 -1.98Z" fill="#e6c27a"/><path transform="translate(190 140)" d="M0 -6L1.32 -1.32L6 0L1.32 1.32L0 6L-1.32 1.32L-6 0L-1.32 -1.32Z" fill="#e6c27a"/><path transform="translate(140 186)" d="M0 -6L1.32 -1.32L6 0L1.32 1.32L0 6L-1.32 1.32L-6 0L-1.32 -1.32Z" fill="#e6c27a"/><path transform="translate(232 50)" d="M0 -5L1.1 -1.1L5 0L1.1 1.1L0 5L-1.1 1.1L-5 0L-1.1 -1.1Z" fill="#e6c27a"/>
+  </svg></span></span><div class="cont"><p class="eyebrow rv">R.S.V.P.</p><h2 class="titulo rv">Confirma tu asistencia</h2>
+        <div class="pase rv"><strong data-invitado-nombre>Querido invitado</strong>Hemos reservado <b data-pases>2</b> <span data-pases-palabra>lugares</span> en tu honor<em class="pase-mesa" data-mesa-pase hidden></em></div>
+        <form id="form-rsvp" class="rv" novalidate>
+          <label for="f-nombre">Nombre completo</label>
+          <input type="text" id="f-nombre" placeholder="Tu nombre" autocomplete="name">
+          <label>¿Me acompañarás?</label>
+          <div class="opciones">
+            <input type="radio" name="asiste" id="asiste-si" value="si" checked><label for="asiste-si">Sí, ahí estaré</label>
+            <input type="radio" name="asiste" id="asiste-no" value="no"><label for="asiste-no">No podré asistir</label>
+          </div>
+          <div id="caja-pases"><label for="f-pases">Número de asistentes</label><select id="f-pases"></select></div>
+          <label for="f-msg">Mensaje para Sofía (opcional)</label>
+          <textarea id="f-msg" placeholder="Escribe unas palabras…"></textarea>
+          <button class="btn solido" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Confirmar por WhatsApp</button>
+          <p class="limite">Agradeceremos tu confirmación antes del 20 de mayo de 2027</p>
+        </form></div></section>
+  <section id="deseos" class="sec sec-deseos "><div class="cont"><p class="eyebrow rv">Déjame un mensaje</p><h2 class="titulo rv">Buenos deseos</h2><p class="lead rv">Tus palabras serán un recuerdo para siempre</p><form class="form-whats" data-whats="deseo" novalidate>
+        <input type="text" name="nombre" placeholder="Tu nombre" autocomplete="name" data-nombre-invitado>
+        <textarea name="texto" placeholder="Escribe tus buenos deseos…"></textarea>
+        <button class="btn solido" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Enviar mis buenos deseos</button>
+      </form></div></section><section id="canciones" class="sec sec-canciones "><div class="cont"><p class="eyebrow rv">¡Que no pare la fiesta!</p><h2 class="titulo rv">Sugiere una canción</h2><p class="lead rv">¿Qué canción no puede faltar en la pista?</p><form class="form-whats" data-whats="cancion" novalidate>
+        <input type="text" name="nombre" placeholder="Tu nombre" autocomplete="name" data-nombre-invitado>
+        <input type="text" name="texto" placeholder="Canción y artista">
+        <button class="btn solido" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Enviar canción</button>
+      </form></div></section><section id="contactos" class="sec sec-contactos "><div class="cont"><p class="eyebrow rv">¿Tienes dudas?</p><h2 class="titulo rv">Contactos</h2><div class="contactos rv"><a class="btn" target="_blank" rel="noopener" href="https://wa.me/5213312345678"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Mamá</a></div></div></section>
+  <section id="compartir" class="sec sec-compartir "><div class="cont"><span class="orn orn-separador separador rv" aria-hidden="true"><img src="plantillas/adornos/princesa-separador.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 260 40"><defs><linearGradient id="pr-oro2-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b98a3e"/><stop offset=".45" stop-color="#f4dc9b"/><stop offset=".7" stop-color="#d1a556"/><stop offset="1" stop-color="#a87a30"/></linearGradient></defs><path d="M10 22H96M164 22H250" stroke="url(#pr-oro2-1)" stroke-width="1.2"/>
+    <path d="M108 30L112 14L120 22L130 8L140 22L148 14L152 30Z" fill="none" stroke="url(#pr-oro2-1)" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M106 32H154" stroke="url(#pr-oro2-1)" stroke-width="2.4"/><circle cx="130" cy="6" r="2.6" fill="#ec9fb3"/>
+    <path transform="translate(80 22)" d="M0 -5L1.1 -1.1L5 0L1.1 1.1L0 5L-1.1 1.1L-5 0L-1.1 -1.1Z" fill="#e6c27a"/><path transform="translate(180 22)" d="M0 -5L1.1 -1.1L5 0L1.1 1.1L0 5L-1.1 1.1L-5 0L-1.1 -1.1Z" fill="#e6c27a"/></svg></span></span>
+          <p class="eyebrow rv">Comparte tus fotos</p><p class="hashtag rv">#LosXVdeSofi</p>
+          </div></section>
+        <footer class="pie "><span class="orn orn-corona corona-pie" aria-hidden="true"><img src="plantillas/adornos/princesa-corona.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 240 150"><defs><linearGradient id="pr-oro-12" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b98a3e"/><stop offset=".45" stop-color="#f4dc9b"/><stop offset=".7" stop-color="#d1a556"/><stop offset="1" stop-color="#a87a30"/></linearGradient></defs>
+    <path d="M28 116Q120 140 212 116L216 130Q120 156 24 130Z" fill="url(#pr-oro-12)"/>
+    <path d="M32 116L46 64L64 96L82 46L101 88L120 16L139 88L158 46L176 96L194 64L208 116" fill="none" stroke="url(#pr-oro-12)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+    <g fill="none" stroke="url(#pr-oro-12)" stroke-width="2" stroke-linecap="round">
+      <path d="M50 110c0-14 8-22 14-14M78 110c0-20 4-34 4-34M120 108c-10-10-10-26 0-32 10 6 10 22 0 32M162 110c0-20-4-34-4-34M190 110c0-14-8-22-14-14"/>
+      <path d="M96 104c-4-8 2-14 7-10M144 104c4-8-2-14-7-10"/>
+    </g>
+    <g fill="#fff8f0" stroke="#d1a556" stroke-width="1.5"><circle cx="46" cy="60" r="6"/><circle cx="82" cy="42" r="6.5"/><circle cx="158" cy="42" r="6.5"/><circle cx="194" cy="60" r="6"/><circle cx="120" cy="12" r="7"/></g>
+    <path d="M120 44c9 10 12 18 12 24a12 12 0 01-24 0c0-6 3-14 12-24z" fill="#e58aa3" stroke="#d1a556" stroke-width="2"/>
+    <path d="M116 56c-2 4-2 9 1 12" stroke="#fff" stroke-opacity=".7" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <g fill="#f3b3c4" stroke="#d1a556" stroke-width="1.2"><circle cx="62" cy="124" r="4.5"/><circle cx="92" cy="129" r="4.5"/><circle cx="148" cy="129" r="4.5"/><circle cx="178" cy="124" r="4.5"/></g>
+    <g fill="#fff"><circle cx="120" cy="131" r="3.5"/><circle cx="76" cy="127" r="2.5"/><circle cx="105" cy="131" r="2.5"/><circle cx="135" cy="131" r="2.5"/><circle cx="164" cy="127" r="2.5"/><circle cx="44" cy="120" r="2.5"/><circle cx="196" cy="120" r="2.5"/></g>
+  </svg></span></span>
+          <p class="rv">Gracias por acompañarme en este día tan especial</p>
+          <p class="nombres nombre-xv"><span class="n1">Sofía</span></p>
+          <p class="pie-fecha rv">12 · 06 · 2027</p>
+        </footer>
+</main>
+<script>(function runtime(d) {
+    var W = window;
+    (W.__inv || []).forEach(function (f) { try { f(); } catch (e) {} });
+    var limpiar = W.__inv = [];
+    var $ = function (s, r) { return (r || document).querySelector(s); };
+    var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+    // Personalización: ?invitado=Familia%20López&pases=4&mesa=5  (en el editor: d._prueba)
+    var params = new URLSearchParams(location.search), prueba = d._prueba || {};
+    var invitado = (params.get('invitado') || prueba.nombre || '').trim().slice(0, 60);
+    var pasesDef = parseInt((d.rsvp && d.rsvp.pases) || 2, 10) || 2;
+    var pases = Math.min(Math.max(parseInt(params.get('pases') || prueba.pases, 10) || pasesDef, 1), 30);
+    var mesa = String(params.get('mesa') || prueba.mesa || '').trim().slice(0, 40);
+    if (mesa && d.mesas && d.mesas.activo) {
+      var mesasEl = $$('[data-mesa]').filter(function (e) { return e.getAttribute('data-mesa') === mesa; });
+      if (mesasEl.length) {
+        var etq = /^\d+$/.test(mesa) ? 'Mesa ' + mesa : mesa;
+        mesasEl.forEach(function (e) { e.classList.add('tuya'); });
+        $$('.sec-mesa').forEach(function (e) { e.classList.remove('sin-mesa'); });
+        $$('[data-mesa-nombre]').forEach(function (e) { e.textContent = etq; });
+        $$('[data-mesa-pase]').forEach(function (e) { e.textContent = etq; e.hidden = false; });
+      }
+    }
+    if (invitado) $$('[data-invitado-nombre]').forEach(function (e) { e.textContent = invitado; });
+    $$('[data-pases]').forEach(function (e) { e.textContent = pases; });
+    $$('[data-pases-palabra]').forEach(function (e) { e.textContent = pases === 1 ? 'lugar' : 'lugares'; });
+    var sel = $('#f-pases');
+    if (sel) for (var i = 1; i <= pases; i++) sel.add(new Option(i + (i === 1 ? ' persona' : ' personas'), i, false, i === pases));
+    var fNombre = $('#f-nombre');
+    if (fNombre && invitado) fNombre.value = invitado;
+
+    // Aviso flotante
+    var aviso = document.createElement('div'); aviso.className = 'aviso'; document.body.appendChild(aviso);
+    function avisar(t) { aviso.textContent = t; aviso.classList.add('ver'); setTimeout(function () { aviso.classList.remove('ver'); }, 2400); }
+
+    // Música: archivo de audio, o melodía suave generada por el navegador
+    var btnM = $('#btn-musica'), sonando = false, audio = null, ctx = null, tmr = null;
+    var acordes = [[293.66, 369.99, 440], [220, 277.18, 329.63], [246.94, 293.66, 369.99], [185, 220, 277.18], [196, 246.94, 293.66], [146.83, 185, 220], [196, 246.94, 293.66], [220, 277.18, 329.63]];
+    function tocarAcorde(fs, t) {
+      fs.forEach(function (f, k) {
+        var o = ctx.createOscillator(), g = ctx.createGain(), s = t + k * 0.18;
+        o.type = 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(0, s); g.gain.linearRampToValueAtTime(0.05, s + 0.08); g.gain.exponentialRampToValueAtTime(0.0008, s + 2.6);
+        o.connect(g).connect(ctx.destination); o.start(s); o.stop(s + 2.7);
+      });
+    }
+    function play() {
+      if (!d.musica || !btnM) return;
+      try {
+        if (d.musica === 'melodia') {
+          ctx = ctx || new (W.AudioContext || W.webkitAudioContext)(); ctx.resume();
+          var n = 0, tick = function () { tocarAcorde(acordes[n++ % acordes.length], ctx.currentTime + 0.05); };
+          tick(); tmr = setInterval(tick, 1900);
+        } else {
+          audio = audio || new Audio(d.musica); audio.loop = true;
+          var p = audio.play(); if (p && p.catch) p.catch(function () {});
+        }
+        sonando = true; btnM.classList.add('sonando');
+      } catch (e) {}
+    }
+    function pause() { clearInterval(tmr); if (audio) audio.pause(); sonando = false; if (btnM) btnM.classList.remove('sonando'); }
+    if (btnM) btnM.addEventListener('click', function () { sonando ? pause() : play(); });
+    limpiar.push(pause);
+
+    // Animaciones al aparecer
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    function observar() { $$('.rv').forEach(function (e) { io.observe(e); }); }
+    limpiar.push(function () { io.disconnect(); });
+
+    // Sobre
+    var pantalla = $('#sobre');
+    function abrir() {
+      if (!pantalla || pantalla.classList.contains('abierto')) return;
+      var quieto = W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      pantalla.classList.add('abierto');
+      if (navigator.vibrate) try { navigator.vibrate(25); } catch (e) {}
+      // Chispas al romper el sello
+      var sobreEl = $('.sobre', pantalla);
+      for (var c = 0; c < 14 && !quieto; c++) {
+        var ch = document.createElement('span'), ang = Math.random() * Math.PI * 2, dist = 50 + Math.random() * 70;
+        ch.className = 'chispa';
+        ch.style.setProperty('--x', Math.cos(ang) * dist + 'px'); ch.style.setProperty('--y', Math.sin(ang) * dist + 'px');
+        ch.style.animationDelay = (0.22 + Math.random() * 0.1) + 's';
+        sobreEl.appendChild(ch);
+      }
+      play();
+      if (!quieto) setTimeout(function () { lluviaDelSobre(sobreEl); }, 1150);
+      setTimeout(function () {
+        document.body.classList.remove('bloqueado');
+        if (btnM && d.musica) btnM.classList.add('ver');
+        observar(); iniciarEfecto();
+      }, quieto ? 0 : 3000);
+      if (!enPortada) setTimeout(function () { pantalla.classList.add('fin'); }, quieto ? 0 : 3800);
+    }
+    var enPortada = pantalla && pantalla.classList.contains('en-portada');
+    if (enPortada && document.body.classList.contains('sin-sobre')) pantalla.classList.add('abierto', 'ya');
+    if (pantalla && !document.body.classList.contains('sin-sobre')) {
+      document.body.classList.add('bloqueado');
+      var s = $('.sobre', pantalla);
+      s.addEventListener('click', abrir);
+      s.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(); } });
+    } else {
+      if (btnM && d.musica) btnM.classList.add('ver');
+      observar(); iniciarEfecto();
+    }
+
+    // Cuenta regresiva
+    var meta = new Date(d.fecha + 'T' + (d.hora || '17:00') + ':00' + (d.zonaHoraria || '-06:00')).getTime();
+    var cd = { d: $$('[data-cd=d]'), h: $$('[data-cd=h]'), m: $$('[data-cd=m]'), s: $$('[data-cd=s]') };
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    function reloj() {
+      var x = Math.max(0, meta - Date.now()) || 0;
+      var v = { d: Math.floor(x / 864e5), h: Math.floor(x / 36e5) % 24, m: Math.floor(x / 6e4) % 60, s: Math.floor(x / 1e3) % 60 };
+      for (var k in cd) cd[k].forEach(function (e) { e.textContent = k === 'd' ? v[k] : pad(v[k]); });
+    }
+    reloj(); var tReloj = setInterval(reloj, 1000);
+    limpiar.push(function () { clearInterval(tReloj); });
+
+    // Forma de cada partícula según la plantilla
+    function forma(e, tipo, c, sz) {
+      e.style.background = c;
+      if (tipo === 'petalos') { e.style.width = sz + 'px'; e.style.height = sz * 0.8 + 'px'; e.style.borderRadius = '80% 0 80% 0'; }
+      else if (tipo === 'hojas') { e.style.width = sz * 0.6 + 'px'; e.style.height = sz + 'px'; e.style.borderRadius = '0 100% 0 100%'; }
+      else if (tipo === 'destellos') { sz = 3 + Math.random() * 4; e.style.width = e.style.height = sz + 'px'; e.style.borderRadius = '50%'; e.style.boxShadow = '0 0 ' + sz * 2 + 'px ' + c; }
+      else if (tipo === 'mariposas') { e.style.width = sz * 1.3 + 'px'; e.style.height = sz + 'px'; e.style.clipPath = 'polygon(50% 28%,64% 2%,92% 0,100% 22%,84% 50%,98% 76%,78% 100%,56% 80%,50% 62%,44% 80%,22% 100%,2% 76%,16% 50%,0 22%,8% 0,36% 2%)'; e.style.opacity = '.85'; }
+      else if (tipo === 'estrellas') { sz = 7 + Math.random() * 9; e.style.width = e.style.height = sz + 'px'; e.style.clipPath = 'polygon(50% 0,61% 38%,100% 50%,61% 62%,50% 100%,39% 62%,0 50%,39% 38%)'; e.style.filter = 'drop-shadow(0 0 3px ' + c + ')'; }
+      else { e.style.width = sz * 0.5 + 'px'; e.style.height = sz * 0.9 + 'px'; }
+    }
+
+    // Pétalos que salen disparados del sobre al abrirse
+    function lluviaDelSobre(sobreEl) {
+      if (!sobreEl.animate) return;
+      var r = sobreEl.getBoundingClientRect(), ox = r.left + r.width / 2, oy = r.top + r.height * 0.12;
+      var tipo = d._efecto || 'hojas';
+      var cols = d._efectoColores || ['#8a9a7b', '#b9c4a7', '#d8c08f'];
+      var capa = document.createElement('div'); capa.className = 'efecto'; capa.style.zIndex = 150; document.body.appendChild(capa);
+      for (var i = 0; i < 40; i++) {
+        var e = document.createElement('i'), c = cols[i % cols.length];
+        // En la plantilla dorada se mezclan confeti y destellos
+        forma(e, tipo === 'destellos' && i % 2 ? 'confeti' : tipo, c, 12 + Math.random() * 14);
+        e.style.left = ox + 'px'; e.style.top = oy + 'px'; e.style.animation = 'none';
+        capa.appendChild(e);
+        var ang = -Math.PI / 2 + (Math.random() - 0.5) * 2.2, fuerza = 140 + Math.random() * 220;
+        var x1 = Math.cos(ang) * fuerza, y1 = Math.sin(ang) * fuerza, x2 = x1 * 1.5 + (Math.random() - 0.5) * 120, y2 = y1 + 420 + Math.random() * 260;
+        var giro = (Math.random() - 0.5) * 900, dur = 2600 + Math.random() * 1400;
+        e.animate([
+          { transform: 'translate(0,0) rotate(0deg) scale(.3)', opacity: 0 },
+          { transform: 'translate(' + x1 * 0.6 + 'px,' + y1 * 0.6 + 'px) rotate(' + giro * 0.2 + 'deg) scale(1)', opacity: 1, offset: 0.12 },
+          { transform: 'translate(' + x1 + 'px,' + y1 + 'px) rotate(' + giro * 0.45 + 'deg) scale(1)', opacity: 1, offset: 0.35, easing: 'ease-in' },
+          { transform: 'translate(' + x2 + 'px,' + y2 + 'px) rotate(' + giro + 'deg) scale(.9)', opacity: 0 }
+        ], { duration: dur, delay: Math.random() * 350, easing: 'cubic-bezier(.15,.7,.35,1)', fill: 'both' });
+      }
+      var t = setTimeout(function () { capa.remove(); }, 4600);
+      limpiar.push(function () { clearTimeout(t); capa.remove(); });
+    }
+
+    // Efecto que cae (pétalos, hojas, destellos, confeti dorado)
+    function iniciarEfecto() {
+      var tipo = d._efecto; if (!tipo || (W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+      var capa = document.createElement('div'); capa.className = 'efecto'; document.body.appendChild(capa);
+      var cols = d._efectoColores || ['#e8b4b8'], total = 0;
+      function uno() {
+        if (total > 70 || document.hidden) return;
+        var e = document.createElement('i'), t = 9 + Math.random() * 9, sz = 8 + Math.random() * 12;
+        var c = cols[Math.floor(Math.random() * cols.length)];
+        e.style.left = Math.random() * 100 + 'vw';
+        e.style.setProperty('--dx', (Math.random() * 30 - 15) + 'vw');
+        e.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+        e.style.animationDuration = t + 's';
+        e.style.opacity = 0.5 + Math.random() * 0.4;
+        forma(e, tipo, c, sz);
+        capa.appendChild(e); total++;
+        setTimeout(function () { e.remove(); total--; }, t * 1000);
+      }
+      var tEf = setInterval(uno, 650);
+      limpiar.push(function () { clearInterval(tEf); capa.remove(); });
+    }
+
+    // Copiar CLABE
+    $$('[data-copiar]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var t = b.getAttribute('data-copiar');
+        if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { avisar('CLABE copiada ✓'); }, function () { avisar(t); });
+        else avisar(t);
+      });
+    });
+
+    // Fotos en grande
+    $$('[data-zoom]').forEach(function (f) {
+      f.addEventListener('click', function () {
+        var z = document.createElement('div'); z.className = 'zoom';
+        var im = document.createElement('img'); im.src = f.getAttribute('data-zoom'); z.appendChild(im);
+        z.addEventListener('click', function () { z.remove(); }); document.body.appendChild(z);
+      });
+    });
+
+    // Confirmaciones automáticas: se guardan en la hoja de Google Sheets de los novios
+    var C = d.confirmaciones || {}, numWa = String((d.rsvp && d.rsvp.whatsapp) || '').replace(/\D/g, '');
+    var usarHoja = !!(C.url && C.boda), usarWa = !!numWa && (!usarHoja || C.whatsapp);
+    function aHoja(obj) {
+      if (!usarHoja || d._prueba || /[?&]preview/.test(location.search)) return Promise.resolve(!usarHoja ? false : true);
+      obj.boda = C.boda;
+      return fetch(C.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(obj) })
+        .then(function () { return true; }, function () { return false; });
+    }
+    function abrirWa(txt) { if (numWa) W.open('https://wa.me/' + numWa + '?text=' + encodeURIComponent(txt), '_blank'); }
+    function gracias(form, titulo, texto) {
+      var g = document.createElement('div'); g.className = 'gracias';
+      g.innerHTML = '<span class="gracias-ico">✓</span><strong></strong><p></p><button type="button" class="gracias-otra">Enviar otra respuesta</button>';
+      g.querySelector('strong').textContent = titulo; g.querySelector('p').textContent = texto;
+      g.querySelector('button').addEventListener('click', function () { g.remove(); form.style.display = ''; });
+      form.style.display = 'none'; form.parentNode.insertBefore(g, form.nextSibling);
+    }
+    var xv = d.evento === 'xv', quien = xv ? d.festejada : d.novia + ' & ' + d.novio, delEv = xv ? 'los XV años de ' + quien : 'la boda de ' + quien;
+    var claveLocal = 'inv-rsvp:' + (C.boda || quien) + ':' + (invitado || '');
+    function recordar(v) { try { localStorage.setItem(claveLocal, JSON.stringify(v)); } catch (e) {} }
+    function recordado() { try { return JSON.parse(localStorage.getItem(claveLocal)); } catch (e) { return null; } }
+
+    // Formularios cortos (buenos deseos, canciones)
+    $$('[data-whats]').forEach(function (f) {
+      var n = $('[name=nombre]', f); if (invitado && n) n.value = invitado;
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var tipo = f.getAttribute('data-whats'), nom = $('[name=nombre]', f).value.trim(), txt = $('[name=texto]', f).value.trim();
+        if (!txt) { avisar(tipo === 'cancion' ? 'Escribe una canción' : 'Escribe tu mensaje'); return; }
+        var msg = tipo === 'cancion'
+          ? '🎵 Sugerencia de canción para ' + delEv + ':\n' + txt + (nom ? '\n— ' + nom : '')
+          : '💌 Buenos deseos para ' + quien + ':\n' + txt + (nom ? '\n— ' + nom : '');
+        if (usarWa) abrirWa(msg);
+        if (!usarHoja) return;
+        aHoja({ tipo: tipo, nombre: nom || invitado, mensaje: txt }).then(function (ok) {
+          if (ok) { gracias(f, tipo === 'cancion' ? '¡Anotada!' : '¡Gracias por tus palabras!', tipo === 'cancion' ? 'La pondremos en la lista para la pista.' : (xv ? quien + ' recibirá tu mensaje.' : 'Los novios recibirán tu mensaje.')); $('[name=texto]', f).value = ''; }
+          else if (!usarWa) { avisar('Sin conexión; te abrimos WhatsApp'); abrirWa(msg); }
+        });
+      });
+    });
+
+    // Tarjetas que se voltean y bloques que se despliegan
+    $$('[data-voltear]').forEach(function (e) {
+      e.addEventListener('click', function () { e.classList.toggle('volteada'); });
+      e.addEventListener('keydown', function (k) { if (k.key === 'Enter') e.classList.toggle('volteada'); });
+    });
+    $$('[data-desplegar]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var c = document.getElementById(b.getAttribute('data-desplegar')); if (!c) return;
+        var abrirlo = c.hasAttribute('hidden');
+        if (abrirlo) { c.removeAttribute('hidden'); $$('.rv', c).forEach(function (x) { x.classList.add('vis'); }); setTimeout(function () { c.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); }
+        else c.setAttribute('hidden', '');
+        b.setAttribute('aria-expanded', abrirlo);
+      });
+    });
+
+    // Menú de secciones y botón para volver arriba
+    $$('[data-menu]').forEach(function (b) { b.addEventListener('click', function () { document.body.classList.toggle('menu-abierto'); }); });
+    $$('.menu a').forEach(function (a) { a.addEventListener('click', function () { document.body.classList.remove('menu-abierto'); }); });
+    var arriba = $('[data-arriba]');
+    if (arriba) {
+      arriba.addEventListener('click', function () { W.scrollTo({ top: 0, behavior: 'smooth' }); });
+      var alScroll = function () { arriba.classList.toggle('ver', W.scrollY > 700); };
+      W.addEventListener('scroll', alScroll, { passive: true });
+      limpiar.push(function () { W.removeEventListener('scroll', alScroll); });
+    }
+
+    // Confirmación por WhatsApp
+    var form = $('#form-rsvp');
+    if (form) {
+      var caja = $('#caja-pases');
+      $$('input[name=asiste]').forEach(function (r) { r.addEventListener('change', function () { caja.style.display = $('#asiste-si').checked ? '' : 'none'; }); });
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var nom = fNombre.value.trim();
+        if (!nom) { avisar('Escribe tu nombre, por favor'); fNombre.focus(); return; }
+        var si = $('#asiste-si').checked, msg = $('#f-msg').value.trim();
+        var txt = si ? '¡Hola! Soy ' + nom + ' y confirmo mi asistencia a ' + delEv + (xv ? ' 👑' : ' 💍') + '\nAsistentes: ' + sel.value
+                     : 'Hola, soy ' + nom + '. Lamentablemente no podré asistir a ' + delEv + ', ¡pero ' + (xv ? 'le' : 'les') + ' deseo lo mejor! 🤍';
+        if (msg) txt += '\n\nMensaje: ' + msg;
+        if (!usarHoja && !numWa) { avisar('Falta configurar el número de WhatsApp'); return; }
+        if (usarWa) abrirWa(txt);
+        if (!usarHoja) return;
+        var personas = si ? parseInt(sel.value, 10) || 1 : 0;
+        aHoja({ tipo: 'rsvp', nombre: nom, asiste: si, personas: personas, mensaje: msg, pases: pases, mesa: mesa }).then(function (ok) {
+          if (ok) {
+            recordar({ si: si, personas: personas });
+            gracias(form, si ? '¡Gracias, ' + nom + '!' : 'Gracias por avisarnos', si ? 'Registramos tu confirmación para ' + personas + (personas === 1 ? ' persona' : ' personas') + '. ¡Nos vemos en ' + (xv ? 'la fiesta' : 'la boda') + '!' : 'Te vamos a extrañar. Tu respuesta quedó registrada.');
+          } else if (!usarWa) { avisar('Sin conexión; te abrimos WhatsApp'); abrirWa(txt); }
+        });
+      });
+      // Si ya respondió desde este celular, se lo recordamos
+      var previa = usarHoja && recordado();
+      if (previa) {
+        var aviso2 = document.createElement('p'); aviso2.className = 'ya-respondio';
+        aviso2.textContent = previa.si ? '✓ Ya confirmaste tu asistencia (' + previa.personas + (previa.personas === 1 ? ' persona' : ' personas') + '). Si necesitas cambiarla, envía de nuevo.' : '✓ Ya nos avisaste que no podrás asistir. Si cambian tus planes, envía de nuevo.';
+        form.parentNode.insertBefore(aviso2, form);
+      }
+    }
+  })({"evento":"xv","plantilla":"princesa","festejada":"Sofía","iniciales":"","fecha":"2027-06-12","hora":"18:00","zonaHoraria":"-06:00","ciudad":"Guadalajara, Jalisco","introPortada":"Mis XV años","fotoPortada":"","frase":"Hay momentos que se esperan toda una vida; hoy celebro el mío rodeada de quienes más quiero.","fraseAutor":"","tituloFamilia":"Con la bendición de Dios y de mis padres","textoFamilia":"tengo el honor de invitarte a celebrar mis quince años","padresNovia":"Eduardo Ramírez Ochoa\nClaudia Herrera de Ramírez","padresNovio":"","padrinos":[{"rol":"Padrinos de velación","nombres":"Raúl & Gabriela Herrera"},{"rol":"Padrinos de anillo","nombres":"Miguel & Laura Ramírez"},{"rol":"Padrinos de la última muñeca","nombres":"Óscar & Diana Torres"},{"rol":"Chambelán de honor","nombres":"Emilio Ramírez"}],"itinerario":[{"hora":"18:00","evento":"Misa de acción de gracias","detalle":"Templo de San Francisco","icono":"iglesia"},{"hora":"20:00","evento":"Recepción","detalle":"Salón Cristal","icono":"copa"},{"hora":"20:45","evento":"Vals","detalle":"Con mis chambelanes","icono":"corona"},{"hora":"21:30","evento":"Cena","detalle":"","icono":"cena"},{"hora":"22:30","evento":"¡A bailar!","detalle":"","icono":"musica"},{"hora":"02:00","evento":"Fin de la fiesta","detalle":"Gracias por acompañarme","icono":"luna"}],"lugares":[{"tipo":"Misa","hora":"18:00","nombre":"Templo de San Francisco de Asís","direccion":"Av. 16 de Septiembre 289, Centro\nGuadalajara, Jal.","mapa":"","icono":"iglesia"},{"tipo":"Recepción","hora":"20:00","nombre":"Salón Cristal","direccion":"Av. López Mateos Sur 2375\nZapopan, Jal.","mapa":"","icono":"hacienda"}],"vestimenta":{"tipo":"Formal","texto":"Te sugerimos colores de noche y tonos pastel.","colores":["#1f3463","#7c5ea8","#b8c4d6","#c9a75c"],"nota":"El color rosa está reservado para la quinceañera."},"historia":{"titulo":"Mis momentos","texto":"Quince años de risas, aprendizajes y sueños. ¡Gracias por ser parte de ellos!","fotos":[{"src":"","pie":"Mi primer año"},{"src":"","pie":"Con mi familia"},{"src":"","pie":"Hoy"}]},"regalos":{"titulo":"Tu presencia es mi mejor regalo","texto":"pero si deseas obsequiarme algo, aquí algunas opciones","opciones":[{"nombre":"Liverpool","detalle":"Evento #50987654","enlace":"","icono":"regalo"},{"nombre":"Lluvia de sobres","detalle":"El día del evento","enlace":"","icono":"sobre"}],"banco":"","titular":"","clabe":""},"rsvp":{"whatsapp":"5213312345678","fechaLimite":"2027-05-20","pases":2,"texto":""},"hospedaje":[],"contactos":{"novia":"5213312345678","novio":""},"invitados":[{"nombre":"Familia Gómez","pases":4,"mesa":"2"},{"nombre":"Valentina Ruiz","pases":1,"mesa":"6"},{"nombre":"Familia Ortiz","pases":3,"mesa":"4"}],"mesas":{"activo":false,"texto":"","lista":[],"elementos":[]},"hashtag":"#LosXVdeSofi","nota":"","despedida":"Gracias por acompañarme en este día tan especial","musica":"melodia","adornos":{},"ocultar":{},"novia":"","novio":"","confirmaciones":{"url":"","boda":"","whatsapp":false},"encuadres":{},"_rutaAdornos":"plantillas/adornos/","_efecto":"destellos","_efectoColores":["#f4dc9b","#ec9fb3","#f8d3db","#d1a556"]});</script>
+</body>
+</html>

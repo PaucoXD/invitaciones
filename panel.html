@@ -177,10 +177,10 @@
   function pintarEntrada(error) {
     app.innerHTML = `<form class="aviso entrada" id="f-entrada" autocomplete="on">
       <h2>Panel de confirmaciones</h2>
-      <p>Escribe el código de tu boda y tu clave. Te los dio quien hizo tu invitación.</p>
+      <p>Escribe el código de tu boda o evento y tu clave. Te los dio quien hizo tu invitación.</p>
       ${error ? `<p class="error">${esc(error)}</p>` : ''}
       ${N.hojaConfirmaciones ? '' : `<label>Dirección de la hoja<input id="e-url" type="url" placeholder="https://script.google.com/…/exec" value="${esc(cfg.url)}"></label>`}
-      <label>Código de la boda<input id="e-boda" autocapitalize="none" autocomplete="username" placeholder="valeria-y-santiago-ab12" value="${esc(cfg.boda)}" required></label>
+      <label>Código<input id="e-boda" autocapitalize="none" autocomplete="username" placeholder="valeria-y-santiago-ab12" value="${esc(cfg.boda)}" required></label>
       <label>Clave<input id="e-clave" type="password" autocomplete="current-password" placeholder="••••••" required></label>
       <button class="b pri" type="submit">Entrar</button>
       <p class="pista-inicio">💡 Después de entrar, agrégalo a tu pantalla de inicio para abrirlo como app:<br>iPhone: Compartir → <b>Agregar a inicio</b> · Android: menú ⋮ → <b>Agregar a la pantalla principal</b></p>
@@ -204,7 +204,7 @@
   function recordatorio(f) {
     let link = '';
     if (cfg.enlace) link = cfg.enlace + (cfg.enlace.includes('?') ? '&' : '?') + 'invitado=' + encodeURIComponent(f.nombre) + (f.lugares ? '&pases=' + f.lugares : '') + (f.mesa ? '&mesa=' + encodeURIComponent(f.mesa) : '');
-    const txt = `¡Hola ${f.nombre}! 💌 Les recordamos con cariño confirmar su asistencia a la boda de ${cfg.nombres || 'los novios'}.` + (link ? ` Pueden hacerlo aquí: ${link}` : '');
+    const txt = `¡Hola ${f.nombre}! 💌 Les recordamos con cariño confirmar su asistencia a ${/^XV /.test(cfg.nombres) ? 'los ' + cfg.nombres : 'la boda de ' + (cfg.nombres || 'los novios')}.` + (link ? ` Pueden hacerlo aquí: ${link}` : '');
     const tel = f.tel.replace(/\D/g, '');
     return 'https://wa.me/' + tel + '?text=' + encodeURIComponent(txt);
   }
