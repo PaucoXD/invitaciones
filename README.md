@@ -70,6 +70,11 @@ WhatsApp), quién no asistirá, mensajes y canciones más pedidas, y descarga a 
 3. **Copiar enlace del panel** y mándalo a los novios. La clave del panel no viaja dentro de la invitación.
 4. Opcional: *Además abrir WhatsApp* si los novios también quieren recibir el mensaje.
 
+**Entrar al panel de forma sencilla:** pon una sola vez la dirección de tu app de Google en `negocio.js`
+(`hojaConfirmaciones`). Así los novios entran a `tusitio/panel.html` solo con su **código de boda** y **clave**,
+el celular lo recuerda y pueden agregarlo a su pantalla de inicio. El botón *Copiar acceso para los novios*
+del editor arma el mensaje de WhatsApp con el enlace directo, el código y la clave.
+
 Ejemplo del panel con datos ficticios: `panel.html?demo=1`. El código de Google está en `servidor/codigo-sheets.js`.
 
 ## Personalización por invitado

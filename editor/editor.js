@@ -208,6 +208,7 @@
         el('button', { class: 'b chico', type: 'button', onclick: () => $('#b-invitados').click() }, '🔗 Enlaces para enviar'));
     } else if (t === 'confAyuda') {
       const c = datos.confirmaciones = Object.assign({ url: '', boda: '', clave: '', whatsapp: false }, datos.confirmaciones);
+      if (!c.url && window.NEGOCIO && NEGOCIO.hojaConfirmaciones) { c.url = NEGOCIO.hojaConfirmaciones; setTimeout(cambio, 0); }
       if (!c.boda || !c.clave) { c.boda = c.boda || slug() + '-' + Math.random().toString(36).slice(2, 6); c.clave = c.clave || Math.random().toString(36).slice(2, 8); setTimeout(cambio, 0); }
       return el('div', {},
         el('p', { class: 'ayuda' }, 'Las confirmaciones, buenos deseos y canciones se guardan solos en una hoja de Google Sheets (gratis) y los novios los ven en su panel. Se instala una sola vez y sirve para todas tus bodas:'),
@@ -225,7 +226,8 @@
       const c = () => datos.confirmaciones || {};
       const marcar = (txt, ok) => { estado.textContent = txt; estado.className = 'conf-estado ' + (ok ? 'ok' : 'mal'); };
       const enlacePanel = () => {
-        const p = new URLSearchParams({ u: c().url, b: c().boda, k: c().clave, n: `${datos.novia} & ${datos.novio}` });
+        const p = new URLSearchParams({ b: c().boda, k: c().clave, n: `${datos.novia} & ${datos.novio}` });
+        if (!(window.NEGOCIO && NEGOCIO.hojaConfirmaciones === c().url)) p.set('u', c().url);
         const base = ($('#inv-base') && $('#inv-base').value.trim()) || '';
         if (base) p.set('l', base);
         return new URL('panel.html?' + p.toString(), location.href).href;
@@ -252,8 +254,10 @@
           el('button', { class: 'b chico', type: 'button', onclick: () => {
             if (!listo()) return;
             if (location.protocol === 'file:') avisar('Para compartir el panel, usa el editor desde tu sitio publicado');
-            navigator.clipboard.writeText(enlacePanel()).then(() => avisar('Enlace del panel copiado ✓ Mándalo a los novios'));
-          } }, '🔗 Copiar enlace del panel'),
+            const sitio = new URL('panel.html', location.href).href;
+            const msg = `¡Hola ${datos.novia} y ${datos.novio}! 💍 Aquí pueden ver en tiempo real quién confirmó su asistencia:\n\n👉 ${enlacePanel()}\n\nSi algún día lo necesitan, entren a ${sitio}\nCódigo: ${c().boda}\nClave: ${c().clave}\n\nTip: ábranlo y agréguenlo a la pantalla de inicio de su celular para tenerlo como app.`;
+            navigator.clipboard.writeText(msg).then(() => avisar('Mensaje con el acceso copiado ✓ Pégalo en WhatsApp a los novios'));
+          } }, '🔗 Copiar acceso para los novios'),
           el('a', { class: 'b chico', href: 'panel.html?demo=1', target: '_blank', rel: 'noopener', style: 'text-decoration:none' }, '👀 Panel de ejemplo')),
         estado,
         el('p', { class: 'ayuda' }, 'Sincroniza otra vez si cambias la lista de invitados. La clave solo la usan los novios para ver su panel; no viaja dentro de la invitación. Para que el botón “Recordar” incluya el enlace de cada familia, escribe la dirección publicada en “Enlaces de invitados”.'));

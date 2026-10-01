@@ -16,6 +16,10 @@ window.NEGOCIO = {
   entrega: '48 horas',                        // tiempo de entrega promedio
   anticipo: '50%',                            // anticipo para apartar
 
+  // Dirección de tu app de Google para confirmaciones (termina en /exec). Se pone UNA vez y sirve para todas las bodas:
+  // así los novios entran a su panel solo con su código y clave.
+  hojaConfirmaciones: '',
+
   paquetes: [
     {
       nombre: 'Esencial', precio: 790, nota: 'Ideal para bodas sencillas',
