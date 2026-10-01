@@ -141,6 +141,10 @@
   th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
   td.url{max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:12px}
   .caja-pie{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;flex-wrap:wrap}
+  .pedido-info{margin:16px 16px 0;padding:14px;border:1px solid #e9d3a6;background:#fdf6e6;border-radius:12px;font-size:13.5px;display:flex;flex-direction:column;gap:6px}
+  .pedido-info .pedido-cab{display:flex;align-items:center;gap:10px}.pedido-info .pedido-cab b{font-size:14.5px;margin-right:auto}
+  .pedido-info .pedido-cab span{color:var(--muted);font-size:12.5px}
+  .pedido-info p{white-space:pre-line}.pedido-info>a{align-self:flex-start}
   .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:30px;transition:transform .35s;z-index:60;font-weight:500}
   .toast.ver{transform:translate(-50%,0)}
   /* Móvil: formulario y vista se alternan */
@@ -163,7 +167,7 @@
   <div class="marca"><a href="mis-bodas.html" title="Ver todas mis bodas">✦ Estudio de Invitaciones</a> <a href="mis-bodas.html" class="b chico" style="font-weight:500">📋 Mis bodas</a> <a href="manual.html" target="_blank" rel="noopener" class="b chico" style="font-weight:500">❓ Manual</a> <span class="aviso-guardado" id="guardado"></span></div>
   <button class="b solo-movil" id="b-alternar">👁 <span>Vista previa</span></button>
   <button class="b" id="b-nueva" title="Empezar una invitación en blanco"><span class="txt">Nueva</span><span class="solo-movil">＋</span></button>
-  <button class="b" id="b-abrir" title="Abrir un archivo .json guardado">📂 <span class="txt">Abrir</span></button>
+  <button class="b" id="b-abrir" title="Abrir un archivo .json guardado o el archivo que mandó tu cliente">📂 <span class="txt">Abrir</span></button>
   <button class="b" id="b-guardar" title="Guardar los datos para editarlos después">💾 <span class="txt">Guardar datos</span></button>
   <button class="b" id="b-invitados" title="Crear enlaces personalizados para cada invitado">👥 <span class="txt">Enlaces de invitados</span></button>
   <button class="b" id="b-pdf" title="Invitación en PDF para imprimir o mandar por WhatsApp">📄 <span class="txt">PDF</span></button>

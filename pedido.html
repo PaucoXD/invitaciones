@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#2b1a1e">
+<title>Datos para tu invitación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!--
+  Formulario para que el cliente llene los datos de su invitación.
+  Se manda a tu Google Sheets (si pusiste hojaConfirmaciones en negocio.js) y aparece en "Mis bodas".
+  Enlaces útiles:  pedido.html            pedido.html?evento=xv            pedido.html?plantilla=gala&paquete=Premium
+-->
+<script src="negocio.js" onerror="window.NEGOCIO={}"></script>
+<script src="motor/invitacion.js"></script>
+<script src="plantillas/floral.js"></script>
+<script src="plantillas/rustica.js"></script>
+<script src="plantillas/boho.js"></script>
+<script src="plantillas/dorada.js"></script>
+<script src="plantillas/vino.js"></script>
+<script src="plantillas/botanica.js"></script>
+<script src="plantillas/xv-princesa.js"></script>
+<script src="plantillas/xv-mariposas.js"></script>
+<script src="plantillas/xv-gala.js"></script>
+<style>
+  :root{--bg:#faf6f1;--card:#fff;--ink:#2e2721;--muted:#6f655b;--line:#e6dccf;--accent:#8e3b4a;--accent-bg:#f6eaec;--ok:#3f7a52;--ok-bg:#e8f3eb;--no:#a9473e;--no-bg:#f8e9e7;--dark:#2b1a1e;--serif:'Cormorant Garamond',Georgia,serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  button,input,select,textarea{font:inherit;color:inherit}
+  :where(a,button,input,select,textarea,summary):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .top{background:var(--dark);color:#f4e9e2;padding:14px 16px}
+  .top .w{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .top b{font-family:var(--serif);font-size:22px;font-weight:600;margin-right:auto}
+  .top small{font-size:13px;color:#d9c6bd}
+  .avance{height:5px;background:#efe6dc}.avance i{display:block;height:100%;background:var(--accent);transition:width .4s ease}
+  main{max-width:720px;margin:0 auto;padding:22px 16px 120px}
+  .paso-n{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  h1{font-family:var(--serif);font-weight:600;font-size:34px;line-height:1.1;margin:6px 0 6px}
+  .intro{color:var(--muted);margin-bottom:20px}
+  .caja{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+  .caja h2{font-size:15px;font-weight:600;margin-bottom:4px}
+  .caja>.ayuda:first-of-type{margin-top:0}
+  label.c{display:block;font-size:14px;font-weight:600;margin:14px 0 6px}
+  label.c:first-child{margin-top:0}
+  label.c small{font-weight:400;color:var(--muted)}
+  .req{color:var(--no)}
+  input[type=text],input[type=tel],input[type=date],input[type=time],input[type=url],input[type=number],select,textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fdfbf8;font-size:16px;min-height:48px}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(142,59,74,.15);outline:none}
+  textarea{min-height:110px;resize:vertical}
+  .ayuda{font-size:13.5px;color:var(--muted);margin-top:6px}
+  .fila{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .fila>div>label.c{margin-top:14px}
+  .opc{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .opc label{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:2px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;font-weight:600;min-height:56px;text-align:center}
+  .opc input{position:absolute;opacity:0;pointer-events:none}
+  .opc input:checked+label{border-color:var(--accent);background:var(--accent-bg);color:var(--accent)}
+  .opc input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+  .disenos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .dis{position:relative}
+  .dis input{position:absolute;opacity:0;pointer-events:none}
+  .dis label{display:block;border:2px solid var(--line);border-radius:12px;padding:10px;background:var(--card);cursor:pointer;height:100%}
+  .dis input:checked+label{border-color:var(--accent);box-shadow:0 0 0 3px rgba(142,59,74,.15)}
+  .dis input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+  .dis .sw{display:flex;height:28px;border-radius:7px;overflow:hidden;margin-bottom:8px}.dis .sw span{flex:1}
+  .dis b{display:block;font-size:14px}
+  .dis a{display:inline-block;margin-top:4px;font-size:13px;color:var(--accent);padding:4px 0}
+  .lista-it .it{display:grid;grid-template-columns:110px 1fr 44px;gap:8px;margin-bottom:8px}
+  .quitar{border:1px solid var(--line);background:var(--card);border-radius:10px;cursor:pointer;font-size:18px;color:var(--muted);min-height:48px}
+  .mas{border:1px dashed var(--accent);background:none;color:var(--accent);padding:11px 16px;border-radius:10px;cursor:pointer;font-weight:600;min-height:46px}
+  .fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:10px}
+  .foto{position:relative;border-radius:12px;overflow:hidden;background:#efe7dd;aspect-ratio:3/4}
+  .foto img{width:100%;height:100%;object-fit:cover;display:block}
+  .foto input{position:absolute;left:6px;right:6px;bottom:6px;width:auto;min-height:36px;padding:6px 8px;font-size:13px;background:rgba(255,255,255,.92)}
+  .foto .x{position:absolute;top:6px;right:6px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;cursor:pointer;font-size:18px}
+  .subir{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:2px dashed var(--line);border-radius:12px;padding:18px;cursor:pointer;color:var(--muted);text-align:center;background:#fdfbf8;min-height:120px}
+  .subir:hover{border-color:var(--accent);color:var(--accent)}
+  .portada-prev{max-width:220px}
+  .cuenta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .pill{font-size:13px;padding:4px 10px;border-radius:20px;background:var(--ok-bg);color:var(--ok);font-weight:600}
+  .pill.mal{background:var(--no-bg);color:var(--no)}
+  .nav{position:fixed;left:0;right:0;bottom:0;background:rgba(250,246,241,.96);backdrop-filter:blur(6px);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
+  .nav .w{max-width:720px;margin:0 auto;display:flex;gap:10px;align-items:center}
+  .nav .guardado{font-size:12.5px;color:var(--muted);margin-right:auto}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:600;text-decoration:none;min-height:50px}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.wa{background:#198644;border-color:#198644;color:#fff}
+  .btn:disabled{opacity:.55;cursor:wait}
+  .error{background:var(--no-bg);color:var(--no);border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:14px}
+  .resumen dl{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;font-size:14.5px}
+  .resumen dt{color:var(--muted)}
+  .resumen dd{white-space:pre-line;word-break:break-word}
+  .resumen .ed{float:right;font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;font-weight:600;padding:6px}
+  .previa{border-radius:28px;border:8px solid #1e1b18;overflow:hidden;width:min(320px,100%);aspect-ratio:9/17;margin:0 auto;background:#eee}
+  .previa iframe{width:100%;height:100%;border:0}
+  .listo{text-align:center;padding:30px 10px}
+  .listo .ico{width:72px;height:72px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:36px}
+  .listo .folio{display:inline-block;margin:10px 0;padding:8px 16px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-weight:600;letter-spacing:.05em}
+  .acciones{display:flex;flex-direction:column;gap:10px;max-width:360px;margin:18px auto 0}
+  @media (max-width:560px){.fila{grid-template-columns:1fr}.fila>div>label.c{margin-top:14px}.resumen dl{grid-template-columns:1fr}.resumen dt{margin-top:6px}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="w"><b id="marca">Tu invitación</b><small id="paso-txt"></small></div></header>
+<div class="avance"><i id="barra" style="width:0"></i></div>
+<main id="app"></main>
+<nav class="nav" id="nav"><div class="w">
+  <span class="guardado" id="guardado"></span>
+  <button class="btn" id="atras" type="button">Atrás</button>
+  <button class="btn pri" id="sig" type="button">Siguiente</button>
+</div></nav>
+
+<script>
+(function () {
+  'use strict';
+  const N = window.NEGOCIO || {}, PL = Invitacion.plantillas, q = new URLSearchParams(location.search);
+  const $ = (s, r) => (r || document).querySelector(s), $$ = (s, r) => [...(r || document).querySelectorAll(s)];
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const app = $('#app');
+  if (N.marca) { $('#marca').textContent = N.marca; document.title = 'Datos para tu invitación · ' + N.marca; }
+
+  // ---------------------------------------------------------------------------
+  // Estado (se guarda solo en este celular, también las fotos)
+  // ---------------------------------------------------------------------------
+  const ITIN = {
+    boda: [['17:00', 'Ceremonia religiosa'], ['19:00', 'Recepción'], ['21:00', 'Cena'], ['22:30', '¡A bailar!']],
+    xv: [['18:00', 'Misa de acción de gracias'], ['20:00', 'Recepción'], ['20:45', 'Vals'], ['21:30', 'Cena'], ['22:30', '¡A bailar!']]
+  };
+  function vacio() {
+    const ev = q.get('evento') === 'xv' || (PL[q.get('plantilla')] || {}).evento === 'xv' ? 'xv' : 'boda';
+    return {
+      paso: 0, cliente: { nombre: '', tel: '', paquete: q.get('paquete') || '', comentarios: '', cancion: '' },
+      evento: ev, plantilla: PL[q.get('plantilla')] ? q.get('plantilla') : '',
+      novia: '', novio: '', festejada: '', fecha: '', hora: '', ciudad: '', zona: '-06:00',
+      lugar1: { tipo: ev === 'xv' ? 'Misa' : 'Ceremonia', nombre: '', direccion: '', hora: '', mapa: '' },
+      lugar2: { tipo: 'Recepción', nombre: '', direccion: '', hora: '', mapa: '' }, mismoLugar: false,
+      padres1: '', padres2: '', padrinos: '', itinerario: ITIN[ev].map(([hora, evento]) => ({ hora, evento })),
+      vestimenta: 'Formal', notaVestimenta: '', frase: '', historia: '',
+      regalos: '', sobres: true, banco: '', clabe: '', titular: '',
+      portada: '', fotos: [],
+      rsvpTel: '', fechaLimite: '', invitados: '', hashtag: '', nota: ''
+    };
+  }
+  let E = vacio(), enviado = null;
+
+  // IndexedDB: el borrador (con fotos) sobrevive si cierran la página
+  const DB = { db: null,
+    abrir() { return new Promise(ok => { try { const r = indexedDB.open('pedido-invitacion', 1); r.onupgradeneeded = () => r.result.createObjectStore('b'); r.onsuccess = () => { DB.db = r.result; ok(); }; r.onerror = () => ok(); } catch (e) { ok(); } }); },
+    leer() { return new Promise(ok => { if (!DB.db) return ok(null); try { const r = DB.db.transaction('b').objectStore('b').get('borrador'); r.onsuccess = () => ok(r.result || null); r.onerror = () => ok(null); } catch (e) { ok(null); } }); },
+    poner(v) { if (!DB.db) return; try { DB.db.transaction('b', 'readwrite').objectStore('b').put(v, 'borrador'); } catch (e) {} },
+    borrar() { if (!DB.db) return; try { DB.db.transaction('b', 'readwrite').objectStore('b').delete('borrador'); } catch (e) {} }
+  };
+  let tGuardar;
+  function guardar() {
+    clearTimeout(tGuardar);
+    tGuardar = setTimeout(() => { DB.poner(JSON.parse(JSON.stringify(E))); $('#guardado').textContent = '✓ Guardado en este celular'; }, 500);
+  }
+
+  const xv = () => E.evento === 'xv';
+  const get = (ruta) => ruta.split('.').reduce((o, k) => o == null ? o : o[k], E);
+  const set = (ruta, v) => { const ks = ruta.split('.'); let o = E; for (let i = 0; i < ks.length - 1; i++) o = o[ks[i]]; o[ks[ks.length - 1]] = v; guardar(); };
+
+  // ---------------------------------------------------------------------------
+  // Campos
+  // ---------------------------------------------------------------------------
+  const campo = (ruta, etq, o = {}) => `<label class="c" for="f-${ruta}">${etq}${o.req ? ' <span class="req">*</span>' : ''}${o.opc ? ' <small>(opcional)</small>' : ''}</label>
+    ${o.area ? `<textarea id="f-${ruta}" data-k="${ruta}" placeholder="${esc(o.ph || '')}">${esc(get(ruta))}</textarea>`
+      : `<input id="f-${ruta}" data-k="${ruta}" type="${o.tipo || 'text'}" value="${esc(get(ruta))}" placeholder="${esc(o.ph || '')}" ${o.auto ? `autocomplete="${o.auto}"` : ''} ${o.tipo === 'tel' ? 'inputmode="tel"' : ''}>`}
+    ${o.ayuda ? `<p class="ayuda">${o.ayuda}</p>` : ''}`;
+  const sel = (ruta, etq, ops) => `<label class="c" for="f-${ruta}">${etq}</label><select id="f-${ruta}" data-k="${ruta}">${ops.map(([v, t]) => `<option value="${esc(v)}" ${get(ruta) === v ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
+
+  function lugar(k, titulo) {
+    return `<div class="caja"><h2>${titulo}</h2>
+      ${campo(k + '.tipo', 'Tipo', { ph: xv() ? 'Misa' : 'Ceremonia religiosa / civil' })}
+      ${campo(k + '.nombre', 'Nombre del lugar', { req: k === 'lugar1', ph: k === 'lugar2' ? 'Salón, jardín u hacienda' : xv() ? 'Templo de San Francisco' : 'Parroquia de San Miguel' })}
+      ${campo(k + '.direccion', 'Dirección', { area: true, ph: 'Calle, número, colonia, ciudad' })}
+      <div class="fila"><div>${campo(k + '.hora', 'Hora', { tipo: 'time' })}</div><div>${campo(k + '.mapa', 'Enlace de Google Maps', { tipo: 'url', opc: true, ph: 'https://maps.app.goo.gl/…' })}</div></div>
+      <p class="ayuda">En Google Maps busca el lugar → Compartir → Copiar vínculo. Si no lo tienes, no pasa nada.</p>
+    </div>`;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Pasos
+  // ---------------------------------------------------------------------------
+  const PASOS = [
+    { t: 'Empecemos', render() {
+      const pls = Object.values(PL).filter(p => (p.evento || 'boda') === E.evento);
+      return `<p class="intro">Llena los datos de tu invitación. Toma unos 10 minutos y <b>se guarda solo</b>: puedes cerrar y seguir después desde este mismo celular. Lo que no sepas todavía, déjalo en blanco.</p>
+        <div class="caja">
+          ${campo('cliente.nombre', 'Tu nombre', { req: true, auto: 'name', ph: 'Nombre y apellido' })}
+          ${campo('cliente.tel', 'Tu WhatsApp', { req: true, tipo: 'tel', auto: 'tel', ph: '55 1234 5678', ayuda: 'Para avisarte cuando tu invitación esté lista.' })}
+          ${(N.paquetes || []).length ? sel('cliente.paquete', 'Paquete', [['', 'Todavía no lo sé'], ...N.paquetes.map(p => [p.nombre, p.nombre])]) : ''}
+        </div>
+        <div class="caja"><h2>¿Qué vas a celebrar?</h2>
+          <div class="opc" style="margin-top:10px">
+            <input type="radio" name="ev" id="ev-boda" value="boda" ${E.evento === 'boda' ? 'checked' : ''}><label for="ev-boda">💍 Boda</label>
+            <input type="radio" name="ev" id="ev-xv" value="xv" ${E.evento === 'xv' ? 'checked' : ''}><label for="ev-xv">👑 XV años</label>
+          </div>
+        </div>
+        <div class="caja"><h2>Elige tu diseño</h2><p class="ayuda" style="margin-bottom:12px">Toca “Ver ejemplo” para verlo completo. Si no te decides, te ayudamos.</p>
+          <div class="disenos">${pls.map(p => `<div class="dis"><input type="radio" name="pl" id="pl-${p.id}" value="${p.id}" ${E.plantilla === p.id ? 'checked' : ''}>
+            <label for="pl-${p.id}"><div class="sw">${(p.colores || []).map(c => `<span style="background:${esc(c)}"></span>`).join('')}</div><b>${esc(p.nombre)}</b>
+            <a href="invitacion.html?plantilla=${p.id}" target="_blank" rel="noopener">Ver ejemplo ↗</a></label></div>`).join('')}</div>
+        </div>`;
+    }, montar() {
+      $$('[name=ev]').forEach(r => r.onchange = () => {
+        const ev = r.value; if (ev === E.evento) return;
+        E.evento = ev; E.plantilla = '';
+        if (E.itinerario.every((x, i) => ITIN[ev === 'xv' ? 'boda' : 'xv'][i] && x.evento === ITIN[ev === 'xv' ? 'boda' : 'xv'][i][1])) E.itinerario = ITIN[ev].map(([hora, evento]) => ({ hora, evento }));
+        if (E.lugar1.tipo === (ev === 'xv' ? 'Ceremonia' : 'Misa')) E.lugar1.tipo = ev === 'xv' ? 'Misa' : 'Ceremonia';
+        guardar(); pintar();
+      });
+      $$('[name=pl]').forEach(r => r.onchange = () => { E.plantilla = r.value; guardar(); });
+    }, validar() {
+      if (!E.cliente.nombre.trim()) return 'Escribe tu nombre.';
+      if (String(E.cliente.tel).replace(/\D/g, '').length < 10) return 'Escribe tu WhatsApp (10 dígitos).';
+    } },
+
+    { t: () => xv() ? 'La quinceañera y la fecha' : 'Los novios y la fecha', render() {
+      return `<div class="caja">
+          ${xv() ? campo('festejada', 'Nombre de la quinceañera', { req: true, ph: 'Como quieres que aparezca: Sofía' })
+            : `<div class="fila"><div>${campo('novia', 'Nombre de la novia', { req: true, ph: 'Valeria' })}</div><div>${campo('novio', 'Nombre del novio', { req: true, ph: 'Santiago' })}</div></div>
+               <p class="ayuda">Solo el nombre, como quieren que aparezca en grande.</p>`}
+        </div>
+        <div class="caja">
+          <div class="fila"><div>${campo('fecha', 'Fecha del evento', { req: true, tipo: 'date' })}</div><div>${campo('hora', 'Hora de inicio', { tipo: 'time' })}</div></div>
+          ${campo('ciudad', 'Ciudad', { ph: 'Guadalajara, Jalisco' })}
+          ${sel('zona', 'Zona horaria', [['-06:00', 'Centro de México (CDMX, Guadalajara, Monterrey)'], ['-05:00', 'Quintana Roo (Cancún, Tulum)'], ['-07:00', 'Sonora, Sinaloa, Nayarit, BCS'], ['-08:00', 'Baja California (Tijuana)']])}
+        </div>`;
+    }, validar() {
+      if (xv() ? !E.festejada.trim() : !(E.novia.trim() && E.novio.trim())) return xv() ? 'Escribe el nombre de la quinceañera.' : 'Escribe los nombres de los novios.';
+      if (!E.fecha) return 'Elige la fecha del evento.';
+    } },
+
+    { t: 'Lugares', render() {
+      return `<p class="intro">¿Dónde será? Tus invitados tendrán un botón para llegar con Google Maps.</p>
+        ${lugar('lugar1', xv() ? 'Misa o ceremonia' : 'Ceremonia')}
+        <div class="caja"><label class="c" style="display:flex;gap:10px;align-items:center;margin:0;font-weight:500"><input type="checkbox" id="mismo" ${E.mismoLugar ? 'checked' : ''} style="width:22px;height:22px">Todo es en el mismo lugar</label></div>
+        ${E.mismoLugar ? '' : lugar('lugar2', 'Recepción')}`;
+    }, montar() { $('#mismo').onchange = (e) => { E.mismoLugar = e.target.checked; guardar(); pintar(); }; } },
+
+    { t: 'Familia y padrinos', render() {
+      return `<div class="caja">
+          ${campo('padres1', xv() ? 'Mis papás' : 'Papás de la novia', { area: true, ph: 'Un nombre por renglón\nEduardo Ramírez Ochoa\nClaudia Herrera de Ramírez', ayuda: 'Si alguno ya falleció, agrega † al final de su nombre.' })}
+          ${xv() ? '' : campo('padres2', 'Papás del novio', { area: true, ph: 'Un nombre por renglón' })}
+        </div>
+        <div class="caja">
+          ${campo('padrinos', xv() ? 'Padrinos y chambelanes' : 'Padrinos', { area: true, opc: true, ph: xv() ? 'Velación: Raúl y Gabriela Herrera\nAnillo: Miguel y Laura Ramírez\nChambelán de honor: Emilio Ramírez' : 'Velación: Jorge y Patricia Salinas\nAnillos: Diego y Fernanda Ríos\nLazo: Héctor y Andrea Morales', ayuda: 'Un renglón por padrinos: <b>de qué</b>, dos puntos y <b>nombres</b>.' })}
+        </div>`;
+    } },
+
+    { t: 'Programa del día', render() {
+      return `<p class="intro">Los momentos importantes con su hora. Cambia, borra o agrega los que quieras.</p>
+        <div class="caja lista-it">${E.itinerario.map((x, i) => `<div class="it">
+            <input type="time" data-it="${i}" data-c="hora" value="${esc(x.hora)}" aria-label="Hora">
+            <input type="text" data-it="${i}" data-c="evento" value="${esc(x.evento)}" placeholder="Evento" aria-label="Evento">
+            <button class="quitar" type="button" data-quitar="${i}" aria-label="Quitar">×</button></div>`).join('')}
+          <button class="mas" type="button" id="mas-it">＋ Agregar momento</button>
+        </div>`;
+    }, montar() {
+      $$('[data-it]').forEach(i => i.oninput = () => { E.itinerario[+i.dataset.it][i.dataset.c] = i.value; guardar(); });
+      $$('[data-quitar]').forEach(b => b.onclick = () => { E.itinerario.splice(+b.dataset.quitar, 1); guardar(); pintar(); });
+      $('#mas-it').onclick = () => { E.itinerario.push({ hora: '', evento: '' }); guardar(); pintar(); $$('[data-c=hora]').pop().focus(); };
+    } },
+
+    { t: 'Vestimenta y regalos', render() {
+      return `<div class="caja">
+          ${sel('vestimenta', 'Código de vestimenta', [['Formal', 'Formal'], ['Etiqueta rigurosa', 'Etiqueta rigurosa'], ['Cóctel', 'Cóctel'], ['Casual elegante', 'Casual elegante'], ['Playa', 'Playa'], ['', 'Sin código de vestimenta']])}
+          ${campo('notaVestimenta', 'Nota', { opc: true, ph: xv() ? 'El color rosa está reservado para la quinceañera.' : 'El color blanco está reservado para la novia.' })}
+        </div>
+        <div class="caja"><h2>Mesa de regalos</h2>
+          ${campo('regalos', 'Tiendas', { area: true, opc: true, ph: 'Liverpool: evento 50123456\nAmazon: lista “Vale y Santi”', ayuda: 'Un renglón por tienda: nombre, dos puntos y número de evento o enlace.' })}
+          <label class="c" style="display:flex;gap:10px;align-items:center;font-weight:500"><input type="checkbox" id="sobres" ${E.sobres ? 'checked' : ''} style="width:22px;height:22px">Lluvia de sobres (regalo en efectivo el día del evento)</label>
+          <div class="fila"><div>${campo('banco', 'Banco', { opc: true, ph: 'BBVA' })}</div><div>${campo('clabe', 'CLABE para transferencia', { opc: true, ph: '18 dígitos' })}</div></div>
+          ${campo('titular', 'Titular de la cuenta', { opc: true })}
+        </div>`;
+    }, montar() { $('#sobres').onchange = (e) => { E.sobres = e.target.checked; guardar(); }; } },
+
+    { t: 'Fotos y textos', render() {
+      return `<div class="caja"><h2>Foto de portada</h2><p class="ayuda">Una foto vertical ${xv() ? 'de la quinceañera' : 'de ustedes dos'} se ve mejor. Opcional.</p>
+          <div class="fotos portada-prev">${E.portada ? `<div class="foto"><img src="${E.portada}" alt="Foto de portada"><button class="x" type="button" id="quitar-portada" aria-label="Quitar foto">×</button></div>`
+            : `<label class="subir" tabindex="0"><span style="font-size:28px">📷</span>Subir foto<input type="file" accept="image/*" id="subir-portada" hidden></label>`}</div>
+        </div>
+        <div class="caja"><h2>Galería ${xv() ? '“Mis momentos”' : '“Nuestra historia”'}</h2><p class="ayuda">Hasta 12 fotos. Puedes escribirles un texto corto (por ejemplo un año).</p>
+          <div class="fotos">${E.fotos.map((f, i) => `<div class="foto"><img src="${f.src}" alt="Foto ${i + 1}"><button class="x" type="button" data-qf="${i}" aria-label="Quitar foto">×</button>
+            <input type="text" data-pie="${i}" value="${esc(f.pie)}" placeholder="Texto (opcional)" aria-label="Texto de la foto ${i + 1}"></div>`).join('')}
+            ${E.fotos.length < 12 ? `<label class="subir" tabindex="0"><span style="font-size:28px">＋</span>Agregar fotos<input type="file" accept="image/*" multiple id="subir-fotos" hidden></label>` : ''}</div>
+          <p class="ayuda" id="estado-fotos"></p>
+        </div>
+        <div class="caja">
+          ${campo('frase', 'Frase especial', { area: true, opc: true, ph: 'Una frase, versículo o canción que les guste' })}
+          ${campo('historia', xv() ? 'Unas palabras tuyas' : 'Su historia en pocas palabras', { area: true, opc: true, ph: xv() ? 'Quince años de risas, sueños…' : 'Cómo se conocieron…' })}
+        </div>`;
+    }, montar() {
+      const sp = $('#subir-portada'); if (sp) sp.onchange = async () => { if (!sp.files[0]) return; $('#estado-fotos').textContent = 'Preparando foto…'; E.portada = await reducir(sp.files[0]); guardar(); pintar(); };
+      const qp = $('#quitar-portada'); if (qp) qp.onclick = () => { E.portada = ''; guardar(); pintar(); };
+      const sf = $('#subir-fotos'); if (sf) sf.onchange = async () => {
+        const fs = [...sf.files].slice(0, 12 - E.fotos.length);
+        for (let i = 0; i < fs.length; i++) { $('#estado-fotos').textContent = `Preparando foto ${i + 1} de ${fs.length}…`; try { E.fotos.push({ src: await reducir(fs[i]), pie: '' }); } catch (e) {} }
+        guardar(); pintar();
+      };
+      $$('.subir').forEach(l => l.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); l.querySelector('input').click(); } });
+      $$('[data-qf]').forEach(b => b.onclick = () => { E.fotos.splice(+b.dataset.qf, 1); guardar(); pintar(); });
+      $$('[data-pie]').forEach(i => i.oninput = () => { E.fotos[+i.dataset.pie].pie = i.value; guardar(); });
+    } },
+
+    { t: 'Invitados y confirmaciones', render() {
+      const inv = invitados();
+      return `<div class="caja">
+          ${campo('rsvpTel', 'WhatsApp que recibe las confirmaciones', { tipo: 'tel', ph: E.cliente.tel || '55 1234 5678', ayuda: 'Si lo dejas vacío usamos tu WhatsApp.' })}
+          ${campo('fechaLimite', 'Confirmar antes del', { tipo: 'date', opc: true })}
+        </div>
+        <div class="caja"><h2>Lista de invitados</h2>
+          <p class="ayuda" style="margin-bottom:8px">Cada invitación con sus lugares. Un renglón por invitación: <b>nombre</b>, una barra <b>|</b> y <b>cuántas personas</b>. También puedes copiar y pegar dos columnas desde Excel.</p>
+          <textarea data-k="invitados" id="f-invitados" style="min-height:200px" placeholder="Familia López | 4&#10;Tía Carmen | 1&#10;Ana y Luis Pérez | 2">${esc(E.invitados)}</textarea>
+          <div class="cuenta" id="cuenta-inv">${cuentaInv(inv)}</div>
+          <p class="ayuda">¿Aún no la tienes? Puedes mandarla después; déjala en blanco.</p>
+        </div>`;
+    }, montar() { $('#f-invitados').addEventListener('input', () => { $('#cuenta-inv').innerHTML = cuentaInv(invitados()); }); } },
+
+    { t: 'Últimos detalles', render() {
+      return `<div class="caja">
+          ${campo('hashtag', 'Hashtag para sus fotos', { opc: true, ph: xv() ? '#LosXVdeSofi' : '#ValeYSanti' })}
+          ${campo('nota', 'Nota para los invitados', { opc: true, ph: 'Evento solo para adultos' })}
+          ${campo('cliente.cancion', 'Canción para la invitación', { opc: true, ph: 'Nombre y artista' })}
+          ${campo('cliente.comentarios', 'Comentarios para quien hace tu invitación', { area: true, opc: true, ph: 'Colores que te gustan, ideas, cambios al diseño…' })}
+        </div>`;
+    } },
+
+    { t: 'Revisa y envía', render() {
+      const inv = invitados(), d = armar().datos;
+      const fila = (t, v) => v ? `<dt>${t}</dt><dd>${esc(v)}</dd>` : '';
+      const sec = (n, titulo, html) => `<div class="caja resumen"><button class="ed" type="button" data-ir="${n}">Editar</button><h2>${titulo}</h2><dl>${html || '<dt>—</dt><dd>Sin datos</dd>'}</dl></div>`;
+      return `<p class="intro">Así quedaría tu invitación con tus datos. Revisa que todo esté bien y toca <b>Enviar</b>.</p>
+        <div class="caja"><div class="previa"><iframe id="previa" title="Vista previa de tu invitación" src="invitacion.html?preview=1&sinSobre=1"></iframe></div>
+          <p class="ayuda" style="text-align:center">Vista previa: desliza dentro del celular. Los detalles finales los ajustamos nosotros.</p></div>
+        ${sec(0, 'Tú', fila('Nombre', E.cliente.nombre) + fila('WhatsApp', E.cliente.tel) + fila('Paquete', E.cliente.paquete) + fila('Diseño', (PL[d.plantilla] || {}).nombre))}
+        ${sec(1, 'Evento', fila(xv() ? 'Quinceañera' : 'Novios', xv() ? E.festejada : `${E.novia} & ${E.novio}`) + fila('Fecha', d.fecha && Invitacion.fechaInfo(d).larga) + fila('Hora', E.hora) + fila('Ciudad', E.ciudad))}
+        ${sec(2, 'Lugares', d.lugares.map(l => fila(l.tipo, [l.nombre, l.direccion, l.hora && l.hora + ' hrs'].filter(Boolean).join('\n'))).join(''))}
+        ${sec(3, 'Familia', fila(xv() ? 'Mis papás' : 'Papás de la novia', E.padres1) + fila('Papás del novio', xv() ? '' : E.padres2) + fila('Padrinos', E.padrinos))}
+        ${sec(4, 'Programa', d.itinerario.map(x => fila(x.hora || '—', x.evento)).join(''))}
+        ${sec(5, 'Vestimenta y regalos', fila('Vestimenta', E.vestimenta) + fila('Mesa de regalos', E.regalos) + fila('Lluvia de sobres', E.sobres ? 'Sí' : '') + fila('CLABE', E.clabe))}
+        ${sec(6, 'Fotos y textos', fila('Fotos', (E.portada ? 'Portada ✓ · ' : '') + E.fotos.length + ' en la galería') + fila('Frase', E.frase))}
+        ${sec(7, 'Invitados', fila('Invitaciones', inv.length ? `${inv.length} invitaciones · ${inv.reduce((a, b) => a + b.pases, 0)} personas` : 'La mando después') + fila('Confirmaciones al', E.rsvpTel || E.cliente.tel))}
+        ${sec(8, 'Detalles', fila('Hashtag', E.hashtag) + fila('Nota', E.nota) + fila('Canción', E.cliente.cancion) + fila('Comentarios', E.cliente.comentarios))}`;
+    }, montar() {
+      $$('[data-ir]').forEach(b => b.onclick = () => irA(+b.dataset.ir));
+      const f = $('#previa');
+      const enviarPrevia = () => f.contentWindow.postMessage({ tipo: 'invitacion', datos: armar().datos, conSobre: false }, '*');
+      f.addEventListener('load', enviarPrevia);
+      window.addEventListener('message', (e) => { if (e.data && e.data.tipo === 'lista' && e.source === f.contentWindow) enviarPrevia(); });
+    } }
+  ];
+
+  // ---------------------------------------------------------------------------
+  // Convertir lo que llenó el cliente en los datos del editor
+  // ---------------------------------------------------------------------------
+  function invitados() {
+    return String(E.invitados || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+      const p = l.split(/\s*[|\t;]\s*/);
+      let nombre = p[0], pases = parseInt(p[1], 10);
+      if (p.length === 1) { const m = l.match(/^(.*?)[\s,.-]+(\d{1,2})$/); if (m) { nombre = m[1]; pases = +m[2]; } }
+      return { nombre: nombre.trim(), pases: pases > 0 ? pases : 2, mesa: '' };
+    }).filter(x => x.nombre);
+  }
+  const cuentaInv = (inv) => inv.length ? `<span class="pill">${inv.length} invitaciones</span><span class="pill">${inv.reduce((a, b) => a + b.pases, 0)} personas</span>` : '';
+  function icono(t) {
+    t = String(t).toLowerCase();
+    return /misa|iglesia|religios|templo|parroquia/.test(t) ? 'iglesia' : /civil|boda civil|anillo/.test(t) ? 'anillos' : /c[oó]ctel|recepci/.test(t) ? 'copa' : /brindis/.test(t) ? 'brindis'
+      : /cena|comida|banquete/.test(t) ? 'cena' : /vals|corona/.test(t) ? 'corona' : /zapatilla/.test(t) ? 'zapatilla' : /bail|m[uú]sica|fiesta|dj/.test(t) ? 'musica'
+      : /pastel/.test(t) ? 'pastel' : /foto/.test(t) ? 'foto' : /fin|cierre|despedida/.test(t) ? 'luna' : 'corazon';
+  }
+  const lineas = (s) => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
+  function armar() {
+    const ev = E.evento, base = Invitacion.normalizar({ evento: ev });
+    const pl = PL[E.plantilla] && (PL[E.plantilla].evento || 'boda') === ev ? E.plantilla : Object.values(PL).find(p => (p.evento || 'boda') === ev).id;
+    const L = (l, icono) => ({ tipo: l.tipo || '', hora: l.hora || '', nombre: l.nombre || '', direccion: l.direccion || '', mapa: l.mapa || '', icono });
+    const lugares = [L(E.lugar1, /recep|sal[oó]n|jard|hacienda/i.test(E.lugar1.tipo) ? 'hacienda' : 'iglesia')];
+    if (!E.mismoLugar && E.lugar2.nombre) lugares.push(L(E.lugar2, 'hacienda'));
+    const ops = lineas(E.regalos).map(l => { const [n, ...r] = l.split(':'); return { nombre: n.trim(), detalle: r.join(':').trim(), enlace: /^https?:\/\//.test(r.join(':').trim()) ? r.join(':').trim() : '', icono: /amazon|tienda/i.test(n) ? 'bolsa' : 'regalo' }; });
+    if (E.sobres) ops.push({ nombre: 'Lluvia de sobres', detalle: 'El día del evento', enlace: '', icono: 'sobre' });
+    const tel = String(E.rsvpTel || E.cliente.tel || '').replace(/\D/g, '');
+    const datos = {
+      evento: ev, plantilla: pl,
+      novia: ev === 'xv' ? '' : E.novia.trim(), novio: ev === 'xv' ? '' : E.novio.trim(), festejada: ev === 'xv' ? E.festejada.trim() : '',
+      fecha: E.fecha, hora: E.hora || E.lugar1.hora || (ev === 'xv' ? '18:00' : '17:00'), zonaHoraria: E.zona, ciudad: E.ciudad,
+      frase: E.frase, padresNovia: E.padres1, padresNovio: ev === 'xv' ? '' : E.padres2,
+      padrinos: lineas(E.padrinos).map(l => { const i = l.indexOf(':'); return i > 0 ? { rol: l.slice(0, i).trim(), nombres: l.slice(i + 1).trim() } : { rol: 'Padrinos', nombres: l }; }),
+      itinerario: E.itinerario.filter(x => x.evento).map(x => ({ hora: x.hora, evento: x.evento, detalle: '', icono: icono(x.evento) })),
+      lugares,
+      vestimenta: { tipo: E.vestimenta, texto: '', colores: [], nota: E.notaVestimenta },
+      historia: { titulo: base.historia.titulo, texto: E.historia, fotos: E.fotos.map(f => ({ src: f.src, pie: f.pie })) },
+      regalos: { titulo: base.regalos.titulo, texto: ops.length || E.clabe ? (ev === 'xv' ? 'pero si deseas obsequiarme algo, aquí algunas opciones' : 'pero si deseas obsequiarnos algo, aquí algunas opciones') : '', opciones: ops, banco: E.banco, titular: E.titular, clabe: String(E.clabe || '').replace(/\D/g, '') },
+      fotoPortada: E.portada,
+      rsvp: { whatsapp: tel ? (tel.length === 10 ? '521' + tel : tel) : '', fechaLimite: E.fechaLimite, pases: 2, texto: '' },
+      invitados: invitados(), hashtag: E.hashtag, nota: E.nota, musica: 'melodia'
+    };
+    return { tipo: 'pedido-invitacion', version: 1, creado: new Date().toISOString(),
+      cliente: { nombre: E.cliente.nombre.trim(), tel: E.cliente.tel, paquete: E.cliente.paquete, cancion: E.cliente.cancion, comentarios: E.cliente.comentarios },
+      datos };
+  }
+
+  /** Reduce la foto para que el envío sea rápido. */
+  function reducir(file) {
+    return new Promise((ok, mal) => {
+      const url = URL.createObjectURL(file), im = new Image();
+      im.onload = () => { const k = Math.min(1, 1600 / Math.max(im.width, im.height)); const c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); ok(c.toDataURL('image/jpeg', 0.8)); };
+      im.onerror = () => { URL.revokeObjectURL(url); mal(new Error('No se pudo leer la foto')); };
+      im.src = url;
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Navegación
+  // ---------------------------------------------------------------------------
+  let error = '';
+  function pintar() {
+    if (enviado) return pintarListo();
+    const n = E.paso, P = PASOS[n], t = typeof P.t === 'function' ? P.t() : P.t;
+    app.innerHTML = `<p class="paso-n">Paso ${n + 1} de ${PASOS.length}</p><h1>${esc(t)}</h1>${error ? `<p class="error" role="alert">${esc(error)}</p>` : ''}${P.render()}`;
+    $('#paso-txt').textContent = `${n + 1} / ${PASOS.length}`;
+    $('#barra').style.width = ((n + 1) / PASOS.length * 100) + '%';
+    $('#atras').style.visibility = n ? 'visible' : 'hidden';
+    $('#sig').textContent = n === PASOS.length - 1 ? 'Enviar mis datos' : 'Siguiente';
+    $$('[data-k]', app).forEach(i => i.addEventListener('input', () => set(i.dataset.k, i.value)));
+    if (P.montar) P.montar();
+  }
+  function irA(n) { error = ''; E.paso = Math.max(0, Math.min(PASOS.length - 1, n)); guardar(); pintar(); window.scrollTo({ top: 0 }); }
+  $('#atras').onclick = () => irA(E.paso - 1);
+  $('#sig').onclick = () => {
+    const P = PASOS[E.paso], e = P.validar && P.validar();
+    if (e) { error = e; pintar(); window.scrollTo({ top: 0 }); return; }
+    if (E.paso === PASOS.length - 1) return enviar();
+    irA(E.paso + 1);
+  };
+
+  // ---------------------------------------------------------------------------
+  // Envío
+  // ---------------------------------------------------------------------------
+  const url = N.hojaConfirmaciones || '';
+  async function enviar() {
+    for (let i = 0; i < PASOS.length - 1; i++) { const e = PASOS[i].validar && PASOS[i].validar(); if (e) { E.paso = i; error = e; pintar(); window.scrollTo({ top: 0 }); return; } }
+    const p = armar();
+    if (!url) { enviado = { sinHoja: true, p }; return pintar(); }
+    const b = $('#sig'); b.disabled = true; b.textContent = 'Enviando…';
+    try {
+      const r = await (await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p) })).json();
+      if (!r.ok) throw new Error(r.error || 'error');
+      enviado = { folio: r.pedido, p }; DB.borrar(); pintar();
+    } catch (err) {
+      b.disabled = false; b.textContent = 'Enviar mis datos';
+      enviado = { fallo: true, p }; pintar();
+    }
+  }
+  function archivo(p) { return new File([JSON.stringify(p)], `pedido-${(p.cliente.nombre || 'invitacion').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w]+/g, '-').toLowerCase()}.json`, { type: 'application/json' }); }
+  function pintarListo() {
+    const p = enviado.p, wa = String(N.whatsapp || '').replace(/\D/g, '');
+    $('#nav').hidden = true; $('#barra').style.width = '100%'; $('#paso-txt').textContent = '';
+    const quien = p.datos.evento === 'xv' ? p.datos.festejada : `${p.datos.novia} & ${p.datos.novio}`;
+    const msg = `¡Hola! Soy ${p.cliente.nombre}. ${enviado.folio ? `Ya envié los datos de mi invitación (${quien}). Folio: ${enviado.folio}` : `Te mando el archivo con los datos de mi invitación (${quien}).`}`;
+    app.innerHTML = enviado.folio ? `<div class="listo"><div class="ico">✓</div><h1>¡Listo, ${esc(p.cliente.nombre.split(' ')[0])}!</h1>
+        <p class="intro">Recibimos los datos de tu invitación. Te escribiremos por WhatsApp cuando esté lista para revisarla.</p>
+        <p>Tu folio:</p><p class="folio">${esc(enviado.folio)}</p>
+        <div class="acciones">${wa ? `<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent(msg)}">Avisar por WhatsApp</a>` : ''}</div></div>`
+      : `<div class="listo"><div class="ico" style="background:var(--accent-bg);color:var(--accent)">✉</div><h1>Ya casi</h1>
+        ${enviado.fallo ? '<p class="error">No pudimos enviarlo por internet. No te preocupes: tus datos están guardados.</p>' : ''}
+        <p class="intro">Manda el archivo con tus datos por WhatsApp${N.whatsapp ? '' : ' a quien hace tu invitación'}. Incluye tus fotos.</p>
+        <div class="acciones">
+          <button class="btn wa" type="button" id="compartir">Compartir archivo por WhatsApp</button>
+          <button class="btn" type="button" id="bajar">Descargar archivo</button>
+          ${enviado.fallo ? '<button class="btn" type="button" id="reintentar">Intentar enviar otra vez</button>' : ''}
+          <button class="btn" type="button" id="volver">Volver a revisar</button>
+        </div>
+        <p class="ayuda" style="margin-top:14px">Si “Compartir” no funciona en tu celular, toca “Descargar archivo” y mándalo como documento por WhatsApp${wa ? ` al ${esc(N.whatsapp)}` : ''}.</p></div>`;
+    const bajar = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(archivo(p)); a.download = archivo(p).name; document.body.append(a); a.click(); a.remove(); };
+    const c = $('#compartir'); if (c) c.onclick = async () => {
+      const f = archivo(p);
+      if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], text: msg }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+      bajar(); if (wa) window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg + ' (te lo adjunto como documento)')}`, '_blank');
+    };
+    const d = $('#bajar'); if (d) d.onclick = bajar;
+    const r = $('#reintentar'); if (r) r.onclick = () => { enviado = null; $('#nav').hidden = false; E.paso = PASOS.length - 1; pintar(); enviar(); };
+    const v = $('#volver'); if (v) v.onclick = () => { enviado = null; $('#nav').hidden = false; pintar(); };
+  }
+
+  // ---------------------------------------------------------------------------
+  // Inicio: recupera el borrador si existe
+  // ---------------------------------------------------------------------------
+  DB.abrir().then(DB.leer).then(b => {
+    if (b && b.cliente) { E = Object.assign(vacio(), b); if (E.paso) $('#guardado').textContent = '✓ Seguimos donde te quedaste'; }
+    pintar();
+  });
+})();
+</script>
+</body>
+</html>
