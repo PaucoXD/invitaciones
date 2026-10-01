@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#2b1a1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Entrada">
+<title>Registro de entrada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+<!--
+  Registro de entrada el día del evento: escanea el pase QR de cada familia (o búscala por nombre)
+  y registra cuántas personas llegaron. Se abre con el enlace del editor:
+    entrada.html?b=<ID de boda>&k=<clave del panel>
+  Ejemplo sin conexión: entrada.html?demo=1
+-->
+<script src="negocio.js" onerror="window.NEGOCIO={}"></script>
+<script src="motor/lib/jsQR.min.js"></script>
+<style>
+  :root{--bg:#f4f0eb;--card:#fff;--ink:#2b241f;--muted:#6f655b;--line:#e8dfd4;--accent:#8e3b4a;--dark:#2b1a1e;--ok:#2f6d43;--ok-bg:#e6f2e9;--no:#a9473e;--no-bg:#f8e7e5;--pend:#8a5f0e;--pend-bg:#fbf0d9}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  button,input{font:inherit;color:inherit}
+  :where(a,button,input):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .barra{background:var(--dark);color:#f3e6e0;padding:14px 16px calc(14px) ;padding-top:calc(14px + env(safe-area-inset-top))}
+  .barra .w{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+  .barra h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:24px;line-height:1.1;margin-right:auto}
+  .barra h1 small{display:block;font-family:Inter,sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#d7a9b1;font-weight:500}
+  .barra button{border:1px solid rgba(255,255,255,.25);background:none;color:#f3e6e0;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:14px;min-height:44px}
+  .wrap{max-width:720px;margin:0 auto;padding:16px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+  .st{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+  .st b{display:block;font-size:28px;line-height:1.1}
+  .st span{font-size:12.5px;color:var(--muted)}
+  .st.ok b{color:var(--ok)}
+  .escanear{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:20px;border:none;border-radius:18px;background:var(--accent);color:#fff;font-size:20px;font-weight:700;cursor:pointer;min-height:76px;box-shadow:0 10px 24px rgba(142,59,74,.25)}
+  .escanear svg{width:30px;height:30px}
+  .pend-envio{margin-top:10px;font-size:13.5px;color:var(--pend);background:var(--pend-bg);border-radius:10px;padding:8px 12px}
+  .buscar{display:block;width:100%;margin:16px 0 10px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:16px;min-height:52px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .chip{border:1px solid var(--line);background:var(--card);padding:9px 14px;border-radius:20px;cursor:pointer;font-size:14px;font-weight:500;min-height:42px}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .lista{display:flex;flex-direction:column;gap:8px}
+  .fila{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;min-height:64px}
+  .fila .n{flex:1;min-width:0}
+  .fila b{display:block;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .fila small{color:var(--muted);font-size:13px}
+  .tag{font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:14px;white-space:nowrap;background:#f1ece5}
+  .tag.ok{background:var(--ok-bg);color:var(--ok)}.tag.no{background:var(--no-bg);color:var(--no)}.tag.pend{background:var(--pend-bg);color:var(--pend)}
+  .vacio{text-align:center;color:var(--muted);padding:30px;background:var(--card);border-radius:14px;border:1px dashed var(--line)}
+  /* Cámara */
+  .camara{position:fixed;inset:0;background:#000;z-index:20;display:flex;flex-direction:column}
+  .camara video{flex:1;width:100%;height:100%;object-fit:cover}
+  .mira{position:absolute;left:50%;top:45%;width:min(72vw,320px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:24px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45);border:3px solid rgba(255,255,255,.9)}
+  .cam-txt{position:absolute;left:0;right:0;top:calc(45% + min(36vw,160px) + 24px);text-align:center;color:#fff;font-size:17px;font-weight:500;padding:0 20px}
+  .cam-cerrar{position:absolute;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#fff;color:#111;border:none;border-radius:30px;padding:14px 28px;font-weight:700;font-size:16px;cursor:pointer;min-height:52px}
+  /* Resultado */
+  .velo{position:fixed;inset:0;background:rgba(20,14,12,.55);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+  .hoja{background:var(--card);width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));animation:sube .25s ease}
+  @keyframes sube{from{transform:translateY(40px);opacity:0}}
+  .estado{display:flex;align-items:center;gap:10px;border-radius:14px;padding:12px 14px;font-weight:700;font-size:17px;margin-bottom:14px}
+  .estado i{font-style:normal;font-size:24px}
+  .estado.ok{background:var(--ok-bg);color:var(--ok)}.estado.ya{background:var(--pend-bg);color:var(--pend)}.estado.no{background:var(--no-bg);color:var(--no)}
+  .hoja h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34px;line-height:1.1}
+  .hoja .det{color:var(--muted);margin-top:4px}
+  .personas{display:flex;align-items:center;justify-content:center;gap:18px;margin:18px 0 6px}
+  .personas button{width:56px;height:56px;border-radius:50%;border:1px solid var(--line);background:#faf7f3;font-size:28px;cursor:pointer}
+  .personas output{font-size:44px;font-weight:700;min-width:70px;text-align:center}
+  .personas-txt{text-align:center;color:var(--muted);font-size:14px;margin-bottom:16px}
+  .botones{display:flex;flex-direction:column;gap:10px}
+  .b{display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border-radius:14px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:16px;cursor:pointer;min-height:54px;text-decoration:none;color:inherit}
+  .b.pri{background:var(--ok);border-color:var(--ok);color:#fff;font-size:18px}
+  .b.suave{border:none;background:none;color:var(--muted);min-height:44px}
+  .b.peligro{color:var(--no)}
+  .entrada{max-width:420px;margin:40px auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px}
+  .entrada h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:32px;text-align:center}
+  .entrada>p{color:var(--muted);text-align:center;margin:6px 0}
+  .entrada label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-top:14px}
+  .entrada input{display:block;width:100%;margin-top:6px;padding:13px 14px;border:1px solid var(--line);border-radius:10px;font-size:16px;background:#fdfbf8;min-height:50px}
+  .entrada .b{width:100%;margin-top:20px}
+  .error{color:var(--no);background:var(--no-bg);border-radius:10px;padding:10px 12px;font-size:14px;margin-top:10px}
+  .demo{background:var(--pend-bg);color:var(--pend);border-radius:10px;padding:9px 12px;font-size:13.5px;margin-bottom:12px}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,160px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:30px;transition:transform .3s;z-index:40;font-weight:600;max-width:90vw;text-align:center}
+  .toast.ver{transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div id="app"><div class="entrada"><h2>Cargando…</h2></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(function () {
+  'use strict';
+  const N = window.NEGOCIO || {}, q = new URLSearchParams(location.search), app = document.getElementById('app');
+  const CLAVE = 'entrada-acceso';
+  let ses = {}; try { ses = JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) {}
+  const desdeEnlace = q.get('b') && q.get('k');
+  const cfg = desdeEnlace ? { url: q.get('u') || N.hojaConfirmaciones || '', boda: q.get('b'), clave: q.get('k') }
+    : { url: ses.url || N.hojaConfirmaciones || '', boda: ses.boda || '', clave: ses.clave || '' };
+  cfg.demo = q.has('demo');
+
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+  const hora = (iso) => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }); };
+  const etqMesa = (m) => !m ? '' : /^\d+$/.test(String(m)) ? 'Mesa ' + m : String(m);
+  function avisar(t) { const a = document.getElementById('toast'); a.textContent = t; a.classList.add('ver'); clearTimeout(a._t); a._t = setTimeout(() => a.classList.remove('ver'), 2600); }
+
+  // ---------------------------------------------------------------------------
+  // Datos: invitados (de la hoja), confirmaciones y entradas registradas
+  // ---------------------------------------------------------------------------
+  let invitados = [], rsvp = new Map(), entradas = new Map(), filtro = 'faltan', busqueda = '';
+  const CLAVE_PEND = () => 'entrada-pend:' + cfg.boda;
+  let pendientes = []; const leerPend = () => { try { pendientes = JSON.parse(localStorage.getItem(CLAVE_PEND())) || []; } catch (e) { pendientes = []; } };
+  const guardarPend = () => { try { localStorage.setItem(CLAVE_PEND(), JSON.stringify(pendientes)); } catch (e) {} };
+
+  function demo() {
+    const n = ['Familia López', 'Ana y Luis Pérez', 'Tía Carmen', 'Familia Hernández', 'Familia Gómez', 'Valentina Ruiz', 'Familia Ortiz', 'Los Martínez', 'Abuelos Ramírez', 'Familia Torres'];
+    const l = [4, 2, 1, 5, 4, 1, 3, 4, 2, 5], m = ['5', '3', '5', '8', '2', '6', '4', '1', 'Honor', '7'];
+    return {
+      invitados: n.map((x, i) => ({ Invitado: x, Lugares: l[i], Mesa: m[i] })),
+      confirmaciones: n.slice(0, 8).map((x, i) => ({ Tipo: 'rsvp', Invitado: x, Asiste: i === 5 ? 'No' : 'Sí', Personas: i === 5 ? '' : Math.max(1, l[i] - (i % 3 === 0 ? 1 : 0)), Fecha: new Date(Date.now() - (20 - i) * 864e5).toISOString() })),
+      entradas: [{ Invitado: 'Tía Carmen', Personas: 1, Fecha: new Date(Date.now() - 18 * 6e4).toISOString() }, { Invitado: 'Familia Gómez', Personas: 4, Fecha: new Date(Date.now() - 6 * 6e4).toISOString() }]
+    };
+  }
+  function procesar(j) {
+    invitados = (j.invitados || []).map(i => ({ nombre: String(i.Invitado || ''), lugares: +i.Lugares || 0, mesa: i.Mesa || '' })).filter(i => i.nombre);
+    rsvp = new Map();
+    (j.confirmaciones || []).filter(c => (c.Tipo || 'rsvp') === 'rsvp').sort((a, b) => new Date(a.Fecha) - new Date(b.Fecha))
+      .forEach(c => rsvp.set(norm(c.Invitado), { asiste: c.Asiste !== 'No', personas: +c.Personas || 0 }));
+    entradas = new Map();
+    (j.entradas || []).sort((a, b) => new Date(a.Fecha) - new Date(b.Fecha)).forEach(e => entradas.set(norm(e.Invitado), { personas: +e.Personas || 0, fecha: e.Fecha }));
+    pendientes.forEach(p => entradas.set(norm(p.nombre), { personas: p.personas, fecha: p.fecha, sinEnviar: true }));
+  }
+  const buscarInv = (nombre) => invitados.find(i => norm(i.nombre) === norm(nombre));
+
+  async function cargar(silencio) {
+    if (cfg.demo) { leerPend(); if (!invitados.length) procesar(demo()); return pintar(); }
+    if (!cfg.url || !cfg.boda || !cfg.clave) return pantallaEntrada();
+    try {
+      const u = cfg.url + (cfg.url.includes('?') ? '&' : '?') + 'boda=' + encodeURIComponent(cfg.boda) + '&clave=' + encodeURIComponent(cfg.clave) + '&t=' + Date.now();
+      const j = await (await fetch(u)).json();
+      if (!j.ok) return pantallaEntrada('El código o la clave no coinciden.');
+      if (!(j.version >= 4)) return pantallaEntrada('', true);
+      try { localStorage.setItem(CLAVE, JSON.stringify({ url: cfg.url, boda: cfg.boda, clave: cfg.clave })); } catch (e) {}
+      if (location.search) history.replaceState(null, '', location.pathname);
+      leerPend(); procesar(j);
+      if (!document.querySelector('.velo') && !document.querySelector('.camara')) pintar();
+    } catch (e) {
+      if (!silencio && !invitados.length) pantallaEntrada('Sin conexión. Revisa el internet del celular.');
+    }
+  }
+
+  // Envío a la hoja (si no hay señal se guarda y se reintenta solo)
+  async function enviarPendientes() {
+    if (cfg.demo || !pendientes.length || !navigator.onLine) return;
+    const lista = pendientes.slice();
+    for (const p of lista) {
+      try {
+        const r = await (await fetch(cfg.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'entrada', boda: cfg.boda, clave: cfg.clave, nombre: p.nombre, personas: p.personas, quien: 'Entrada' }) })).json();
+        if (!r.ok) throw new Error(r.error);
+        pendientes = pendientes.filter(x => x !== p); guardarPend();
+        const e = entradas.get(norm(p.nombre)); if (e) delete e.sinEnviar;
+      } catch (e) { break; }
+    }
+    if (!document.querySelector('.velo') && !document.querySelector('.camara')) pintar();
+  }
+  function registrar(nombre, personas) {
+    const p = { nombre, personas, fecha: new Date().toISOString() };
+    pendientes = pendientes.filter(x => norm(x.nombre) !== norm(nombre)).concat(p); guardarPend();
+    entradas.set(norm(nombre), { personas, fecha: p.fecha, sinEnviar: !cfg.demo });
+    if (cfg.demo) { pendientes = []; guardarPend(); }
+    enviarPendientes();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Pantallas
+  // ---------------------------------------------------------------------------
+  function pantallaEntrada(error, viejo) {
+    app.innerHTML = `<form class="entrada" id="f">
+      <h2>Registro de entrada</h2>
+      <p>Escribe el código del evento y la clave del panel.</p>
+      ${error ? `<p class="error">${esc(error)}</p>` : ''}
+      ${viejo ? '<p class="error">El código de Google Sheets es de una versión anterior. Quien hizo la invitación debe actualizarlo (manual, sección "Pase de entrada").</p>' : ''}
+      ${N.hojaConfirmaciones ? '' : `<label>Dirección de la app de Google<input id="u" type="url" value="${esc(cfg.url)}" placeholder="https://script.google.com/…/exec"></label>`}
+      <label>Código del evento<input id="e-b" autocapitalize="none" value="${esc(cfg.boda)}" placeholder="sofia-xv-ab12"></label>
+      <label>Clave<input id="e-k" autocapitalize="none" value="" placeholder="Clave del panel"></label>
+      <button class="b pri" type="submit">Entrar</button>
+      <p style="text-align:center;margin-top:14px;font-size:14px"><a href="?demo=1" style="color:var(--accent)">Probar con un ejemplo</a></p>
+    </form>`;
+    const f = document.getElementById('f');
+    f.onsubmit = (e) => {
+      e.preventDefault();
+      const u = f.querySelector('#u'); if (u) cfg.url = u.value.trim();
+      cfg.boda = f.querySelector('#e-b').value.trim(); cfg.clave = f.querySelector('#e-k').value.trim();
+      if (!cfg.url || !cfg.boda || !cfg.clave) return pantallaEntrada('Llena todos los datos.');
+      app.innerHTML = '<div class="entrada"><h2>Entrando…</h2></div>'; cargar();
+    };
+  }
+
+  const ICO_QR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V4a1 1 0 011-1h3M17 3h3a1 1 0 011 1v3M21 17v3a1 1 0 01-1 1h-3M7 21H4a1 1 0 01-1-1v-3"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="13" width="4" height="4"/><path d="M13 7h4v2M7 15v2h2"/></svg>';
+  function estadoDe(inv) {
+    const e = entradas.get(norm(inv.nombre)), r = rsvp.get(norm(inv.nombre));
+    if (e && e.personas > 0) return { cls: 'ok', txt: `Llegó · ${e.personas}`, llego: true };
+    if (r && !r.asiste) return { cls: 'no', txt: 'Dijo que no' };
+    if (r) return { cls: 'pend', txt: `Confirmó ${r.personas}` };
+    return { cls: '', txt: 'Sin confirmar' };
+  }
+  function pintar() {
+    const llegaron = [...entradas.values()].reduce((a, e) => a + (e.personas || 0), 0);
+    const famLlegaron = invitados.filter(i => (entradas.get(norm(i.nombre)) || {}).personas > 0).length;
+    const esperadas = invitados.reduce((a, i) => { const r = rsvp.get(norm(i.nombre)); return a + (r ? (r.asiste ? r.personas : 0) : i.lugares); }, 0);
+    const lista = invitados
+      .filter(i => filtro === 'todos' || (filtro === 'llegaron' ? estadoDe(i).llego : !estadoDe(i).llego))
+      .filter(i => !busqueda || norm(i.nombre).includes(norm(busqueda)))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+    const sinEnviar = pendientes.length && !cfg.demo;
+    app.innerHTML = `
+      <div class="barra"><div class="w"><h1><small>Registro de entrada</small>${esc(cfg.demo ? 'Ejemplo' : cfg.boda)}</h1>
+        <button id="b-act" aria-label="Actualizar">⟳</button>${cfg.demo ? '' : '<button id="b-salir">Salir</button>'}</div></div>
+      <div class="wrap">
+        ${cfg.demo ? '<p class="demo">Ejemplo con datos ficticios. Toca “Probar con un pase” o busca una familia.</p>' : ''}
+        <div class="stats">
+          <div class="st ok"><b>${llegaron}</b><span>personas llegaron</span></div>
+          <div class="st"><b>${esperadas}</b><span>personas esperadas</span></div>
+          <div class="st"><b>${famLlegaron}/${invitados.length}</b><span>invitaciones</span></div>
+        </div>
+        <button class="escanear" id="b-esc" type="button">${ICO_QR}Escanear pase</button>
+        ${cfg.demo ? '<button class="b" id="b-prueba" type="button" style="width:100%;margin-top:10px">Probar con un pase (Familia López)</button>' : ''}
+        ${sinEnviar ? `<p class="pend-envio">⏳ ${pendientes.length} ${pendientes.length === 1 ? 'registro' : 'registros'} sin enviar (sin señal). Se envían solos cuando vuelva el internet.</p>` : ''}
+        <input class="buscar" id="buscar" type="search" placeholder="Buscar familia por nombre…" value="${esc(busqueda)}" aria-label="Buscar familia">
+        <div class="chips">${[['faltan', 'Faltan por llegar'], ['llegaron', 'Ya llegaron'], ['todos', 'Todas']].map(([k, t]) => `<button class="chip ${filtro === k ? 'on' : ''}" data-f="${k}" type="button">${t}</button>`).join('')}</div>
+        <div class="lista">${lista.length ? lista.map(i => { const s = estadoDe(i); return `<button class="fila" type="button" data-inv="${esc(i.nombre)}">
+            <span class="n"><b>${esc(i.nombre)}</b><small>${i.lugares} ${i.lugares === 1 ? 'lugar' : 'lugares'}${i.mesa ? ' · ' + esc(etqMesa(i.mesa)) : ''}</small></span><span class="tag ${s.cls}">${esc(s.txt)}</span></button>`; }).join('')
+          : `<p class="vacio">${invitados.length ? 'Nadie en esta lista.' : 'No hay lista de invitados. En el editor usa “Sincronizar lista de invitados”.'}</p>`}</div>
+      </div>`;
+    document.getElementById('b-esc').onclick = abrirCamara;
+    const bp = document.getElementById('b-prueba'); if (bp) bp.onclick = () => leido('INV1:demo:' + encodeURIComponent('Familia López'));
+    document.getElementById('b-act').onclick = () => cargar().then(() => avisar('Actualizado ✓'));
+    const bs = document.getElementById('b-salir'); if (bs) bs.onclick = () => { if (confirm('¿Cerrar sesión en este celular?')) { try { localStorage.removeItem(CLAVE); } catch (e) {} location.href = location.pathname; } };
+    const bu = document.getElementById('buscar');
+    bu.oninput = (e) => { busqueda = e.target.value; const pos = e.target.selectionStart; pintar(); const x = document.getElementById('buscar'); x.focus(); x.setSelectionRange(pos, pos); };
+    app.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { filtro = b.dataset.f; pintar(); });
+    app.querySelectorAll('[data-inv]').forEach(b => b.onclick = () => resultado({ nombre: b.dataset.inv }));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Resultado de escanear o de tocar una familia
+  // ---------------------------------------------------------------------------
+  function leido(texto) {
+    const m = /^INV1:([^:]*):(.+)$/.exec(String(texto || '').trim());
+    if (!m) return resultado({ error: 'Este código no es un pase de entrada.' }, true);
+    let boda, nombre; try { boda = decodeURIComponent(m[1]); nombre = decodeURIComponent(m[2]); } catch (e) { return resultado({ error: 'No se pudo leer el pase.' }, true); }
+    if (!cfg.demo && boda !== cfg.boda) return resultado({ error: 'Este pase es de otro evento.', nombre }, true);
+    resultado({ nombre }, true);
+  }
+  function resultado(r, desdeCamara) {
+    if (navigator.vibrate) navigator.vibrate(r.error ? [80, 60, 80] : 60);
+    const inv = r.nombre && buscarInv(r.nombre);
+    const e = inv && entradas.get(norm(inv.nombre)), rs = inv && rsvp.get(norm(inv.nombre));
+    let est, personas = 0;
+    if (r.error) est = { cls: 'no', ico: '✕', txt: r.error };
+    else if (!inv) est = { cls: 'no', ico: '!', txt: 'No está en la lista de invitados' };
+    else if (e && e.personas > 0) { est = { cls: 'ya', ico: '↺', txt: `Ya registró su entrada a las ${hora(e.fecha)}` }; personas = e.personas; }
+    else { est = { cls: 'ok', ico: '✓', txt: '¡Bienvenidos!' }; personas = rs && rs.asiste ? rs.personas || inv.lugares : inv.lugares; }
+    const maxP = Math.max(30, inv ? inv.lugares : 0);
+    const v = document.createElement('div'); v.className = 'velo';
+    v.innerHTML = `<div class="hoja" role="dialog" aria-modal="true" aria-label="Resultado">
+      <div class="estado ${est.cls}"><i aria-hidden="true">${est.ico}</i>${esc(est.txt)}</div>
+      ${r.nombre ? `<h2>${esc(r.nombre)}</h2>` : ''}
+      ${inv ? `<p class="det">${inv.lugares} ${inv.lugares === 1 ? 'lugar reservado' : 'lugares reservados'}${inv.mesa ? ' · <b>' + esc(etqMesa(inv.mesa)) + '</b>' : ''}<br>${rs ? (rs.asiste ? `Confirmó ${rs.personas} ${rs.personas === 1 ? 'persona' : 'personas'}` : 'Había dicho que no asistiría') : 'No confirmó por la invitación'}</p>` : ''}
+      ${inv || (r.nombre && !r.error) ? `<div class="personas"><button type="button" id="menos" aria-label="Menos personas">−</button><output id="np">${personas || 1}</output><button type="button" id="mas" aria-label="Más personas">+</button></div>
+        <p class="personas-txt">${est.cls === 'ya' ? 'personas en total de esta familia' : 'personas que entran ahora'}</p>` : ''}
+      <div class="botones">
+        ${inv || (r.nombre && !r.error) ? `<button class="b pri" type="button" id="ok">${est.cls === 'ya' ? 'Actualizar entrada' : est.cls === 'no' ? 'Registrar de todos modos' : '✓ Registrar entrada'}</button>` : ''}
+        ${est.cls === 'ya' ? '<button class="b peligro" type="button" id="deshacer">Deshacer entrada</button>' : ''}
+        <button class="b" type="button" id="cerrar">${desdeCamara ? 'Escanear otro' : 'Cerrar'}</button>
+        ${desdeCamara ? '<button class="b suave" type="button" id="lista">Ir a la lista</button>' : ''}
+      </div></div>`;
+    document.body.appendChild(v);
+    let n = personas || 1; const out = v.querySelector('#np');
+    const mm = v.querySelector('#menos'), ms = v.querySelector('#mas');
+    if (mm) mm.onclick = () => { n = Math.max(1, n - 1); out.textContent = n; };
+    if (ms) ms.onclick = () => { n = Math.min(maxP, n + 1); out.textContent = n; };
+    const cerrar = (seguir) => { v.remove(); if (seguir && desdeCamara) abrirCamara(); else pintar(); };
+    const ok = v.querySelector('#ok'); if (ok) ok.onclick = () => { const nombre = inv ? inv.nombre : r.nombre; registrar(nombre, n); if (!inv && !invitados.some(i => norm(i.nombre) === norm(nombre))) invitados.push({ nombre, lugares: 0, mesa: '' }); avisar(`✓ ${nombre}: ${n} ${n === 1 ? 'persona' : 'personas'}`); cerrar(true); };
+    const dz = v.querySelector('#deshacer'); if (dz) dz.onclick = () => { registrar(inv.nombre, 0); avisar('Entrada deshecha'); cerrar(false); };
+    v.querySelector('#cerrar').onclick = () => cerrar(true);
+    const li = v.querySelector('#lista'); if (li) li.onclick = () => cerrar(false);
+    (ok || v.querySelector('#cerrar')).focus();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Cámara: lee el QR con jsQR (funciona en Android y iPhone)
+  // ---------------------------------------------------------------------------
+  let flujo = null;
+  async function abrirCamara() {
+    const c = document.createElement('div'); c.className = 'camara';
+    c.innerHTML = '<video playsinline muted autoplay></video><div class="mira" aria-hidden="true"></div><p class="cam-txt">Apunta al código QR del pase</p><button class="cam-cerrar" type="button">Cerrar cámara</button>';
+    document.body.appendChild(c);
+    const video = c.querySelector('video'), txt = c.querySelector('.cam-txt');
+    let vivo = true;
+    const parar = () => { vivo = false; if (flujo) { flujo.getTracks().forEach(t => t.stop()); flujo = null; } c.remove(); };
+    c.querySelector('.cam-cerrar').onclick = () => { parar(); pintar(); };
+    try {
+      flujo = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+      video.srcObject = flujo; await video.play();
+    } catch (e) {
+      txt.textContent = 'No se pudo abrir la cámara. Da permiso de cámara a esta página (o búscala por nombre en la lista).';
+      return;
+    }
+    const cv = document.createElement('canvas'), g = cv.getContext('2d', { willReadFrequently: true });
+    let ultimo = 0;
+    const ciclo = (t) => {
+      if (!vivo) return;
+      if (t - ultimo > 120 && video.readyState >= 2 && window.jsQR) {
+        ultimo = t;
+        const k = Math.min(1, 720 / Math.max(video.videoWidth, video.videoHeight));
+        cv.width = Math.round(video.videoWidth * k); cv.height = Math.round(video.videoHeight * k);
+        g.drawImage(video, 0, 0, cv.width, cv.height);
+        const img = g.getImageData(0, 0, cv.width, cv.height);
+        const code = window.jsQR(img.data, cv.width, cv.height, { inversionAttempts: 'dontInvert' });
+        if (code && code.data) { parar(); leido(code.data); return; }
+      }
+      requestAnimationFrame(ciclo);
+    };
+    requestAnimationFrame(ciclo);
+  }
+
+  // ---------------------------------------------------------------------------
+  leerPend(); cargar();
+  setInterval(() => { enviarPendientes(); if (!document.hidden && !cfg.demo && !document.querySelector('.velo') && !document.querySelector('.camara')) cargar(true); }, 30000);
+  addEventListener('online', enviarPendientes);
+})();
+</script>
+</body>
+</html>

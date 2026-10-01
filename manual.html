@@ -119,6 +119,7 @@
   <a class="sub" href="#mesas">Paquete Mesas</a>
   <a class="sub" href="#confirmaciones">Confirmaciones automáticas</a>
   <a class="sub" href="#xv">XV años</a>
+  <a class="sub" href="#acceso">Pase de entrada con QR</a>
   <a href="#publicar">4. Publicar y enviar</a>
   <a class="sub" href="#subir">Subir la invitación</a>
   <a class="sub" href="#enlaces">Enlaces por familia</a>
@@ -222,7 +223,7 @@
     <li>Revisa, ajusta y sigue como siempre (Guardar datos, Descargar, Enlaces…).</li>
   </ol>
   <div class="caja tip"><b>Enlaces que puedes mandar</b><code>pedido.html?evento=xv</code> (empieza en XV años) · <code>pedido.html?plantilla=gala</code> (con el diseño ya elegido) · <code>pedido.html?paquete=Premium</code> (con el paquete elegido).</div>
-  <div class="caja ojo"><b>Actualiza tu código de Google (versión 3)</b>Para recibir pedidos, copia otra vez el código desde el editor (sección Confirmaciones automáticas), pégalo en Apps Script y ve a <b>Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión → Implementar</b>. Google te pedirá <b>permiso para usar tu Drive</b> (ahí guarda las fotos): acéptalo. La dirección no cambia.</div>
+  <div class="caja ojo"><b>Actualiza tu código de Google (versión 4)</b>Para recibir pedidos y usar el pase de entrada con QR, copia otra vez el código desde el editor (sección Confirmaciones automáticas), pégalo en Apps Script y ve a <b>Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión → Implementar</b>. Google te pedirá <b>permiso para usar tu Drive</b> (ahí guarda las fotos): acéptalo. La dirección no cambia.</div>
   <div class="caja tip"><b>¿Sin Google Sheets?</b>El formulario también funciona: al final el cliente toca <b>Compartir archivo por WhatsApp</b> (o lo descarga) y te lo manda. Tú lo abres en el editor con <span class="btn">📂 Abrir</span>.</div>
 
   <h3 id="editor">3.1 El editor, botón por botón</h3>
@@ -320,6 +321,18 @@
   </ol>
   <div class="caja tip"><b>En Mis bodas y en el panel</b>Los XV aparecen como "XV años de Sofía". El botón de acceso dice "Copiar acceso para la familia" y el mensaje de recordatorio dice "a los XV años de Sofía".</div>
   <div class="caja ojo"><b>¿Ya hiciste algunos datos como boda?</b>Si cambias de Boda a XV años, los textos que no habías cambiado se pasan solos a la versión de XV, y el nombre de la novia se usa como nombre de la quinceañera. Revisa todo antes de enviar.</div>
+
+  <h3 id="acceso">3.8 Pase de entrada con QR (paquete)</h3>
+  <p>Cada familia ve en su invitación un <b>pase de entrada</b> con su nombre, sus lugares, su mesa y un código QR, y puede guardarlo como imagen en su celular. También sale en su PDF. El día del evento, quien esté en la puerta lo escanea con su celular y queda registrado quién llegó y cuántos son.</p>
+  <ol class="pasos">
+    <li>Primero configura <b>Confirmaciones automáticas</b> y toca <span class="btn">👥 Sincronizar lista de invitados</span> (la puerta usa esa lista).</li>
+    <li>En la sección <b>Pase de entrada con QR</b> marca <b>Activar pase de entrada</b>. Para verlo en la vista previa, elige una familia en <b>Ver como</b>.</li>
+    <li>Descarga la invitación y manda a cada familia <b>su enlace personalizado</b> (el pase solo aparece en los enlaces con nombre).</li>
+    <li>Para el día del evento toca <span class="btn">🔗 Copiar acceso para la entrada</span> y mándalo a quien estará en la puerta (coordinador, hostess o un familiar). También está el botón <span class="btn">🚪 Entrada</span> en Mis bodas y en el panel de los novios.</li>
+    <li>En la puerta: <b>Escanear pase</b> → aparece "¡Bienvenidos! Familia López · 4 lugares · Mesa 5" → <b>Registrar entrada</b>. Si alguien no trae su pase, se busca por nombre en la lista.</li>
+  </ol>
+  <div class="caja tip"><b>Qué avisa la página de la puerta</b>Si ese pase ya entró (con la hora), si la familia no está en la lista, o si el pase es de otro evento. Se pueden ajustar las personas que llegaron o deshacer una entrada. Si se va la señal, guarda los registros y los manda solos cuando vuelve el internet. Varios celulares pueden registrar a la vez.</div>
+  <div class="caja ojo"><b>Necesita el código de Google versión 4</b>Si ya lo tenías instalado, actualízalo como se explica en la sección <a href="#formulario">3.0</a>. Para practicar sin internet: <a href="entrada.html?demo=1" target="_blank" rel="noopener">entrada.html?demo=1</a>.</div>
 </section>
 
 <!-- 4 -->

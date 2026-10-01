@@ -109,7 +109,7 @@
       { boda: 'valeria-y-santiago-ab12', clave: 'q7k2m9', nombres: 'Valeria & Santiago', fecha: f(9), invitaciones: 62, lugares: 180, respondidas: 47, confirmadas: 41, personas: 128, no: 6, pendientes: 15, deseos: 23, canciones: 12, ultima: h(2) },
       { boda: 'ana-y-luis-x9z1', clave: 'zz11yy', nombres: 'Ana & Luis', fecha: f(34), invitaciones: 40, lugares: 110, respondidas: 12, confirmadas: 11, personas: 30, no: 1, pendientes: 28, deseos: 5, canciones: 3, ultima: h(20) },
       { boda: 'mariana-y-diego-k3p0', clave: 'abc123', nombres: 'Mariana & Diego', fecha: f(76), invitaciones: 85, lugares: 240, respondidas: 0, confirmadas: 0, personas: 0, no: 0, pendientes: 85, deseos: 0, canciones: 0, ultima: '' },
-      { boda: 'sofia-y-andres-m2q8', clave: 'zxc987', nombres: 'Sofía & Andrés', fecha: f(-12), invitaciones: 55, lugares: 150, respondidas: 53, confirmadas: 49, personas: 141, no: 4, pendientes: 2, deseos: 31, canciones: 18, ultima: h(400) }
+      { boda: 'sofia-y-andres-m2q8', clave: 'zxc987', nombres: 'Sofía & Andrés', fecha: f(-12), invitaciones: 55, lugares: 150, respondidas: 53, confirmadas: 49, personas: 141, no: 4, pendientes: 2, deseos: 31, canciones: 18, llegaron: 133, ultima: h(400) }
     ];
   }
   function demoPedidos() {
@@ -119,6 +119,7 @@
       { recibido: h(50), pedido: '260929-c3d4', cliente: 'Ana Pérez', tel: '5512345678', evento: 'Boda', nombres: 'Ana & Luis', fecha: f(34), plantilla: 'vino', paquete: 'Personalizada', estado: 'Abierto' }
     ];
   }
+  const entradaUrl = (b) => { const p = new URLSearchParams({ b: b.boda, k: b.clave }); if (cfg.url !== N.hojaConfirmaciones) p.set('u', cfg.url); return cfg.demo ? 'entrada.html?demo=1' : new URL('entrada.html?' + p, location.href).href; };
   const formUrl = () => new URL('pedido.html', location.href).href;
   function copiarFormulario() {
     const msg = `¡Hola! 💌 Para hacer tu invitación, llena tus datos aquí (toma unos 10 minutos y se guarda solo):\n\n👉 ${formUrl()}\n\nAhí eliges tu diseño y subes tus fotos y tu lista de invitados.`;
@@ -206,7 +207,7 @@
           <div class="t ok"><b>${sum(prox, 'personas')}</b><span>personas confirmadas (próximas)</span></div>
           <div class="t pend"><b>${sum(prox, 'pendientes')}</b><span>invitaciones sin responder</span></div>
         </div>
-        ${version < 3 ? '<p class="demo">Para recibir los pedidos del formulario de tus clientes, actualiza tu código de Google a la versión 3 (manual, sección 3.0).</p>' : ''}
+        ${version < 4 ? '<p class="demo">Hay una versión nueva del código de Google (pedidos de clientes y pase de entrada con QR). Actualízalo: manual, sección 3.0.</p>' : ''}
         ${seccionPedidos()}
         <div class="filtros">
           ${[['proximas', 'Próximas'], ['pasadas', 'Pasadas'], ['todas', 'Todas']].map(([k, t]) => `<button class="chip ${filtro === k ? 'on' : ''}" data-f="${k}">${t}</button>`).join('')}
@@ -227,6 +228,7 @@
                 <span class="d">${b.respondidas}/${total || '?'} respondieron</span>
                 ${b.pendientes ? `<span class="d pend">${b.pendientes} ${b.pendientes === 1 ? 'pendiente' : 'pendientes'}</span>` : ''}
                 ${b.no ? `<span class="d no">${b.no} no ${b.no === 1 ? 'asiste' : 'asisten'}</span>` : ''}
+                ${b.llegaron ? `<span class="d ok">🚪 ${b.llegaron} llegaron</span>` : ''}
                 ${b.deseos ? `<span class="d">💌 ${b.deseos}</span>` : ''}${b.canciones ? `<span class="d">🎵 ${b.canciones}</span>` : ''}
               </div>
               ${alerta ? `<p class="alerta">⚠ Faltan ${n} días y ${b.pendientes} invitaciones no han respondido. Recuérdales usar el botón “Recordar” de su panel.</p>` : ''}
@@ -235,6 +237,7 @@
               <div class="acc">
                 <a class="b pri" href="${esc(panelUrl(b))}" target="_blank" rel="noopener">📊 Abrir panel</a>
                 <button class="b" data-acceso="${esc(b.boda)}">🔗 Acceso para novios</button>
+                <a class="b" href="${esc(entradaUrl(b))}" target="_blank" rel="noopener" title="Registro de entrada con el pase QR">🚪 Entrada</a>
                 <button class="b" data-copiar="${esc(b.boda)}" title="Código de la boda">📋 ${esc(b.boda)}</button>
               </div>
             </article>`;
