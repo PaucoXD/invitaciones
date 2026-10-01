@@ -146,6 +146,7 @@
             <button class="etiqueta" type="button" data-desplegar="caja-rsvp" aria-expanded="false">
               <strong data-invitado-nombre>Querido invitado</strong>
               <span>No. de pases <b data-pases>${e(r.pases || 2)}</b></span>
+              <span data-mesa-pase hidden></span>
             </button>
           </div>
           <div id="caja-rsvp" class="caja-form" hidden>${marco(`${S.hay(r.texto) ? `<p class="lead-v">${S.br(r.texto)}</p>` : ''}${S.formRsvp(d)}`)}</div>
@@ -230,7 +231,7 @@
   ${portada}
   ${padres}${cuenta}${padrinos}${itinerario}${ubicacion}
   ${gal[3] ? `<div class="tira rv">${foto(3, '')}</div>` : ''}
-  ${rsvp}${historia}${vestimenta}${regalos}${galeria}${extrasCollage}${hospedaje}${contactos}
+  ${rsvp}${S.mesa(d, { clase: 'v-mesa' })}${historia}${vestimenta}${regalos}${galeria}${extrasCollage}${hospedaje}${contactos}
   ${cierre}
 </main>`;
     },
@@ -423,6 +424,11 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
 .plantilla-vino .r-cierre{right:-20px;top:-40px;width:120px;z-index:3}
 .plantilla-vino .cierre-encaje{overflow:visible}
 .plantilla-vino .pie-v{background:#7e2638;color:#f3e3dc;text-align:center;padding:14px;font-size:14px;letter-spacing:.08em}
+
+/* Mesa */
+.plantilla-vino .sec-mesa{padding:60px 20px}
+.plantilla-vino .sec-mesa .titulo{font-family:var(--f-titulo);font-size:clamp(34px,9vw,46px);color:var(--titulo)}
+.plantilla-vino .plano{background:#f8f5f0;border-color:#d6cdc1;box-shadow:0 14px 30px rgba(80,40,30,.12)}
 
 /* Botones flotantes */
 .plantilla-vino .menu-btn{background:#c4949a;color:#fff;width:40px;height:40px}

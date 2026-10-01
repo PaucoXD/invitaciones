@@ -40,7 +40,7 @@
       if (!e.data || e.data.tipo !== 'invitacion') return;
       var y = window.scrollY;
       opciones.sinSobre = !e.data.conSobre;
-      mostrar(e.data.datos);
+      mostrar(e.data.prueba ? Object.assign({}, e.data.datos, { _prueba: e.data.prueba }) : e.data.datos);
       window.scrollTo(0, y);
     });
     parent.postMessage({ tipo: 'lista' }, '*');

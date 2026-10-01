@@ -225,6 +225,20 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 .en-portada.ya *,.en-portada.ya *::before,.en-portada.ya *::after{animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important;transition-delay:0s!important}
 .en-portada .sobre-atras,.en-portada .sobre-frente{animation:none!important}
 
+/* Mesas */
+.sec-mesa.sin-mesa{display:none}
+.mesa-txt{font-style:italic;color:var(--suave)}
+.mesa-num{font-family:var(--f-titulo);font-size:clamp(46px,12vw,64px);line-height:1.1;color:var(--titulo,var(--tinta));margin:4px 0 14px}
+.pase-mesa{display:block;font-style:normal;font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.25em;text-transform:uppercase;color:var(--acento);margin-top:6px}
+.plano{position:relative;width:100%;max-width:520px;aspect-ratio:4/3;margin:24px auto 0;background:var(--tarjeta,var(--fondo));border:1px solid var(--linea);border-radius:6px;overflow:hidden;box-shadow:inset 0 0 0 6px var(--fondo2,transparent)}
+.pl-el{position:absolute;display:flex;align-items:center;justify-content:center;border:1px dashed var(--linea);background:var(--fondo2,rgba(0,0,0,.04));color:var(--suave);font-family:var(--f-etiqueta);font-size:10px;letter-spacing:.2em;text-transform:uppercase;border-radius:4px}
+.pl-pista{background:repeating-linear-gradient(45deg,var(--fondo2,#eee) 0 8px,var(--tarjeta,#fff) 8px 16px)}
+.pl-novios{border-style:solid;border-color:var(--acento);color:var(--acento)}
+.pl-mesa{position:absolute;width:9%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:1px solid var(--linea);background:var(--fondo);display:flex;align-items:center;justify-content:center;font-family:var(--f-etiqueta);font-size:clamp(8px,2.4vw,12px);color:var(--suave);transition:all .4s}
+.pl-mesa.rect{width:15%;aspect-ratio:2.1;border-radius:4px}
+.pl-mesa.tuya{background:var(--acento2);border-color:var(--acento2);color:var(--fondo);font-weight:600;z-index:2;animation:latido 1.6s ease-in-out infinite;box-shadow:0 0 0 0 var(--acento2)}
+@keyframes latido{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--acento2) 60%,transparent)}70%{box-shadow:0 0 0 14px transparent}100%{box-shadow:0 0 0 0 transparent}}
+
 /* Menú y botón para volver arriba */
 .menu-btn,.arriba-btn{position:fixed;z-index:60;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--acento2);color:var(--fondo);box-shadow:0 6px 16px rgba(0,0,0,.18);transition:opacity .3s,transform .3s}
 .menu-btn{top:14px;right:14px}
@@ -458,6 +472,11 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
 .plantilla-vino .r-cierre{right:-20px;top:-40px;width:120px;z-index:3}
 .plantilla-vino .cierre-encaje{overflow:visible}
 .plantilla-vino .pie-v{background:#7e2638;color:#f3e3dc;text-align:center;padding:14px;font-size:14px;letter-spacing:.08em}
+
+/* Mesa */
+.plantilla-vino .sec-mesa{padding:60px 20px}
+.plantilla-vino .sec-mesa .titulo{font-family:var(--f-titulo);font-size:clamp(34px,9vw,46px);color:var(--titulo)}
+.plantilla-vino .plano{background:#f8f5f0;border-color:#d6cdc1;box-shadow:0 14px 30px rgba(80,40,30,.12)}
 
 /* Botones flotantes */
 .plantilla-vino .menu-btn{background:#c4949a;color:#fff;width:40px;height:40px}
@@ -696,6 +715,7 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
             <button class="etiqueta" type="button" data-desplegar="caja-rsvp" aria-expanded="false">
               <strong data-invitado-nombre>Querido invitado</strong>
               <span>No. de pases <b data-pases>2</b></span>
+              <span data-mesa-pase hidden></span>
             </button>
           </div>
           <div id="caja-rsvp" class="caja-form" hidden><div class="troquel " ><span class="tq tq1"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 38V14C2 7 7 2 14 2h24"/><path d="M8 38V18c0-6 4-10 10-10h20"/><path d="M14 14c4 0 6 3 4 6s-6 1-5-2"/><circle cx="5" cy="5" r="1.6" fill="currentColor"/></svg></span><span class="tq tq2"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 38V14C2 7 7 2 14 2h24"/><path d="M8 38V18c0-6 4-10 10-10h20"/><path d="M14 14c4 0 6 3 4 6s-6 1-5-2"/><circle cx="5" cy="5" r="1.6" fill="currentColor"/></svg></span><span class="tq tq3"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 38V14C2 7 7 2 14 2h24"/><path d="M8 38V18c0-6 4-10 10-10h20"/><path d="M14 14c4 0 6 3 4 6s-6 1-5-2"/><circle cx="5" cy="5" r="1.6" fill="currentColor"/></svg></span><span class="tq tq4"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 38V14C2 7 7 2 14 2h24"/><path d="M8 38V18c0-6 4-10 10-10h20"/><path d="M14 14c4 0 6 3 4 6s-6 1-5-2"/><circle cx="5" cy="5" r="1.6" fill="currentColor"/></svg></span><div class="tq-in"><form id="form-rsvp" class="rv" novalidate>
@@ -712,7 +732,14 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
           <button class="btn solido" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Confirmar por WhatsApp</button>
           <p class="limite">Agradeceremos tu confirmación antes del 20 de febrero de 2027</p>
         </form></div></div></div>
-        </section>
+        </section><section id="mesa" class="sec sec-mesa v-mesa sin-mesa"><div class="cont"><p class="eyebrow rv">Su lugar</p><h2 class="titulo rv">Tu mesa</h2>
+        <p class="mesa-txt rv"><span data-invitado-nombre>Querido invitado</span>, te esperamos en la</p>
+        <p class="mesa-num rv" data-mesa-nombre></p>
+        <p class="lead rv">Al llegar, nuestro personal te guiará a tu lugar.</p>
+        <div class="rv"><div class="plano">
+        <div class="pl-el pl-novios" style="left:30%;top:3%;width:40%;height:8%"><span>Novios</span></div><div class="pl-el pl-pista" style="left:35%;top:34%;width:30%;height:26%"><span>Pista</span></div><div class="pl-el pl-entrada" style="left:42%;top:92%;width:16%;height:7%"><span>Entrada</span></div>
+        <div class="pl-mesa " data-mesa="1" style="left:36.2%;top:20%"><span>1</span></div><div class="pl-mesa " data-mesa="2" style="left:49.8%;top:20%"><span>2</span></div><div class="pl-mesa " data-mesa="3" style="left:63.4%;top:20%"><span>3</span></div><div class="pl-mesa " data-mesa="4" style="left:22.6%;top:30%"><span>4</span></div><div class="pl-mesa " data-mesa="5" style="left:77%;top:30%"><span>5</span></div><div class="pl-mesa " data-mesa="6" style="left:22.6%;top:40%"><span>6</span></div><div class="pl-mesa " data-mesa="7" style="left:77%;top:40%"><span>7</span></div><div class="pl-mesa " data-mesa="8" style="left:22.6%;top:50%"><span>8</span></div><div class="pl-mesa " data-mesa="9" style="left:77%;top:50%"><span>9</span></div><div class="pl-mesa " data-mesa="10" style="left:22.6%;top:60%"><span>10</span></div><div class="pl-mesa " data-mesa="11" style="left:77%;top:60%"><span>11</span></div><div class="pl-mesa " data-mesa="12" style="left:36.2%;top:70%"><span>12</span></div><div class="pl-mesa " data-mesa="13" style="left:49.8%;top:70%"><span>13</span></div><div class="pl-mesa " data-mesa="14" style="left:63.4%;top:70%"><span>14</span></div>
+      </div></div></div></section>
         <section id="historia" class="v-sec">
           <h2 class="v-tit rv">Nuestra historia</h2>
           <div class="volteo rv" data-voltear tabindex="0" role="button" aria-label="Voltear tarjeta">
@@ -934,11 +961,22 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
     var $ = function (s, r) { return (r || document).querySelector(s); };
     var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
-    // Personalización: ?invitado=Familia%20López&pases=4
-    var params = new URLSearchParams(location.search);
-    var invitado = (params.get('invitado') || '').trim().slice(0, 60);
+    // Personalización: ?invitado=Familia%20López&pases=4&mesa=5  (en el editor: d._prueba)
+    var params = new URLSearchParams(location.search), prueba = d._prueba || {};
+    var invitado = (params.get('invitado') || prueba.nombre || '').trim().slice(0, 60);
     var pasesDef = parseInt((d.rsvp && d.rsvp.pases) || 2, 10) || 2;
-    var pases = Math.min(Math.max(parseInt(params.get('pases'), 10) || pasesDef, 1), 20);
+    var pases = Math.min(Math.max(parseInt(params.get('pases') || prueba.pases, 10) || pasesDef, 1), 30);
+    var mesa = String(params.get('mesa') || prueba.mesa || '').trim().slice(0, 40);
+    if (mesa && d.mesas && d.mesas.activo) {
+      var mesasEl = $$('[data-mesa]').filter(function (e) { return e.getAttribute('data-mesa') === mesa; });
+      if (mesasEl.length) {
+        var etq = /^\d+$/.test(mesa) ? 'Mesa ' + mesa : mesa;
+        mesasEl.forEach(function (e) { e.classList.add('tuya'); });
+        $$('.sec-mesa').forEach(function (e) { e.classList.remove('sin-mesa'); });
+        $$('[data-mesa-nombre]').forEach(function (e) { e.textContent = etq; });
+        $$('[data-mesa-pase]').forEach(function (e) { e.textContent = etq; e.hidden = false; });
+      }
+    }
     if (invitado) $$('[data-invitado-nombre]').forEach(function (e) { e.textContent = invitado; });
     $$('[data-pases]').forEach(function (e) { e.textContent = pases; });
     $$('[data-pases-palabra]').forEach(function (e) { e.textContent = pases === 1 ? 'lugar' : 'lugares'; });
@@ -1171,6 +1209,6 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
         W.open('https://wa.me/' + num + '?text=' + encodeURIComponent(txt), '_blank');
       });
     }
-  })({"plantilla":"vino","novia":"Valeria","novio":"Santiago","iniciales":"","fecha":"2027-03-20","hora":"17:00","zonaHoraria":"-06:00","ciudad":"San Miguel de Allende, Guanajuato","introPortada":"Nos casamos","fotoPortada":"","frase":"El amor no consiste en mirarse el uno al otro, sino en mirar juntos en la misma dirección.","fraseAutor":"Antoine de Saint-Exupéry","tituloFamilia":"Con la bendición de Dios y de nuestros padres","textoFamilia":"tenemos el honor de invitarte a celebrar la unión de nuestras vidas","padresNovia":"Ricardo Morales Ibarra\nLucía Fernández de Morales","padresNovio":"Alejandro Ríos Castañeda †\nMariana Treviño Garza","padrinos":[{"rol":"Velación","nombres":"Jorge & Patricia Salinas"},{"rol":"Anillos","nombres":"Diego & Fernanda Ríos"},{"rol":"Lazo","nombres":"Héctor & Andrea Morales"}],"itinerario":[{"hora":"17:00","evento":"Ceremonia religiosa","detalle":"Parroquia de San Miguel","icono":"iglesia"},{"hora":"19:00","evento":"Cóctel de bienvenida","detalle":"Jardín de la hacienda","icono":"copa"},{"hora":"20:30","evento":"Cena","detalle":"Salón principal","icono":"cena"},{"hora":"22:00","evento":"¡A bailar!","detalle":"Pista bajo las estrellas","icono":"musica"},{"hora":"03:00","evento":"Fin de la fiesta","detalle":"Gracias por acompañarnos","icono":"luna"}],"lugares":[{"tipo":"Ceremonia","hora":"17:00","nombre":"Parroquia de San Miguel Arcángel","direccion":"Plaza Principal s/n, Zona Centro\nSan Miguel de Allende, Gto.","mapa":"","icono":"iglesia"},{"tipo":"Recepción","hora":"19:00","nombre":"Hacienda Las Jacarandas","direccion":"Carretera a Dolores Hidalgo km 4.5\nSan Miguel de Allende, Gto.","mapa":"","icono":"hacienda"}],"vestimenta":{"tipo":"Formal","texto":"Sugerimos tonos neutros, tierra y verdes suaves.","colores":["#5d6b52","#8a9a7b","#c9b79c","#b8955a","#7a5c4a"],"nota":"El color blanco está reservado para la novia."},"historia":{"titulo":"Nuestra historia","texto":"Desde aquel café en Coyoacán en 2019, cada día ha sido una aventura juntos.","fotos":[{"src":"","pie":"2019"},{"src":"","pie":"El sí"},{"src":"","pie":"2027"}]},"regalos":{"titulo":"Tu presencia es nuestro mejor regalo","texto":"pero si deseas obsequiarnos algo, aquí algunas opciones","opciones":[{"nombre":"Liverpool","detalle":"Evento #50123456","enlace":"","icono":"regalo"},{"nombre":"Amazon","detalle":"Lista “Vale y Santi”","enlace":"","icono":"bolsa"},{"nombre":"Lluvia de sobres","detalle":"El día del evento","enlace":"","icono":"sobre"}],"banco":"BBVA","titular":"Valeria Morales Fernández","clabe":"012180001234567890"},"rsvp":{"whatsapp":"5215512345678","fechaLimite":"2027-02-20","pases":2,"texto":""},"hospedaje":[{"nombre":"Hotel Casa de Sierra Nevada","nota":"Tarifa especial: BODAVS","direccion":"Hospicio 42, Zona Centro\nSan Miguel de Allende, Gto.","mapa":""},{"nombre":"Hotel Matilda","nota":"A 5 minutos de la parroquia","direccion":"Aldama 53, Zona Centro\nSan Miguel de Allende, Gto.","mapa":""}],"contactos":{"novia":"5215512345678","novio":"5215587654321"},"hashtag":"#ValeYSantiParaSiempre","nota":"Ceremonia y recepción solo para adultos. ¡Gracias por tu comprensión!","despedida":"Gracias por ser parte de nuestra historia","musica":"melodia","adornos":{},"ocultar":{},"encuadres":{},"_rutaAdornos":"plantillas/adornos/","_efecto":"petalos","_efectoColores":["#7e2638","#a8455a","#fbf8f3","#9c9b5f"]});</script>
+  })({"plantilla":"vino","novia":"Valeria","novio":"Santiago","iniciales":"","fecha":"2027-03-20","hora":"17:00","zonaHoraria":"-06:00","ciudad":"San Miguel de Allende, Guanajuato","introPortada":"Nos casamos","fotoPortada":"","frase":"El amor no consiste en mirarse el uno al otro, sino en mirar juntos en la misma dirección.","fraseAutor":"Antoine de Saint-Exupéry","tituloFamilia":"Con la bendición de Dios y de nuestros padres","textoFamilia":"tenemos el honor de invitarte a celebrar la unión de nuestras vidas","padresNovia":"Ricardo Morales Ibarra\nLucía Fernández de Morales","padresNovio":"Alejandro Ríos Castañeda †\nMariana Treviño Garza","padrinos":[{"rol":"Velación","nombres":"Jorge & Patricia Salinas"},{"rol":"Anillos","nombres":"Diego & Fernanda Ríos"},{"rol":"Lazo","nombres":"Héctor & Andrea Morales"}],"itinerario":[{"hora":"17:00","evento":"Ceremonia religiosa","detalle":"Parroquia de San Miguel","icono":"iglesia"},{"hora":"19:00","evento":"Cóctel de bienvenida","detalle":"Jardín de la hacienda","icono":"copa"},{"hora":"20:30","evento":"Cena","detalle":"Salón principal","icono":"cena"},{"hora":"22:00","evento":"¡A bailar!","detalle":"Pista bajo las estrellas","icono":"musica"},{"hora":"03:00","evento":"Fin de la fiesta","detalle":"Gracias por acompañarnos","icono":"luna"}],"lugares":[{"tipo":"Ceremonia","hora":"17:00","nombre":"Parroquia de San Miguel Arcángel","direccion":"Plaza Principal s/n, Zona Centro\nSan Miguel de Allende, Gto.","mapa":"","icono":"iglesia"},{"tipo":"Recepción","hora":"19:00","nombre":"Hacienda Las Jacarandas","direccion":"Carretera a Dolores Hidalgo km 4.5\nSan Miguel de Allende, Gto.","mapa":"","icono":"hacienda"}],"vestimenta":{"tipo":"Formal","texto":"Sugerimos tonos neutros, tierra y verdes suaves.","colores":["#5d6b52","#8a9a7b","#c9b79c","#b8955a","#7a5c4a"],"nota":"El color blanco está reservado para la novia."},"historia":{"titulo":"Nuestra historia","texto":"Desde aquel café en Coyoacán en 2019, cada día ha sido una aventura juntos.","fotos":[{"src":"","pie":"2019"},{"src":"","pie":"El sí"},{"src":"","pie":"2027"}]},"regalos":{"titulo":"Tu presencia es nuestro mejor regalo","texto":"pero si deseas obsequiarnos algo, aquí algunas opciones","opciones":[{"nombre":"Liverpool","detalle":"Evento #50123456","enlace":"","icono":"regalo"},{"nombre":"Amazon","detalle":"Lista “Vale y Santi”","enlace":"","icono":"bolsa"},{"nombre":"Lluvia de sobres","detalle":"El día del evento","enlace":"","icono":"sobre"}],"banco":"BBVA","titular":"Valeria Morales Fernández","clabe":"012180001234567890"},"rsvp":{"whatsapp":"5215512345678","fechaLimite":"2027-02-20","pases":2,"texto":""},"hospedaje":[{"nombre":"Hotel Casa de Sierra Nevada","nota":"Tarifa especial: BODAVS","direccion":"Hospicio 42, Zona Centro\nSan Miguel de Allende, Gto.","mapa":""},{"nombre":"Hotel Matilda","nota":"A 5 minutos de la parroquia","direccion":"Aldama 53, Zona Centro\nSan Miguel de Allende, Gto.","mapa":""}],"contactos":{"novia":"5215512345678","novio":"5215587654321"},"invitados":[{"nombre":"Familia López","pases":4,"mesa":"5"},{"nombre":"Ana y Luis Pérez","pases":2,"mesa":"3"},{"nombre":"Tía Carmen","pases":1,"mesa":"5"},{"nombre":"Familia Hernández","pases":5,"mesa":"8"}],"mesas":{"activo":true,"texto":"Al llegar, nuestro personal te guiará a tu lugar.","lista":[{"nombre":"1","lugares":10,"forma":"redonda","x":36.2,"y":20},{"nombre":"2","lugares":10,"forma":"redonda","x":49.8,"y":20},{"nombre":"3","lugares":10,"forma":"redonda","x":63.4,"y":20},{"nombre":"4","lugares":10,"forma":"redonda","x":22.6,"y":30},{"nombre":"5","lugares":10,"forma":"redonda","x":77,"y":30},{"nombre":"6","lugares":10,"forma":"redonda","x":22.6,"y":40},{"nombre":"7","lugares":10,"forma":"redonda","x":77,"y":40},{"nombre":"8","lugares":10,"forma":"redonda","x":22.6,"y":50},{"nombre":"9","lugares":10,"forma":"redonda","x":77,"y":50},{"nombre":"10","lugares":10,"forma":"redonda","x":22.6,"y":60},{"nombre":"11","lugares":10,"forma":"redonda","x":77,"y":60},{"nombre":"12","lugares":10,"forma":"redonda","x":36.2,"y":70},{"nombre":"13","lugares":10,"forma":"redonda","x":49.8,"y":70},{"nombre":"14","lugares":10,"forma":"redonda","x":63.4,"y":70}],"elementos":[{"tipo":"novios","x":30,"y":3,"w":40,"h":8},{"tipo":"pista","x":35,"y":34,"w":30,"h":26},{"tipo":"entrada","x":42,"y":92,"w":16,"h":7}]},"hashtag":"#ValeYSantiParaSiempre","nota":"Ceremonia y recepción solo para adultos. ¡Gracias por tu comprensión!","despedida":"Gracias por ser parte de nuestra historia","musica":"melodia","adornos":{},"ocultar":{},"encuadres":{},"_rutaAdornos":"plantillas/adornos/","_efecto":"petalos","_efectoColores":["#7e2638","#a8455a","#fbf8f3","#9c9b5f"]});</script>
 </body>
 </html>

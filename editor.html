@@ -95,6 +95,24 @@
   .enc-box img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;user-select:none}
   .enc-mira{position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px;border:2px solid rgba(255,255,255,.85);border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.3);pointer-events:none}
   .campo input[type=range]{width:100%;accent-color:var(--accent)}
+  /* Invitados y mesas */
+  .inv-herr{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+  .inv-total{font-weight:600;font-size:13px;width:100%}
+  .alerta{color:var(--danger);font-size:12.5px;margin-top:4px}
+  .fila3{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px}
+  .ed-mesas{margin-top:14px}
+  .ed-barra{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .ed-plano{position:relative;aspect-ratio:4/3;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;touch-action:none;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:10% 10%;background-color:#fdfbf8}
+  .ed-el{position:absolute;display:flex;align-items:center;justify-content:center;border:1.5px dashed #b9ab97;background:rgba(240,234,224,.85);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#7b6f60;border-radius:4px;cursor:grab;user-select:none}
+  .ed-el.pl-novios{border-color:var(--accent);color:var(--accent)}
+  .ed-mesa{position:absolute;width:9.5%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:#fff;border:1.5px solid #9d8f7c;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:grab;user-select:none;line-height:1.05;box-shadow:0 2px 4px rgba(0,0,0,.08)}
+  .ed-mesa.rect{width:15%;aspect-ratio:2.1;border-radius:5px}
+  .ed-mesa b{font-size:12px}
+  .ed-mesa small{font-size:9px;color:var(--muted)}
+  .ed-mesa.lleno{border-color:var(--danger);background:#fbeceb}
+  .ed-mesa.sel,.ed-el.sel{outline:3px solid rgba(155,95,104,.45);z-index:3}
+  .ed-panel{margin-top:10px}
+  .ed-resumen{margin:8px 0}
   /* Modal */
   .modal{position:fixed;inset:0;background:rgba(30,25,20,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
   .modal.ver{display:flex}
@@ -141,6 +159,7 @@
     <div class="vista-ctrl">
       <div class="seg" id="dispositivo"><button data-d="cel" class="on">📱 Celular</button><button data-d="compu">💻 Computadora</button></div>
       <label class="check" style="margin:0"><input type="checkbox" id="con-sobre"> Ver sobre de entrada</label>
+      <label class="check" style="margin:0">Ver como: <select id="ver-como" style="max-width:220px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:#fff"><option value="">Invitado genérico</option></select></label>
     </div>
     <div class="marco-vista cel" id="marco-vista"><iframe id="vista" src="invitacion.html?preview=1&sinSobre=1" title="Vista previa"></iframe></div>
   </div>
@@ -150,10 +169,8 @@
 <div class="modal" id="modal-invitados">
   <div class="caja">
     <h2>Enlaces personalizados para invitados</h2>
-    <p>Cada invitado verá su nombre en el sobre y cuántos lugares tiene reservados. Primero publica la invitación y pega aquí su dirección.</p>
+    <p>Cada invitado verá su nombre en el sobre, cuántos lugares tiene y (si contrataron el paquete) su mesa. La lista se edita en la sección “Invitados”. Primero publica la invitación y pega aquí su dirección.</p>
     <div class="campo"><label>Dirección de la invitación publicada</label><input type="url" id="inv-base" placeholder="https://tusitio.com/valeria-y-santiago.html"></div>
-    <div class="campo"><label>Lista de invitados — uno por renglón: Nombre | lugares</label>
-      <textarea id="inv-lista" placeholder="Familia López | 4&#10;Ana y Luis Pérez | 2&#10;Tía Carmen | 1"></textarea></div>
     <div class="campo"><label>Mensaje para WhatsApp ({nombre} y {enlace} se reemplazan)</label>
       <textarea id="inv-msg" style="min-height:70px;font-family:inherit"></textarea></div>
     <div id="inv-tabla"></div>
