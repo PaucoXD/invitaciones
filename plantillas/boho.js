@@ -87,7 +87,7 @@ ${S.sobre(d, { forro: FORRO })}
     },
 
     css: `
-body.plantilla-boho{--fondo:#fbf4ec;--fondo2:#f3e4d3;--tinta:#4b3428;--suave:#8f6f5c;--acento:#c2734f;--acento2:#a0563a;--linea:#e6cdb4;--oscuro:#8a4a32;--sobre-oscuro:#fbeee2;--titulo:#8a4a32;--tarjeta:#fffaf4;--radio-btn:40px;
+body.plantilla-boho{--acento-texto:#91563b;--fondo:#fbf4ec;--fondo2:#f3e4d3;--tinta:#4b3428;--suave:#7b5f4f;--acento:#c2734f;--acento2:#9a5338;--linea:#e6cdb4;--oscuro:#8a4a32;--sobre-oscuro:#fbeee2;--titulo:#8a4a32;--tarjeta:#fffaf4;--radio-btn:40px;
   --f-titulo:'Allura',cursive;--f-texto:'EB Garamond',Georgia,serif;--f-etiqueta:'Josefin Sans',system-ui,sans-serif;
   --fondo-sobre:radial-gradient(circle at 50% 120%,#f0d2bd,#fbf4ec 70%);--sobre-c1:#c2734f;--sobre-c2:#cf8562;--sobre-c3:#d99574;--sello:radial-gradient(circle at 35% 30%,#e3bd6a,#c9973a 60%,#a97a26);--sello-borde:#b8862f}
 .plantilla-boho .titulo{font-size:clamp(50px,12vw,76px)}
@@ -107,7 +107,7 @@ body.plantilla-boho{--fondo:#fbf4ec;--fondo2:#f3e4d3;--tinta:#4b3428;--suave:#8f
 .plantilla-boho .pam-izq{left:-70px;rotate:-8deg}
 .plantilla-boho .pam-der{right:-70px;scale:-1 1;rotate:8deg;animation-delay:-3s}
 @keyframes viento{0%,100%{transform:rotate(0)}50%{transform:rotate(3deg)}}
-.plantilla-boho .intro{font-family:'Italiana',serif;font-size:15px;letter-spacing:.5em;text-transform:uppercase;color:var(--acento)}
+.plantilla-boho .intro{font-family:'Italiana',serif;font-size:15px;letter-spacing:.5em;text-transform:uppercase;color:var(--acento-texto)}
 .plantilla-boho .nombres{font-size:clamp(66px,17vw,110px);margin:12px 0}
 .plantilla-boho .nombres .amp{font-family:'Italiana',serif;font-size:.3em;letter-spacing:.2em;margin:4px 0 10px}
 .plantilla-boho .fecha-boho{display:flex;align-items:center;justify-content:center;gap:16px;font-family:var(--f-etiqueta);text-transform:uppercase;letter-spacing:.25em;font-size:11px;color:var(--suave)}

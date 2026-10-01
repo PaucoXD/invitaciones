@@ -56,7 +56,7 @@ ${S.sobre(d)}
     },
 
     css: `
-body.plantilla-botanica{--fondo:#fbf8f2;--fondo2:#f5efe4;--tinta:#3a3631;--suave:#7a7268;--acento:#b8955a;--acento2:#5d6b52;--linea:#e2d6c0;--oscuro:#3f4a37;--sobre-oscuro:#fbf8f2;--titulo:#3f4a37;
+body.plantilla-botanica{--acento-texto:#7f673e;--fondo:#fbf8f2;--fondo2:#f5efe4;--tinta:#3a3631;--suave:#716a61;--acento:#b8955a;--acento2:#5d6b52;--linea:#e2d6c0;--oscuro:#3f4a37;--sobre-oscuro:#fbf8f2;--titulo:#3f4a37;
   --f-titulo:'Great Vibes',cursive;--f-texto:'Cormorant Garamond',Georgia,serif;--f-etiqueta:'Montserrat',system-ui,sans-serif;
   --fondo-sobre:radial-gradient(ellipse at center,#fdfaf4 0%,#efe6d6 100%);--sobre-c1:#e2d5bb;--sobre-c2:#efe5d1;--sobre-c3:#f3ebdb;--sello:radial-gradient(circle at 35% 30%,#c9a96e,#9c7b45 60%,#7d5f31);--sello-borde:#a7864f}
 .plantilla-botanica .alt{background:var(--fondo2)}

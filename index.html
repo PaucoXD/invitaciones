@@ -22,7 +22,7 @@
 <script src="plantillas/xv-mariposas.js"></script>
 <script src="plantillas/xv-gala.js"></script>
 <style>
-  :root{--bg:#faf6f1;--bg2:#f3ece3;--card:#fff;--ink:#2e2721;--muted:#7f7468;--line:#e8dfd3;--accent:#8e3b4a;--accent2:#b8955a;--dark:#2b1a1e;--serif:'Cormorant Garamond',Georgia,serif;--sans:Inter,system-ui,sans-serif}
+  :root{--bg:#faf6f1;--bg2:#f3ece3;--card:#fff;--ink:#2e2721;--muted:#72685e;--line:#e8dfd3;--accent:#8e3b4a;--accent2:#b8955a;--dark:#2b1a1e;--serif:'Cormorant Garamond',Georgia,serif;--sans:Inter,system-ui,sans-serif}
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
   body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;font-size:16px}
@@ -39,7 +39,7 @@
   .btn:hover{background:var(--ink);color:#fff}
   .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
   .btn.pri:hover{filter:brightness(.92)}
-  .btn.wa{background:#1fa855;border-color:#1fa855;color:#fff}
+  .btn.wa{background:#198644;border-color:#198644;color:#fff}
   .btn.wa:hover{filter:brightness(.93)}
   .btn.chico{padding:9px 16px;font-size:13.5px}
   .btn svg{width:18px;height:18px}
@@ -69,7 +69,8 @@
   .beneficios{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
   .grid-b{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px}
   .ben{padding:22px;border-radius:16px;background:var(--bg)}
-  .ben i{font-style:normal;font-size:26px}
+  .ben i{display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:12px;background:var(--card);color:var(--accent);box-shadow:0 0 0 1px var(--line);margin:0 auto 12px}
+  .ben i svg{width:24px;height:24px}
   .ben h3{font-size:16px;margin:8px 0 4px}
   .ben p{color:var(--muted);font-size:14px}
 
@@ -78,6 +79,14 @@
   .filtros button{font:inherit;font-size:14px;padding:10px 22px;border-radius:40px;border:1px solid currentColor;background:transparent;cursor:pointer;opacity:.7}
   .filtros button.on{opacity:1;font-weight:600;box-shadow:0 0 0 3px rgba(0,0,0,.06)}
   .tarjeta[hidden]{display:none}
+  .opiniones[hidden]{display:none}
+  .grid-o{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin:36px 0 30px;text-align:left}
+  .opinion{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px}
+  .opinion blockquote{font-family:var(--serif);font-size:20px;line-height:1.45;font-style:italic;color:var(--ink)}
+  .opinion figcaption{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
+  .opinion figcaption b{display:block;color:var(--ink);font-size:15px}
+  .opinion img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+  :where(a,button,summary):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   .rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:28px;margin-top:40px}
   .tarjeta{background:var(--card);border-radius:20px;padding:16px;border:1px solid var(--line);display:flex;flex-direction:column;transition:transform .3s,box-shadow .3s}
   .tarjeta:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(60,40,20,.12)}
@@ -145,11 +154,13 @@
   .final .acc{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:28px}
   .final .btn{border-color:#f4e9e2;color:#f4e9e2}
   .final .btn:hover{background:#f4e9e2;color:var(--dark)}
+  .final .btn.wa{color:#fff;border-color:#198644}
+  .final .btn.wa:hover{background:#198644;color:#fff;filter:brightness(.93)}
   footer{background:#21151a;color:#bfaea6;font-size:13px;padding:28px 0}
   footer .cont{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;align-items:center}
   footer a{color:#e6d5cd}
   .redes{display:flex;gap:16px}
-  .flotante{position:fixed;right:18px;bottom:18px;z-index:30;width:58px;height:58px;border-radius:50%;background:#1fa855;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(0,0,0,.25);transition:transform .2s}
+  .flotante{position:fixed;right:18px;bottom:18px;z-index:30;width:58px;height:58px;border-radius:50%;background:#198644;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(0,0,0,.25);transition:transform .2s}
   .flotante:hover{transform:scale(1.06)}
   .flotante svg{width:30px;height:30px}
   .rv{opacity:0;transform:translateY(26px);transition:opacity .9s ease,transform .9s ease}
@@ -206,14 +217,14 @@
   <p class="eyebrow rv">Todo en un enlace</p>
   <h2 class="rv">Lo que incluye tu invitación</h2>
   <div class="grid-b">
-    <div class="ben rv"><i>✉️</i><h3>Sobre animado</h3><p>Se rompe el sello, salen pétalos y aparece su invitación con música.</p></div>
-    <div class="ben rv"><i>👨‍👩‍👧</i><h3>Para cada familia</h3><p>“Familia López · 4 lugares”: cada quien ve su nombre y sus pases.</p></div>
-    <div class="ben rv"><i>✅</i><h3>Confirmaciones solas</h3><p>Ves en tu panel quién va, cuántos son y a quién recordarle.</p></div>
-    <div class="ben rv"><i>🪑</i><h3>Plano de mesas</h3><p>Cada invitado ve su mesa resaltada en el plano del salón.</p></div>
-    <div class="ben rv"><i>📍</i><h3>Mapas y horarios</h3><p>Ceremonia, recepción, itinerario y botón para llegar con Google Maps.</p></div>
-    <div class="ben rv"><i>🎁</i><h3>Mesa de regalos</h3><p>Liverpool, Amazon o CLABE con botón para copiarla.</p></div>
-    <div class="ben rv"><i>📄</i><h3>PDF para imprimir</h3><p>Para los abuelos y tíos: misma invitación en PDF con su nombre y QR.</p></div>
-    <div class="ben rv"><i>⏳</i><h3>Cuenta regresiva</h3><p>Días, horas y minutos, y un botón para guardarla en su calendario.</p></div>
+    <div class="ben rv"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></i><h3>Sobre animado</h3><p>Se rompe el sello, salen pétalos y aparece su invitación con música.</p></div>
+    <div class="ben rv"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2c3 .2 5.5 2.6 5.5 5.8"/></svg></i><h3>Para cada familia</h3><p>“Familia López · 4 lugares”: cada quien ve su nombre y sus pases.</p></div>
+    <div class="ben rv"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/></svg></i><h3>Confirmaciones solas</h3><p>Ves en tu panel quién va, cuántos son y a quién recordarle.</p></div>
+    <div class="ben rv"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><circle cx="5" cy="5" r="1.6"/><circle cx="19" cy="5" r="1.6"/><circle cx="5" cy="19" r="1.6"/><circle cx="19" cy="19" r="1.6"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></i><h3>Plano de mesas</h3><p>Cada invitado ve su mesa resaltada en el plano del salón.</p></div>
+    <div class="ben rv"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></i><h3>Mapas y horarios</h3><p>Ceremonia, recepción, itinerario y botón para llegar con Google Maps.</p></div>
+    <div class="ben rv"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13M12 8c-1.5-3.5-6-4-6-1.5S9.5 8 12 8zm0 0c1.5-3.5 6-4 6-1.5S14.5 8 12 8z"/></svg></i><h3>Mesa de regalos</h3><p>Liverpool, Amazon o CLABE con botón para copiarla.</p></div>
+    <div class="ben rv"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></i><h3>PDF para imprimir</h3><p>Para los abuelos y tíos: misma invitación en PDF con su nombre y QR.</p></div>
+    <div class="ben rv"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9"/></svg></i><h3>Cuenta regresiva</h3><p>Días, horas y minutos, y un botón para guardarla en su calendario.</p></div>
   </div>
 </div></section>
 
@@ -272,6 +283,13 @@
     <div class="paso rv"><b>3</b><h3>Revisa y ajusta</h3><p>Te enviamos tu invitación en <span data-n="entrega">48 horas</span> y hacemos los cambios que quieras.</p></div>
     <div class="paso rv"><b>4</b><h3>Envíala a tus invitados</h3><p>Te damos un enlace por familia, listo para mandar por WhatsApp.</p></div>
   </div>
+</div></section>
+
+<section class="opiniones" id="opiniones" hidden><div class="cont centro">
+  <p class="eyebrow rv">Opiniones</p>
+  <h2 class="rv">Lo que dicen nuestros clientes</h2>
+  <div class="grid-o" id="grid-opiniones"></div>
+  <a class="btn wa rv" data-wa="Hola 👋 Quiero mi demo gratis" target="_blank" rel="noopener">Quiero la mía</a>
 </div></section>
 
 <section id="preguntas" style="background:var(--bg2)"><div class="cont centro">
@@ -337,6 +355,14 @@
     cat.querySelectorAll('.tarjeta').forEach(t => { t.hidden = t.dataset.ev !== b.dataset.ev; if (t.hidden) return; t.classList.add('vis'); const f = t.querySelector('iframe[data-src]'); if (f) { f.src = f.dataset.src; f.removeAttribute('data-src'); } });
     escalar();
   });
+
+  // Opiniones (solo si el negocio agregó alguna en negocio.js)
+  const ops = (N.testimonios || []).filter(t => t && t.texto);
+  if (ops.length) {
+    document.getElementById('grid-opiniones').innerHTML = ops.map(t => `<figure class="opinion rv"><blockquote>“${esc(t.texto)}”</blockquote>
+      <figcaption>${t.foto ? `<img src="${esc(t.foto)}" alt="" loading="lazy">` : ''}<span><b>${esc(t.nombre || '')}</b>${esc(t.evento || '')}</span></figcaption></figure>`).join('');
+    document.getElementById('opiniones').hidden = false;
+  }
 
   // Paquetes y extras
   document.getElementById('grid-paquetes').innerHTML = (N.paquetes || []).map(p => `

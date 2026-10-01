@@ -96,7 +96,7 @@ ${S.sobre(d, { forro: ENCAJE, selloExtra: '<span class="cordel-v"></span>' })}
     },
 
     css: `
-body.plantilla-rustica{--fondo:#f7f0e4;--fondo2:#ebdfc9;--tinta:#3d3428;--suave:#7d6d58;--acento:#a87b4f;--acento2:#5e6f57;--linea:#d6c4a4;--oscuro:#3f4a3c;--sobre-oscuro:#f4ead8;--titulo:#4a3a2c;--tarjeta:#fbf6ec;--radio-btn:4px;
+body.plantilla-rustica{--acento-texto:#7c5b3a;--fondo:#f7f0e4;--fondo2:#ebdfc9;--tinta:#3d3428;--suave:#6e604d;--acento:#a87b4f;--acento2:#566650;--linea:#d6c4a4;--oscuro:#3f4a3c;--sobre-oscuro:#f4ead8;--titulo:#4a3a2c;--tarjeta:#fbf6ec;--radio-btn:4px;
   --f-titulo:'Parisienne',cursive;--f-texto:'Lora',Georgia,serif;--f-etiqueta:'Josefin Sans',system-ui,sans-serif;
   --fondo-sobre:#ece1cd;--sobre-c1:#b88f62;--sobre-c2:#c9a273;--sobre-c3:#d1ad80;--sello:#f7efe0;--sello-texto:#5e6f57;--sello-borde:#a87b4f}
 .plantilla-rustica{font-size:18px}
