@@ -217,6 +217,7 @@
           el('li', {}, 'Menú ', el('code', {}, 'Extensiones → Apps Script'), '. Borra lo que aparece y pega el código (botón de abajo). Guarda 💾.'),
           el('li', {}, el('code', {}, 'Implementar → Nueva implementación'), ' → tipo ', el('code', {}, 'App web'), ' → Ejecutar como: ', el('b', {}, 'Yo'), ' → Quién tiene acceso: ', el('b', {}, 'Cualquier persona'), ' → Implementar. Autoriza con tu cuenta (en “Configuración avanzada” → “Ir a…”).'),
           el('li', {}, 'Copia la ', el('b', {}, 'URL de la app web'), ' y pégala aquí abajo. Listo.')),
+        el('p', { class: 'ayuda' }, '¿Ya lo tenías instalado? Para tener “Mis bodas”, copia el código otra vez, pégalo en Apps Script y ve a Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión → Implementar. La URL no cambia. Luego vuelve a “Sincronizar” cada boda para que aparezcan sus nombres y fecha.'),
         el('button', { class: 'b chico', type: 'button', onclick: () => {
           const t = window.CODIGO_SHEETS || '';
           (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => avisar('Código copiado ✓ Pégalo en Apps Script'), () => descargar('confirmaciones.gs', t, 'text/plain'));
@@ -245,7 +246,7 @@
             const lista = (datos.invitados || []).filter(x => x.nombre).map(x => ({ nombre: x.nombre, pases: x.pases, mesa: datos.mesas && datos.mesas.activo ? x.mesa : '', tel: x.tel || '' }));
             marcar(`Enviando ${lista.length} invitaciones…`, true);
             try {
-              const r = await (await fetch(c().url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'invitados', boda: c().boda, clave: c().clave, invitados: lista }) })).json();
+              const r = await (await fetch(c().url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'invitados', boda: c().boda, clave: c().clave, info: { nombres: `${datos.novia} & ${datos.novio}`, fecha: datos.fecha }, invitados: lista }) })).json();
               marcar(r.ok ? `✓ Lista sincronizada: ${r.invitados} invitaciones. El panel ya sabe quién falta por responder.`
                 : /clave/i.test(r.error || '') ? 'Ese ID de boda ya existe en tu hoja con otra clave. Abre los datos guardados de esta boda (botón “Abrir”) o cambia el ID de la boda.' : 'Error: ' + (r.error || ''), r.ok);
             } catch (e) { marcar('No se pudo sincronizar. Prueba la conexión primero.', false); }

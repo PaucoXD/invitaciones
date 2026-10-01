@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#2b1a1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mis bodas">
+<title>Mis bodas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet">
+<script src="negocio.js" onerror="window.NEGOCIO={}"></script>
+<!-- Panel del administrador: todas las bodas con su avance de confirmaciones. Ejemplo: mis-bodas.html?demo=1 -->
+<style>
+  :root{--bg:#f4f0eb;--card:#fff;--ink:#2b241f;--muted:#857a6e;--line:#e8dfd4;--accent:#9b5f68;--dark:#2b1a1e;--ok:#3f7a52;--ok-bg:#e8f3eb;--no:#a9473e;--no-bg:#f8e9e7;--pend:#9a6b12;--pend-bg:#fbf1dc}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45}
+  button,input{font:inherit;color:inherit}
+  .barra{background:var(--dark);color:#f3e6e0}
+  .barra .wrap{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:14px;padding-bottom:14px}
+  .barra h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:28px;margin-right:auto}
+  .barra h1 small{display:block;font-family:Inter,sans-serif;font-size:10.5px;letter-spacing:.25em;text-transform:uppercase;color:#d7a9b1}
+  .barra a,.barra button{color:#f3e6e0;border:1px solid rgba(255,255,255,.25);background:none;padding:7px 12px;border-radius:8px;text-decoration:none;cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap}
+  .barra a:hover,.barra button:hover{background:rgba(255,255,255,.1)}
+  .barra .pri{background:#c4949a;border-color:#c4949a;color:#2b1a1e}
+  .wrap{max-width:1100px;margin:0 auto;padding:22px 16px}
+  .tarjetas{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  .t{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .t b{display:block;font-size:28px;font-weight:700;line-height:1.1}
+  .t span{color:var(--muted);font-size:12.5px}
+  .t.ok b{color:var(--ok)}.t.pend b{color:var(--pend)}
+  .filtros{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .chip{border:1px solid var(--line);background:var(--card);padding:6px 13px;border-radius:20px;cursor:pointer;font-size:12.5px;font-weight:500}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .buscar{flex:1;min-width:180px;padding:8px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card)}
+  .bodas{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+  .boda{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px}
+  .boda.pasada{opacity:.75}
+  .cab{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .boda h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:25px;line-height:1.1}
+  .boda h2 small{display:block;font-family:Inter,sans-serif;font-size:11.5px;color:var(--muted);margin-top:3px}
+  .cuando{text-align:right;font-size:12px;color:var(--muted);white-space:nowrap}
+  .cuando b{display:block;font-size:18px;color:var(--ink)}
+  .cuando.cerca b{color:var(--accent)}
+  .pista{height:9px;border-radius:6px;background:#efe8df;overflow:hidden;display:flex}
+  .pista i{display:block;height:100%}.pista .ok{background:var(--ok)}.pista .no{background:var(--no)}
+  .datos{display:flex;flex-wrap:wrap;gap:6px}
+  .d{font-size:12px;padding:3px 9px;border-radius:12px;background:#f4efe9}
+  .d.ok{background:var(--ok-bg);color:var(--ok);font-weight:600}.d.pend{background:var(--pend-bg);color:var(--pend);font-weight:600}.d.no{background:var(--no-bg);color:var(--no)}
+  .alerta{font-size:12.5px;color:var(--no);background:var(--no-bg);padding:6px 10px;border-radius:8px}
+  .ult{font-size:12px;color:var(--muted)}
+  .acc{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+  .b{border:1px solid var(--line);background:var(--card);padding:7px 12px;border-radius:9px;cursor:pointer;font-weight:500;font-size:12.5px;text-decoration:none;display:inline-flex;gap:5px;align-items:center}
+  .b:hover{background:#faf7f3}
+  .b.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+  .vacio{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px;background:var(--card);border-radius:16px;border:1px dashed var(--line)}
+  .entrada{max-width:420px;margin:50px auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px}
+  .entrada h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:34px;text-align:center}
+  .entrada>p{color:var(--muted);text-align:center;margin:6px 0 4px}
+  .entrada label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-top:14px}
+  .entrada input{display:block;width:100%;margin-top:6px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:16px;background:#fdfbf8}
+  .entrada input::placeholder{color:#b9ada0}
+  .entrada .b{width:100%;justify-content:center;margin-top:20px;padding:12px;font-size:15px}
+  .error{color:var(--no);background:var(--no-bg);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:10px}
+  .nota{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5}
+  .nota code{background:#f1ece5;padding:1px 5px;border-radius:4px}
+  .demo{background:var(--pend-bg);color:var(--pend);border-radius:10px;padding:8px 12px;font-size:12.5px;margin-bottom:14px}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,140px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;transition:transform .3s;z-index:9}
+  .toast.ver{transform:translate(-50%,0)}
+  @media (max-width:760px){.tarjetas{grid-template-columns:repeat(2,1fr)}.bodas{grid-template-columns:1fr}.barra h1{width:100%}}
+</style>
+</head>
+<body>
+<div id="app"><div class="entrada"><h2>Cargando…</h2></div></div>
+<div class="toast" id="toast"></div>
+<script>
+(function () {
+  'use strict';
+  const N = window.NEGOCIO || {}, q = new URLSearchParams(location.search), app = document.getElementById('app');
+  const CLAVE = 'mis-bodas-admin';
+  let ses = {}; try { ses = JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) {}
+  const cfg = { url: ses.url || N.hojaConfirmaciones || '', clave: ses.clave || '', demo: q.has('demo') };
+  let bodas = [], filtro = 'proximas', busqueda = '', ultima = null;
+
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  function avisar(t) { const a = document.getElementById('toast'); a.textContent = t; a.classList.add('ver'); setTimeout(() => a.classList.remove('ver'), 2400); }
+  const hoy = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+  const dias = (iso) => { if (!/^\d{4}-\d{2}-\d{2}/.test(iso || '')) return null; const [y, m, d] = iso.slice(0, 10).split('-').map(Number); return Math.round((new Date(y, m - 1, d) - hoy()) / 864e5); };
+  const fechaLarga = (iso) => { const n = dias(iso); if (n === null) return 'Sin fecha'; const [y, m, d] = iso.slice(0, 10).split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' }); };
+  const haceCuanto = (iso) => { if (!iso) return 'Sin respuestas todavía'; const m = Math.round((Date.now() - new Date(iso)) / 6e4); if (m < 60) return `Última respuesta hace ${Math.max(1, m)} min`; const h = Math.round(m / 60); if (h < 24) return `Última respuesta hace ${h} h`; return `Última respuesta hace ${Math.round(h / 24)} días`; };
+  const panelUrl = (b) => { const p = new URLSearchParams({ b: b.boda, k: b.clave }); if (b.nombres) p.set('n', b.nombres); if (cfg.url !== N.hojaConfirmaciones) p.set('u', cfg.url); return new URL('panel.html?' + p, location.href).href; };
+
+  function demo() {
+    const f = (n) => { const d = hoy(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+    const h = (n) => new Date(Date.now() - n * 36e5).toISOString();
+    return [
+      { boda: 'valeria-y-santiago-ab12', clave: 'q7k2m9', nombres: 'Valeria & Santiago', fecha: f(9), invitaciones: 62, lugares: 180, respondidas: 47, confirmadas: 41, personas: 128, no: 6, pendientes: 15, deseos: 23, canciones: 12, ultima: h(2) },
+      { boda: 'ana-y-luis-x9z1', clave: 'zz11yy', nombres: 'Ana & Luis', fecha: f(34), invitaciones: 40, lugares: 110, respondidas: 12, confirmadas: 11, personas: 30, no: 1, pendientes: 28, deseos: 5, canciones: 3, ultima: h(20) },
+      { boda: 'mariana-y-diego-k3p0', clave: 'abc123', nombres: 'Mariana & Diego', fecha: f(76), invitaciones: 85, lugares: 240, respondidas: 0, confirmadas: 0, personas: 0, no: 0, pendientes: 85, deseos: 0, canciones: 0, ultima: '' },
+      { boda: 'sofia-y-andres-m2q8', clave: 'zxc987', nombres: 'Sofía & Andrés', fecha: f(-12), invitaciones: 55, lugares: 150, respondidas: 53, confirmadas: 49, personas: 141, no: 4, pendientes: 2, deseos: 31, canciones: 18, ultima: h(400) }
+    ];
+  }
+  async function cargar() {
+    if (cfg.demo) { bodas = demo(); ultima = new Date(); return pintar(); }
+    if (!cfg.url || !cfg.clave) return entrada();
+    try {
+      const r = await fetch(cfg.url + (cfg.url.includes('?') ? '&' : '?') + 'accion=admin&clave=' + encodeURIComponent(cfg.clave) + '&t=' + Date.now());
+      const j = await r.json();
+      if (!j.ok && /boda o clave/i.test(j.error || '')) return entrada('', true); // código de Google de una versión anterior
+      if (!j.ok) return entrada(j.error || 'No se pudo entrar');
+      bodas = j.bodas || []; ultima = new Date();
+      try { localStorage.setItem(CLAVE, JSON.stringify({ url: cfg.url, clave: cfg.clave })); } catch (e) {}
+      pintar();
+    } catch (e) { if (bodas.length) avisar('No se pudo actualizar'); else entrada('No se pudo conectar. Revisa tu internet y la dirección de la hoja.'); }
+  }
+
+  function entrada(error, viejo) {
+    app.innerHTML = `<form class="entrada" id="f" autocomplete="on">
+      <h2>Mis bodas</h2>
+      <p>Tu panel con todas tus bodas y sus confirmaciones.</p>
+      ${error ? `<p class="error">${esc(error)}</p>` : ''}
+      ${viejo ? `<p class="error">Tu código de Google Sheets es de una versión anterior. En el editor copia el código otra vez, pégalo en Apps Script y ve a <b>Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión → Implementar</b>. La dirección no cambia.</p>` : ''}
+      ${N.hojaConfirmaciones ? '' : `<label>Dirección de tu app de Google<input id="u" type="url" placeholder="https://script.google.com/…/exec" value="${esc(cfg.url)}"></label>`}
+      <label>Clave de administrador<input id="k" type="password" autocomplete="current-password" placeholder="mínimo 6 caracteres"></label>
+      <button class="b pri" type="submit">Entrar</button>
+      <p class="nota">La <b>primera vez</b>, la clave que escribas quedará guardada como tu clave de administrador. Guárdala bien. Este celular o computadora la recordará.</p>
+      <p class="nota" style="text-align:center"><a href="?demo=1" style="color:var(--accent)">Ver un ejemplo</a></p>
+    </form>`;
+    const f = document.getElementById('f'); f.querySelector('#k').focus();
+    f.onsubmit = (e) => {
+      e.preventDefault();
+      const u = f.querySelector('#u'); if (u) cfg.url = u.value.trim();
+      cfg.clave = f.querySelector('#k').value;
+      if (!cfg.url) return entrada('Falta la dirección de tu app de Google.');
+      if (cfg.clave.length < 6) return entrada('La clave debe tener al menos 6 caracteres.');
+      app.innerHTML = '<div class="entrada"><h2>Entrando…</h2></div>'; cargar();
+    };
+  }
+
+  function pintar() {
+    const prox = bodas.filter(b => { const n = dias(b.fecha); return n === null || n >= 0; });
+    const lista = bodas
+      .filter(b => filtro === 'todas' || (filtro === 'proximas' ? prox.includes(b) : !prox.includes(b)))
+      .filter(b => !busqueda || norm(b.nombres + ' ' + b.boda).includes(norm(busqueda)))
+      .sort((a, b) => { const x = dias(a.fecha), y = dias(b.fecha); if (filtro === 'pasadas') return (y ?? -1e9) - (x ?? -1e9); return (x ?? 1e9) - (y ?? 1e9); });
+    const sum = (arr, k) => arr.reduce((a, b) => a + (+b[k] || 0), 0);
+    const esteMes = prox.filter(b => { const n = dias(b.fecha); return n !== null && n <= 30; }).length;
+
+    app.innerHTML = `
+      <div class="barra"><div class="wrap">
+        <h1><small>${esc(N.marca || 'Panel de administrador')}</small>Mis bodas</h1>
+        <a class="pri" href="editor.html">＋ Nueva invitación</a>
+        <a href="index.html" target="_blank" rel="noopener">Mi página</a>
+        <button id="b-act">⟳ Actualizar</button>
+        ${cfg.demo ? '' : '<button id="b-salir">Salir</button>'}
+      </div></div>
+      <div class="wrap">
+        ${cfg.demo ? '<p class="demo">Ejemplo con datos ficticios: así verás todas tus bodas.</p>' : ''}
+        <div class="tarjetas">
+          <div class="t"><b>${prox.length}</b><span>bodas próximas</span></div>
+          <div class="t"><b>${esteMes}</b><span>en los próximos 30 días</span></div>
+          <div class="t ok"><b>${sum(prox, 'personas')}</b><span>personas confirmadas (próximas)</span></div>
+          <div class="t pend"><b>${sum(prox, 'pendientes')}</b><span>invitaciones sin responder</span></div>
+        </div>
+        <div class="filtros">
+          ${[['proximas', 'Próximas'], ['pasadas', 'Pasadas'], ['todas', 'Todas']].map(([k, t]) => `<button class="chip ${filtro === k ? 'on' : ''}" data-f="${k}">${t}</button>`).join('')}
+          <input class="buscar" id="buscar" placeholder="Buscar boda…" value="${esc(busqueda)}">
+        </div>
+        <div class="bodas">
+          ${lista.length ? lista.map(b => {
+            const n = dias(b.fecha), total = +b.invitaciones || 0;
+            const pOk = total ? Math.round(b.confirmadas / total * 100) : 0, pNo = total ? Math.round(b.no / total * 100) : 0;
+            const cuando = n === null ? '—' : n === 0 ? '¡Hoy!' : n > 0 ? `${n} ${n === 1 ? 'día' : 'días'}` : `hace ${-n} días`;
+            const alerta = n !== null && n >= 0 && n <= 14 && b.pendientes > 0;
+            return `<article class="boda ${n !== null && n < 0 ? 'pasada' : ''}">
+              <div class="cab"><h2>${esc(b.nombres || b.boda)}<small>${esc(fechaLarga(b.fecha))}</small></h2>
+                <div class="cuando ${n !== null && n >= 0 && n <= 14 ? 'cerca' : ''}"><b>${cuando}</b>${n > 0 ? 'faltan' : ''}</div></div>
+              <div class="pista" title="${pOk}% confirmó · ${pNo}% no asistirá"><i class="ok" style="width:${pOk}%"></i><i class="no" style="width:${pNo}%"></i></div>
+              <div class="datos">
+                <span class="d ok">✓ ${b.personas} personas${b.lugares ? ` de ${b.lugares}` : ''}</span>
+                <span class="d">${b.respondidas}/${total || '?'} respondieron</span>
+                ${b.pendientes ? `<span class="d pend">${b.pendientes} ${b.pendientes === 1 ? 'pendiente' : 'pendientes'}</span>` : ''}
+                ${b.no ? `<span class="d no">${b.no} no ${b.no === 1 ? 'asiste' : 'asisten'}</span>` : ''}
+                ${b.deseos ? `<span class="d">💌 ${b.deseos}</span>` : ''}${b.canciones ? `<span class="d">🎵 ${b.canciones}</span>` : ''}
+              </div>
+              ${alerta ? `<p class="alerta">⚠ Faltan ${n} días y ${b.pendientes} invitaciones no han respondido. Recuérdales a los novios usar el botón “Recordar”.</p>` : ''}
+              ${!total ? '<p class="alerta" style="background:var(--pend-bg);color:var(--pend)">Sin lista de invitados: en el editor usa “Sincronizar lista de invitados”.</p>' : ''}
+              <p class="ult">${esc(haceCuanto(b.ultima))}</p>
+              <div class="acc">
+                <a class="b pri" href="${esc(panelUrl(b))}" target="_blank" rel="noopener">📊 Abrir panel</a>
+                <button class="b" data-acceso="${esc(b.boda)}">🔗 Acceso para novios</button>
+                <button class="b" data-copiar="${esc(b.boda)}" title="Código de la boda">📋 ${esc(b.boda)}</button>
+              </div>
+            </article>`;
+          }).join('') : `<p class="vacio">${bodas.length ? 'No hay bodas en esta vista.' : 'Todavía no hay bodas. Aparecen aquí cuando usas “Sincronizar lista de invitados” en el editor.'}</p>`}
+        </div>
+        <p class="ult" style="margin-top:14px;text-align:right">Actualizado ${ultima ? ultima.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) : ''}</p>
+      </div>`;
+
+    app.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { filtro = b.dataset.f; pintar(); });
+    const bus = document.getElementById('buscar');
+    bus.oninput = (e) => { busqueda = e.target.value; const pos = e.target.selectionStart; pintar(); const x = document.getElementById('buscar'); x.focus(); x.setSelectionRange(pos, pos); };
+    document.getElementById('b-act').onclick = () => cargar().then(() => avisar('Actualizado ✓'));
+    const s = document.getElementById('b-salir');
+    if (s) s.onclick = () => { if (confirm('¿Cerrar sesión en este dispositivo?')) { try { localStorage.removeItem(CLAVE); } catch (e) {} location.href = location.pathname; } };
+    app.querySelectorAll('[data-copiar]').forEach(b => b.onclick = () => navigator.clipboard.writeText(b.dataset.copiar).then(() => avisar('Código copiado ✓')));
+    app.querySelectorAll('[data-acceso]').forEach(btn => btn.onclick = () => {
+      const b = bodas.find(x => x.boda === btn.dataset.acceso);
+      const nom = (b.nombres || '').split('&').map(s => s.trim()).filter(Boolean).join(' y ') || 'novios';
+      const msg = `¡Hola ${nom}! 💍 Aquí pueden ver en tiempo real quién confirmó su asistencia:\n\n👉 ${panelUrl(b)}\n\nSi algún día lo necesitan, entren a ${new URL('panel.html', location.href).href}\nCódigo: ${b.boda}\nClave: ${b.clave}\n\nTip: ábranlo y agréguenlo a la pantalla de inicio de su celular para tenerlo como app.`;
+      navigator.clipboard.writeText(msg).then(() => avisar('Mensaje copiado ✓ Pégalo en WhatsApp'));
+    });
+  }
+
+  cargar();
+  setInterval(() => { if (!document.hidden && !cfg.demo && bodas.length) cargar(); }, 120000);
+})();
+</script>
+</body>
+</html>
