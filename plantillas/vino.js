@@ -238,19 +238,19 @@
     },
 
     css: `
-body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a6a66;--acento:#9c9b5f;--acento2:#7e2638;--linea:#d9cfc2;--oscuro:#4f1220;--sobre-oscuro:#f7efe6;--titulo:#7e2638;--tarjeta:#f8f4ee;--radio-btn:2px;
+body.plantilla-vino{--acento-texto:#67663f;--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#7b5e5b;--acento:#9c9b5f;--acento2:#7e2638;--linea:#d9cfc2;--oscuro:#4f1220;--sobre-oscuro:#f7efe6;--titulo:#7e2638;--tarjeta:#f8f4ee;--radio-btn:2px;
   --f-titulo:'Gilda Display',Georgia,serif;--f-texto:'Cormorant Garamond',Georgia,serif;--f-etiqueta:'Cormorant Garamond',Georgia,serif;
   --sobre-c1:#7a2335;--sobre-c2:#8c2c40;--sobre-c3:#93324a;--sello:radial-gradient(circle at 35% 30%,#c9c78e,#a3a165 55%,#7c7a43);--sello-texto:#4f4e25;--sello-borde:#8e8c52}
 .plantilla-vino{font-size:19px;background-color:#f4efe8;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .45 0 0 0 0 .4 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .plantilla-vino main{overflow:hidden}
-.plantilla-vino .eyebrow{font-family:var(--f-texto);font-weight:500;font-size:13px;letter-spacing:.32em;color:var(--acento)}
+.plantilla-vino .eyebrow{font-family:var(--f-texto);font-weight:500;font-size:13px;letter-spacing:.32em;color:var(--acento-texto)}
 .plantilla-vino .claro{color:#f7efe6!important}
 .plantilla-vino .v-sec{position:relative;padding:56px 20px;max-width:560px;margin:0 auto;text-align:center}
 .plantilla-vino .v-tit{font-family:var(--f-titulo);font-weight:400;font-size:clamp(34px,9vw,46px);line-height:1.1;color:var(--titulo);margin-bottom:10px}
 .plantilla-vino .v-tit small{display:block;font-size:.55em}
 .plantilla-vino .v-sub{font-family:var(--f-titulo);font-weight:400;font-size:28px;color:var(--titulo);margin-bottom:6px}
 .plantilla-vino .lead-v{font-style:italic;color:var(--suave);margin-top:12px;line-height:1.5}
-.plantilla-vino .mini{display:inline-block;margin-top:12px;padding:4px 14px;border:1px solid currentColor;outline:1px solid currentColor;outline-offset:2px;background:none;font-family:var(--f-texto);font-size:13px;letter-spacing:.12em;color:var(--titulo);text-decoration:none;cursor:pointer}
+.plantilla-vino .mini{display:inline-block;margin-top:12px;padding:9px 16px;border:1px solid currentColor;outline:1px solid currentColor;outline-offset:2px;background:none;font-family:var(--f-texto);font-size:13px;letter-spacing:.12em;color:var(--titulo);text-decoration:none;cursor:pointer}
 .plantilla-vino .mini:hover{background:rgba(126,38,56,.08)}
 
 /* Sobre como portada */
@@ -279,7 +279,7 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
 @keyframes cartaVino{0%{transform:none;opacity:1}100%{transform:translateY(-58%);opacity:1}}
 .plantilla-vino .sello{width:70px;height:70px;margin:-35px 0 0 -35px;font-family:var(--f-titulo);font-size:22px}
 .plantilla-vino .mitad{box-shadow:inset 0 0 0 6px rgba(255,255,255,.12),inset 0 0 0 9px rgba(0,0,0,.12),inset 0 0 0 10px rgba(255,255,255,.15)}
-.plantilla-vino .sobre-pista{font-family:var(--f-texto);font-size:15px;letter-spacing:.3em;color:var(--acento);margin-top:40px}
+.plantilla-vino .sobre-pista{font-family:var(--f-texto);font-size:15px;letter-spacing:.3em;color:var(--acento-texto);margin-top:40px}
 .plantilla-vino .ramo{position:absolute;width:130px;z-index:7;pointer-events:none}
 .plantilla-vino .r-sobre-der{right:-36px;top:18%;width:105px;transform:rotate(18deg)}
 .plantilla-vino .r-sobre-izq{left:-38px;bottom:-60px;transform:rotate(-30deg) scaleX(-1);width:100px}
@@ -291,7 +291,7 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
 .plantilla-vino .tq1{top:8px;left:8px}.plantilla-vino .tq2{top:8px;right:8px;transform:scaleX(-1)}.plantilla-vino .tq3{bottom:8px;left:8px;transform:scaleY(-1)}.plantilla-vino .tq4{bottom:8px;right:8px;transform:scale(-1)}
 .plantilla-vino .troquel h3{font-family:var(--f-texto);font-weight:600;font-size:15px;letter-spacing:.22em;text-transform:uppercase;color:var(--titulo);margin-top:16px}
 .plantilla-vino .padres-v{display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:20px}
-.plantilla-vino .sep-v{color:var(--acento);font-size:12px}
+.plantilla-vino .sep-v{color:var(--acento-texto);font-size:12px}
 
 /* Tarjeta olivo con relieve */
 .plantilla-vino .olivo-card,.plantilla-vino .vino-card{position:relative;padding:44px 24px 34px;border-radius:4px;box-shadow:0 18px 34px rgba(60,50,20,.25);color:#f7efe6;
@@ -338,7 +338,7 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
 .plantilla-vino .ubic-card{padding:30px 22px}
 .plantilla-vino .ovalo{background:#f8f4ee;border-radius:50%;padding:70px 26px;border:2px solid #f8f4ee;outline:1px solid #8a2b3f;outline-offset:-10px;color:var(--titulo);display:flex;flex-direction:column;gap:26px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
 .plantilla-vino .lugar-v h3{font-family:var(--f-titulo);font-weight:400;font-size:26px}
-.plantilla-vino .lugar-v small{font-size:13px;letter-spacing:.22em;color:var(--acento)}
+.plantilla-vino .lugar-v small{font-size:13px;letter-spacing:.22em;color:var(--acento-texto)}
 .plantilla-vino .ico-l{display:block;width:56px;height:56px;margin:8px auto 4px;color:#9b5f68}
 .plantilla-vino .ico-l svg{width:100%;height:100%;stroke-width:.8}
 .plantilla-vino .lugar-v p{font-size:17px}
@@ -409,7 +409,7 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
 
 /* Hospedaje y contactos */
 .plantilla-vino .hotel-v{margin-top:14px}
-.plantilla-vino .hotel-v small{font-size:13px;letter-spacing:.12em;color:var(--acento)}
+.plantilla-vino .hotel-v small{font-size:13px;letter-spacing:.12em;color:var(--acento-texto)}
 .plantilla-vino .hotel-v p{font-size:15px;color:var(--suave)}
 .plantilla-vino .alc{width:220px;margin:0 auto 10px}
 .plantilla-vino .cont-v{display:flex;justify-content:center;gap:34px}
@@ -420,7 +420,7 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
 .plantilla-vino .cierre-encaje{width:min(330px,86vw);aspect-ratio:3/3.6}
 .plantilla-vino .cierre-txt{height:100%;background:#fbf8f3;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
 .plantilla-vino .nombres-cierre{font-family:var(--f-titulo);font-size:40px;line-height:1.15;color:var(--titulo);display:flex;flex-direction:column}
-.plantilla-vino .hash{font-size:14px;letter-spacing:.15em;color:var(--acento);margin-bottom:12px}
+.plantilla-vino .hash{font-size:14px;letter-spacing:.15em;color:var(--acento-texto);margin-bottom:12px}
 .plantilla-vino .nota-v{font-size:14px;font-style:italic;color:var(--suave);margin-top:12px}
 .plantilla-vino .r-cierre{right:-20px;top:-40px;width:120px;z-index:3}
 .plantilla-vino .cierre-encaje{overflow:visible}
@@ -432,8 +432,8 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
 .plantilla-vino .plano{background:#f8f5f0;border-color:#d6cdc1;box-shadow:0 14px 30px rgba(80,40,30,.12)}
 
 /* Botones flotantes */
-.plantilla-vino .menu-btn{background:#c4949a;color:#fff;width:40px;height:40px}
-.plantilla-vino .arriba-btn{background:#c4949a;color:#fff;width:40px;height:40px}
+.plantilla-vino .menu-btn{background:#a8777d;color:#fff;width:44px;height:44px}
+.plantilla-vino .arriba-btn{background:#a8777d;color:#fff;width:44px;height:44px}
 .plantilla-vino .btn-musica{background:#2b1a1e;color:#e8b9c1;border:none}
 .plantilla-vino .menu{background:#f4efe8}
 .plantilla-vino .menu a{font-family:var(--f-titulo);letter-spacing:.12em;font-size:19px}

@@ -43,6 +43,12 @@ window.NEGOCIO = {
     { nombre: 'Diseño con tus colores', precio: 300 }
   ],
 
+  // Opiniones de tus clientes. La sección solo aparece cuando hay al menos una.
+  // Usa opiniones REALES (con permiso del cliente). Ejemplo:
+  //   { nombre: 'Ana y Luis', evento: 'Boda · marzo 2027', texto: 'Nuestros invitados no dejaban de hablar del sobre.', foto: '' },
+  testimonios: [
+  ],
+
   // Preguntas frecuentes (puedes agregar o quitar)
   preguntas: [
     ['¿Mis invitados necesitan descargar una app?', 'No. Es un enlace que se abre en cualquier celular o computadora, como una página web. Se envía por WhatsApp, Messenger o correo.'],

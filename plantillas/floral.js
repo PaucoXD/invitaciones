@@ -94,7 +94,7 @@ ${S.sobre(d, { forro: FORRO })}
     },
 
     css: `
-body.plantilla-floral{--fondo:#fdf8f5;--fondo2:#f8ece7;--tinta:#4a3a3a;--suave:#8c7470;--acento:#c9a063;--acento2:#9b5f68;--linea:#ecd6cf;--oscuro:#6e3f48;--sobre-oscuro:#fbefe9;--titulo:#7a4652;--tarjeta:#fffdfb;
+body.plantilla-floral{--acento-texto:#81663f;--fondo:#fdf8f5;--fondo2:#f8ece7;--tinta:#4a3a3a;--suave:#7b6663;--acento:#c9a063;--acento2:#935a63;--linea:#ecd6cf;--oscuro:#6e3f48;--sobre-oscuro:#fbefe9;--titulo:#7a4652;--tarjeta:#fffdfb;
   --f-titulo:'Pinyon Script',cursive;--f-texto:'Cormorant Garamond',Georgia,serif;--f-etiqueta:'Montserrat',system-ui,sans-serif;
   --fondo-sobre:radial-gradient(ellipse at center,#fff8f5 0%,#f3dcd5 100%);--sobre-c1:#e9bfb9;--sobre-c2:#f2d3cd;--sobre-c3:#f6dfda;--sello:radial-gradient(circle at 35% 30%,#a85866,#7d3442 60%,#5e2230);--sello-borde:#7d3442}
 .plantilla-floral::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.6;background:radial-gradient(circle at 10% 10%,rgba(243,201,198,.25),transparent 40%),radial-gradient(circle at 90% 80%,rgba(201,160,99,.12),transparent 40%)}

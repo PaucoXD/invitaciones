@@ -100,7 +100,7 @@ ${S.sobre(d, { forro: uniq(FORRO), selloExtra: corona('sello-corona') })}
     },
 
     css: `
-body.plantilla-princesa{--fondo:#fff8f9;--fondo2:#fcebef;--tinta:#4b3540;--suave:#93727e;--acento:#c99a4e;--acento2:#c0607a;--linea:#f0d3da;--oscuro:#7a3550;--sobre-oscuro:#fff1f4;--titulo:#b25674;--tarjeta:#fffdfd;
+body.plantilla-princesa{--acento-texto:#856633;--fondo:#fff8f9;--fondo2:#fcebef;--tinta:#4b3540;--suave:#77596a;--acento:#c99a4e;--acento2:#a35268;--linea:#f0d3da;--oscuro:#7a3550;--sobre-oscuro:#fff1f4;--titulo:#a24a68;--tarjeta:#fffdfd;
   --f-titulo:'Parisienne',cursive;--f-texto:'Cormorant Garamond',Georgia,serif;--f-etiqueta:'Montserrat',system-ui,sans-serif;
   --fondo-sobre:radial-gradient(ellipse at center,#fff6f8 0%,#f6d3dc 100%);--sobre-c1:#f0b9c7;--sobre-c2:#f6ccd6;--sobre-c3:#f9d8e0;--sello:radial-gradient(circle at 35% 30%,#f4dc9b,#d1a556 55%,#a87a30);--sello-texto:#6b3a20;--sello-borde:#b98a3e}
 .plantilla-princesa::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 12% 8%,rgba(236,159,179,.18),transparent 40%),radial-gradient(circle at 88% 85%,rgba(209,165,86,.14),transparent 40%)}
@@ -137,7 +137,7 @@ body.plantilla-princesa{--fondo:#fff8f9;--fondo2:#fcebef;--tinta:#4b3540;--suave
 .plantilla-princesa .foto:nth-child(odd){transform:rotate(-1.5deg)}.plantilla-princesa .foto:nth-child(even){transform:rotate(1.5deg)}
 .plantilla-princesa .evento .icono{border-color:var(--acento);color:var(--acento2)}
 .plantilla-princesa .reloj span{font-family:'Cinzel',serif;font-weight:400}
-.plantilla-princesa .btn.solido{background:linear-gradient(100deg,#c0607a,#d97a95);border:none}
+.plantilla-princesa .btn.solido{background:linear-gradient(100deg,#9c4762,#b15870);border:none}
 .plantilla-princesa .pie{background:linear-gradient(180deg,#7a3550,#5b2439)}
 .plantilla-princesa .pie .nombres{text-shadow:none}
 @media (max-width:640px){

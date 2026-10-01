@@ -26,7 +26,7 @@ llenas un formulario y descargas la invitación lista para publicar.
 ## Tu página de ventas
 
 Abre `negocio.js` y cambia tu **nombre**, tu **WhatsApp** (con código de país, por ejemplo `5215512345678`),
-redes, **precios**, lo que incluye cada paquete, los extras y las preguntas frecuentes. La página se actualiza sola.
+redes, **precios**, lo que incluye cada paquete, los extras, las preguntas frecuentes y las **opiniones de clientes** (`testimonios`; la sección solo aparece si agregas alguna). La página se actualiza sola.
 Todos los botones abren WhatsApp con un mensaje ya escrito (paquete o diseño elegido).
 El editor no aparece en la página pública: tú entras directo a `editor.html`.
 
@@ -118,6 +118,13 @@ Los diseños traen flores, pampas y adornos dibujados. Para que se vean como acu
   (por ejemplo `floral-ramo-esquina.png`). Funciona cuando el sitio está publicado o con un servidor local.
 
 Si vas a vender, usa ilustraciones, fuentes y música con **licencia comercial**.
+
+## Accesibilidad y legibilidad
+
+Revisado con las reglas de UI UX Pro Max: textos con contraste mínimo 4.5:1 (cada plantilla define
+`--acento-texto`, una versión más oscura de su color de acento para letras pequeñas), letra de al menos 11–12 px,
+foco visible al navegar con teclado, botones con área de toque cómoda y animaciones apagadas si el celular
+tiene activado "reducir movimiento".
 
 ## Notas
 

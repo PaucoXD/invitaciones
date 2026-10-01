@@ -99,7 +99,7 @@ ${S.sobre(d, { forro: uniq(FORRO) })}
     },
 
     css: `
-body.plantilla-mariposas{--fondo:#fbf8fd;--fondo2:#f3ecfa;--tinta:#3f3550;--suave:#857a96;--acento:#c9a75c;--acento2:#7c5ea8;--linea:#e3d8f0;--oscuro:#4a3a66;--sobre-oscuro:#f6f0fc;--titulo:#6b4f96;--tarjeta:#fffeff;
+body.plantilla-mariposas{--acento-texto:#7d6839;--fondo:#fbf8fd;--fondo2:#f3ecfa;--tinta:#3f3550;--suave:#70667e;--acento:#c9a75c;--acento2:#7a5ca5;--linea:#e3d8f0;--oscuro:#4a3a66;--sobre-oscuro:#f6f0fc;--titulo:#6b4f96;--tarjeta:#fffeff;
   --f-titulo:'Allura',cursive;--f-texto:'Cormorant Garamond',Georgia,serif;--f-etiqueta:'Quicksand',system-ui,sans-serif;
   --fondo-sobre:radial-gradient(ellipse at center,#fcf9ff 0%,#e4d7f3 100%);--sobre-c1:#d3c1ec;--sobre-c2:#e2d5f3;--sobre-c3:#ebe1f7;--sello:radial-gradient(circle at 35% 30%,#a58bc9,#7c5ea8 60%,#5e4682);--sello-borde:#6b4f96}
 .plantilla-mariposas .eyebrow{font-weight:600}
@@ -139,7 +139,8 @@ body.plantilla-mariposas{--fondo:#fbf8fd;--fondo2:#f3ecfa;--tinta:#3f3550;--suav
 .plantilla-mariposas .lugar .btn{position:relative;z-index:1}
 .plantilla-mariposas .foto{border-radius:50% 50% 18px 18px;border:6px solid #fff;box-shadow:0 10px 30px rgba(94,70,130,.14)}
 .plantilla-mariposas .evento .icono{border-color:var(--linea);background:#fff;color:var(--acento2)}
-.plantilla-mariposas .btn.solido{background:linear-gradient(100deg,#7c5ea8,#a58bc9);border:none}
+.plantilla-mariposas .btn.solido{background:linear-gradient(100deg,#6b4f96,#7c5ea8);border:none}
+.plantilla-mariposas .quince{color:var(--acento-texto)}
 .plantilla-mariposas .pie{background:linear-gradient(180deg,#4a3a66,#33284a)}
 @media (max-width:640px){
   .plantilla-mariposas .portada{padding-top:130px}
