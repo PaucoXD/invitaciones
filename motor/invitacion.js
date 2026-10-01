@@ -505,10 +505,11 @@ main{position:relative;z-index:1}
 
 /* Familia */
 .padres{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:34px}
+.padres>div:only-child{grid-column:1/-1}
 .sec-familia h3{font-family:var(--f-etiqueta);font-size:12px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--acento-texto,var(--acento));margin-bottom:10px}
 .padres p{font-size:21px;line-height:1.5}
 .padrinos{display:flex;flex-wrap:wrap;justify-content:center;gap:24px 40px;margin-top:44px;padding-top:38px;border-top:1px solid var(--linea)}
-.padrinos>div{min-width:160px}
+.padrinos>div{flex:0 1 280px;min-width:160px}
 .padrinos p{font-size:18px}
 
 /* Cuenta */
