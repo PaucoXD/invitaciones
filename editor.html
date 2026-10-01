@@ -16,6 +16,7 @@
 <script src="plantillas/botanica.js"></script>
 <script src="bodas/ejemplo.js"></script>
 <script src="motor/pdf.js"></script>
+<script src="servidor/codigo-sheets.js"></script>
 <style>
   :root{--bg:#f4f1ec;--panel:#fff;--ink:#28231d;--muted:#857b6f;--line:#e7e0d6;--accent:#9b5f68;--accent-ink:#fff;--soft:#faf7f3;--ok:#3f7a52;--danger:#b2463d}
   *{box-sizing:border-box;margin:0;padding:0}
@@ -114,6 +115,13 @@
   .ed-mesa.sel,.ed-el.sel{outline:3px solid rgba(155,95,104,.45);z-index:3}
   .ed-panel{margin-top:10px}
   .ed-resumen{margin:8px 0}
+  /* Confirmaciones */
+  .pasos-conf{margin:10px 0 4px 18px;font-size:12.5px;line-height:1.55;color:var(--ink)}
+  .pasos-conf li{margin-bottom:4px}
+  .pasos-conf code{background:#f1ece5;padding:1px 5px;border-radius:4px;font-size:11.5px}
+  .conf-herr{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .conf-estado{font-size:12.5px;margin-top:8px}
+  .conf-estado.ok{color:var(--ok)}.conf-estado.mal{color:var(--danger)}
   /* Modal */
   .modal{position:fixed;inset:0;background:rgba(30,25,20,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
   .modal.ver{display:flex}

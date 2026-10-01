@@ -193,7 +193,7 @@
           ${marco(`<h2 class="v-tit">Hospedaje</h2>${hs.map(x => `<div class="hotel-v"><h3>${e(x.nombre)}</h3>${S.hay(x.nota) ? `<small>${e(x.nota)}</small>` : ''}<p>${S.br(x.direccion || '')}</p>${btnMini(S.enlaceMapa(x), 'Ver ubicación')}</div>`).join('')}`, 'rv')}
         </section>` : '';
 
-      const conWhats = S.hay(r.whatsapp);
+      const conWhats = S.hay(r.whatsapp) || S.conHoja(d);
       const extrasCollage = conWhats && (!oc.deseos || !oc.canciones) ? `
         <section id="deseos" class="v-sec collage dos ${gal[4] ? '' : 'solo'}">
           ${!oc.deseos ? `<div class="olivo-card mini-card rv"><h2 class="v-tit claro">Buenos deseos</h2><button class="mini claro" data-desplegar="caja-deseos">Escribir mis deseos</button></div>` : ''}

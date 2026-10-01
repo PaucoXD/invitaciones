@@ -48,6 +48,20 @@ Para quienes no se llevan bien con la tecnología: botón **📄 PDF** en el edi
 - **Un PDF por invitado (ZIP):** genera todos de una vez.
 - Funciona sin internet: las librerías están en `motor/lib/`.
 
+## Confirmaciones automáticas (paquete)
+
+Las confirmaciones, buenos deseos y canciones se guardan solos en **Google Sheets** (gratis) y los novios
+los ven en su **panel** (`panel.html`): personas confirmadas, quién falta (con botón para recordarle por
+WhatsApp), quién no asistirá, mensajes y canciones más pedidas, y descarga a Excel.
+
+1. En el editor, sección **Confirmaciones automáticas**, copia el código y sigue los 4 pasos para instalarlo en
+   Google Sheets (una sola vez; sirve para todas tus bodas, cada una con su *ID de boda*).
+2. Pega la URL de la app web (termina en `/exec`), **Probar conexión** y **Sincronizar lista de invitados**.
+3. **Copiar enlace del panel** y mándalo a los novios. La clave del panel no viaja dentro de la invitación.
+4. Opcional: *Además abrir WhatsApp* si los novios también quieren recibir el mensaje.
+
+Ejemplo del panel con datos ficticios: `panel.html?demo=1`. El código de Google está en `servidor/codigo-sheets.js`.
+
 ## Personalización por invitado
 
 Cualquier invitación acepta al final del enlace:

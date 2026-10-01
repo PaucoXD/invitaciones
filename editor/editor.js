@@ -206,6 +206,56 @@
         el('p', { class: 'inv-total' }, `${inv.length} invitaciones · ${total} personas`),
         el('button', { class: 'b chico', type: 'button', onclick: pegarInvitados }, '📋 Pegar lista'),
         el('button', { class: 'b chico', type: 'button', onclick: () => $('#b-invitados').click() }, '🔗 Enlaces para enviar'));
+    } else if (t === 'confAyuda') {
+      const c = datos.confirmaciones = Object.assign({ url: '', boda: '', clave: '', whatsapp: false }, datos.confirmaciones);
+      if (!c.boda || !c.clave) { c.boda = c.boda || slug(); c.clave = c.clave || Math.random().toString(36).slice(2, 8); setTimeout(cambio, 0); }
+      return el('div', {},
+        el('p', { class: 'ayuda' }, 'Las confirmaciones, buenos deseos y canciones se guardan solos en una hoja de Google Sheets (gratis) y los novios los ven en su panel. Se instala una sola vez y sirve para todas tus bodas:'),
+        el('ol', { class: 'pasos-conf' },
+          el('li', {}, 'Abre ', el('a', { href: 'https://sheets.new', target: '_blank', rel: 'noopener' }, 'sheets.new'), ' (crea una hoja nueva) y ponle nombre, por ejemplo “Confirmaciones”.'),
+          el('li', {}, 'Menú ', el('code', {}, 'Extensiones → Apps Script'), '. Borra lo que aparece y pega el código (botón de abajo). Guarda 💾.'),
+          el('li', {}, el('code', {}, 'Implementar → Nueva implementación'), ' → tipo ', el('code', {}, 'App web'), ' → Ejecutar como: ', el('b', {}, 'Yo'), ' → Quién tiene acceso: ', el('b', {}, 'Cualquier persona'), ' → Implementar. Autoriza con tu cuenta (en “Configuración avanzada” → “Ir a…”).'),
+          el('li', {}, 'Copia la ', el('b', {}, 'URL de la app web'), ' y pégala aquí abajo. Listo.')),
+        el('button', { class: 'b chico', type: 'button', onclick: () => {
+          const t = window.CODIGO_SHEETS || '';
+          (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => avisar('Código copiado ✓ Pégalo en Apps Script'), () => descargar('confirmaciones.gs', t, 'text/plain'));
+        } }, '📋 Copiar código para Google Sheets'));
+    } else if (t === 'confHerramientas') {
+      const estado = el('p', { class: 'conf-estado' });
+      const c = () => datos.confirmaciones || {};
+      const marcar = (txt, ok) => { estado.textContent = txt; estado.className = 'conf-estado ' + (ok ? 'ok' : 'mal'); };
+      const enlacePanel = () => {
+        const p = new URLSearchParams({ u: c().url, b: c().boda, k: c().clave, n: `${datos.novia} & ${datos.novio}` });
+        const base = ($('#inv-base') && $('#inv-base').value.trim()) || '';
+        if (base) p.set('l', base);
+        return new URL('panel.html?' + p.toString(), location.href).href;
+      };
+      const listo = () => { if (!c().url) { marcar('Primero pega la dirección de la app de Google.', false); return false; } return true; };
+      return el('div', {},
+        el('div', { class: 'conf-herr' },
+          el('button', { class: 'b chico', type: 'button', onclick: async () => {
+            if (!listo()) return; marcar('Probando…', true);
+            try { const r = await (await fetch(c().url + (c().url.includes('?') ? '&' : '?') + 'accion=ping')).json(); marcar(r.ok ? '✓ Conexión correcta con Google Sheets.' : 'La hoja respondió con un error: ' + (r.error || ''), r.ok); }
+            catch (e) { marcar('No se pudo conectar. Revisa que la URL termine en /exec y que el acceso sea “Cualquier persona”.', false); }
+          } }, '🔌 Probar conexión'),
+          el('button', { class: 'b chico', type: 'button', onclick: async () => {
+            if (!listo()) return;
+            const lista = (datos.invitados || []).filter(x => x.nombre).map(x => ({ nombre: x.nombre, pases: x.pases, mesa: datos.mesas && datos.mesas.activo ? x.mesa : '', tel: x.tel || '' }));
+            marcar(`Enviando ${lista.length} invitaciones…`, true);
+            try {
+              const r = await (await fetch(c().url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'invitados', boda: c().boda, clave: c().clave, invitados: lista }) })).json();
+              marcar(r.ok ? `✓ Lista sincronizada: ${r.invitados} invitaciones. El panel ya sabe quién falta por responder.` : 'Error: ' + (r.error || ''), r.ok);
+            } catch (e) { marcar('No se pudo sincronizar. Prueba la conexión primero.', false); }
+          } }, '👥 Sincronizar lista de invitados'),
+          el('button', { class: 'b chico', type: 'button', onclick: () => { if (listo()) window.open(enlacePanel(), '_blank'); } }, '📊 Abrir panel'),
+          el('button', { class: 'b chico', type: 'button', onclick: () => {
+            if (!listo()) return;
+            if (location.protocol === 'file:') avisar('Para compartir el panel, usa el editor desde tu sitio publicado');
+            navigator.clipboard.writeText(enlacePanel()).then(() => avisar('Enlace del panel copiado ✓ Mándalo a los novios'));
+          } }, '🔗 Copiar enlace del panel'),
+          el('a', { class: 'b chico', href: 'panel.html?demo=1', target: '_blank', rel: 'noopener', style: 'text-decoration:none' }, '👀 Panel de ejemplo')),
+        estado,
+        el('p', { class: 'ayuda' }, 'Sincroniza otra vez si cambias la lista de invitados. La clave solo la usan los novios para ver su panel; no viaja dentro de la invitación. Para que el botón “Recordar” incluya el enlace de cada familia, escribe la dirección publicada en “Enlaces de invitados”.'));
     } else if (t === 'nota') {
       return el('p', { class: 'ayuda', style: 'margin-top:12px' }, def.texto);
     } else if (t === 'ocultar') {
@@ -271,17 +321,17 @@
   // Invitados: pegar una lista completa
   // ---------------------------------------------------------------------------
   function pegarInvitados() {
-    const ta = el('textarea', { placeholder: 'Familia López | 4 | 5\nAna y Luis Pérez | 2 | 3\nTía Carmen | 1', style: 'min-height:200px' });
+    const ta = el('textarea', { placeholder: 'Familia López | 4 | 5 | 5215511112222\nAna y Luis Pérez | 2 | 3\nTía Carmen | 1', style: 'min-height:200px' });
     const modal = el('div', { class: 'modal ver' }, el('div', { class: 'caja' },
       el('h2', {}, 'Pegar lista de invitados'),
-      el('p', {}, 'Uno por renglón: Nombre | lugares | mesa (la mesa es opcional). Puedes copiar tres columnas desde Excel o Google Sheets.'),
+      el('p', {}, 'Uno por renglón: Nombre | lugares | mesa | WhatsApp (mesa y WhatsApp son opcionales). Puedes copiar las columnas desde Excel o Google Sheets.'),
       el('div', { class: 'campo' }, ta),
       el('div', { class: 'caja-pie' },
         el('button', { class: 'b', type: 'button', onclick: () => modal.remove() }, 'Cancelar'),
         el('button', { class: 'b pri', type: 'button', onclick: () => {
           const nuevos = ta.value.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-            const [n, p, m] = l.split(/\s*[|\t;]\s*/);
-            return { nombre: (n || '').trim(), pases: parseInt(p, 10) || datos.rsvp.pases || 2, mesa: (m || '').trim() };
+            const [n, p, m, t] = l.split(/\s*[|\t;]\s*/);
+            return { nombre: (n || '').trim(), pases: parseInt(p, 10) || datos.rsvp.pases || 2, mesa: (m || '').trim(), tel: (t || '').replace(/[^\d]/g, '') };
           }).filter(x => x.nombre);
           poner('invitados', [...(datos.invitados || []), ...nuevos]);
           modal.remove(); pintarFormulario(); avisar(`${nuevos.length} invitaciones agregadas`);
@@ -479,11 +529,18 @@
       { t: 'invitadosHerramientas' },
       { k: 'invitados', t: 'lista', boton: 'Agregar invitación', nuevo: { nombre: '', pases: 2, mesa: '' }, item: [
         { k: 'nombre', l: 'Nombre en la invitación', ph: 'Familia López' },
+        { k: 'tel', l: 'WhatsApp (opcional, para recordarle)', ph: '5215512345678' },
         { fila: [{ k: 'pases', t: 'number', l: 'Lugares' }, { k: 'mesa', t: 'select', l: 'Mesa', ops: () => [['', datos.mesas && datos.mesas.activo ? 'Sin asignar' : '— (paquete Mesas apagado)'], ...((datos.mesas && datos.mesas.lista) || []).map(m => [m.nombre, /^\d+$/.test(m.nombre) ? 'Mesa ' + m.nombre : m.nombre])] }] }] }] },
     { sec: 'Mesas ✦ paquete opcional', campos: [
       { k: 'mesas.activo', t: 'check', repintar: true, texto: 'Activar paquete de mesas', ayuda: 'Actívalo solo si el cliente lo contrató. Cada invitado verá en su invitación su número de mesa y el plano del salón con su mesa resaltada.' },
       { k: 'mesas.texto', t: 'area', l: 'Texto (opcional)', ph: 'Al llegar, nuestro personal te guiará a tu lugar.' },
       { t: 'mapaMesas' }] },
+    { sec: 'Confirmaciones automáticas ✦ paquete', campos: [
+      { t: 'confAyuda' },
+      { k: 'confirmaciones.url', t: 'url', l: 'Dirección de la app de Google (termina en /exec)', ph: 'https://script.google.com/macros/s/…/exec' },
+      { fila: [{ k: 'confirmaciones.boda', l: 'ID de la boda' }, { k: 'confirmaciones.clave', l: 'Clave del panel' }] },
+      { k: 'confirmaciones.whatsapp', t: 'check', texto: 'Además abrir WhatsApp cuando el invitado confirme' },
+      { t: 'confHerramientas' }] },
     { sec: 'Hospedaje', campos: [
       { k: 'hospedaje', t: 'lista', boton: 'Agregar hotel', nuevo: { nombre: '', nota: '', direccion: '', mapa: '' }, item: [
         { k: 'nombre', l: 'Hotel' }, { k: 'nota', l: 'Nota (tarifa, código, distancia)', ph: 'Código: BODAVS' }, { k: 'direccion', t: 'area', l: 'Dirección' }, { k: 'mapa', t: 'url', l: 'Enlace de Google Maps (opcional)' }] }] },
