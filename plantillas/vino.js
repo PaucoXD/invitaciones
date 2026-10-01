@@ -75,16 +75,19 @@
       const e = S.esc, f = S.fechaInfo(d), ini = S.iniciales(d), oc = d.ocultar;
       const ramo = (c) => S.adorno(d, 'ramo', RAMO, 'ramo ' + c);
       const alcatrazSuelto = (c) => S.adorno(d, 'alcatraz', ALCATRAZ, 'alc ' + c);
-      const lista = [d.fotoPortada, ...(d.historia.fotos || []).map(x => x.src)].filter(Boolean);
-      const foto = (i, c = '') => lista.length
-        ? `<figure class="vf ${c}" data-zoom="${e(lista[i % lista.length])}"><img src="${e(lista[i % lista.length])}" alt="" loading="lazy"></figure>`
+      // La foto de portada solo va en la portada. Los demás espacios usan las fotos de "Historia y fotos"
+      // en orden: 1 historia · 2 y 3 padrinos · 4 franja · 5 buenos deseos · 6 cierre. Sin foto, el espacio no aparece.
+      const gal = (d.historia.fotos || []);
+      const figura = (x, c) => x.src
+        ? `<figure class="vf ${c}" data-zoom="${e(x.src)}"><img src="${e(x.src)}" alt="" loading="lazy"></figure>`
         : `<figure class="vf hueco ${c}">${SILUETA}</figure>`;
+      const foto = (i, c = '') => gal[i] ? figura(gal[i], c) : '';
       const cera = (txt, c = '') => `<span class="cera ${c}">${e(txt)}</span>`;
       const btnMini = (href, txt) => `<a class="mini" target="_blank" rel="noopener" href="${e(href)}">${e(txt)}</a>`;
       const lineas = S.lineas;
 
       // ---------- Portada: sobre que se queda abierto ----------
-      const carta = `<div class="carta-foto">${lista[0] ? `<img src="${e(lista[0])}" alt="">` : SILUETA}</div>
+      const carta = `<div class="carta-foto">${d.fotoPortada ? `<img src="${e(d.fotoPortada)}" alt="">` : SILUETA}</div>
         <div class="carta-nombres"><span>${e(d.novia)}</span><i>&amp;</i><span>${e(d.novio)}</span></div>`;
       const portada = S.sobre(d, { portada: true, carta, forro: FORRO, sello: e(ini).replace('&amp;', '<i>&amp;</i>'), textoPara: '', pista: 'Toca el sello para abrir' })
         .replace('<p class="sobre-para">', `<div class="portada-txt"><p class="eyebrow">${e(d.introPortada)}</p><h1 class="nombres-v">${e(d.novia)} <i>&amp;</i> ${e(d.novio)}</h1></div><p class="sobre-para">`)
@@ -110,7 +113,7 @@
 
       const pad = (d.padrinos || []).filter(p => S.hay(p.nombres));
       const padrinos = pad.length && !oc.familia ? `
-        <section id="padrinos" class="v-sec collage">
+        <section id="padrinos" class="v-sec collage ${gal[1] ? '' : 'solo'}">
           ${marco(`<h2 class="v-tit">Padrinos</h2>${pad.map(p => `<h3>${e(p.rol)}</h3><p>${S.br(p.nombres)}</p>`).join('')}`, 'padrinos-card rv')}
           ${foto(1, 'f-incl1 rv')}${foto(2, 'f-incl2 rv')}
         </section>` : '';
@@ -149,11 +152,11 @@
         </section>` : '';
 
       const h = d.historia || {};
-      const historia = (S.hay(h.texto) || lista.length) && !oc.historia ? `
+      const historia = (S.hay(h.texto) || gal.length) && !oc.historia ? `
         <section id="historia" class="v-sec">
           <h2 class="v-tit rv">${e(h.titulo || 'Nuestra historia')}</h2>
           <div class="volteo rv" data-voltear tabindex="0" role="button" aria-label="Voltear tarjeta">
-            <div class="cara frente"><div class="encaje">${foto(0, 'sin-zoom')}<p class="toca">Toca para leer</p></div>${ramo('r-hist')}</div>
+            <div class="cara frente"><div class="encaje">${foto(0, 'sin-zoom') || figura({}, 'sin-zoom')}<p class="toca">Toca para leer</p></div>${ramo('r-hist')}</div>
             <div class="cara atras"><div class="encaje"><div class="historia-txt"><p class="eyebrow">Nuestra historia</p><p>${S.br(h.texto || '')}</p><p class="toca">Toca para volver</p></div></div></div>
           </div>
         </section>` : '';
@@ -175,10 +178,10 @@
             ${clabe ? `<div class="banco-v"><h3>${e(rg.banco || 'Transferencia')}</h3>${S.hay(rg.titular) ? `<p>${e(rg.titular)}</p>` : ''}<p>CLABE: ${e(clabe.replace(/(\d{4})(?=\d)/g, '$1 '))}</p><button class="mini" data-copiar="${e(clabe)}">Copiar CLABE</button></div>` : ''}`, 'rv')}
         </section>` : '';
 
-      const galeria = lista.length || (h.fotos || []).length ? `
+      const galeria = gal.length && !oc.historia ? `
         <section id="galeria" class="v-sec">
           <h2 class="v-tit rv">Galería <small>de fotos</small></h2>
-          <div class="galeria-v">${[0, 1, 2, 3, 4].map(i => foto(i + 1, 'g' + i + ' rv')).join('')}</div>
+          <div class="galeria-v">${gal.slice(0, 8).map((x, i) => figura(x, 'g' + (i % 5) + ' rv')).join('')}</div>
           <p class="mono rv">${e(ini)}</p>
         </section>` : '';
 
@@ -190,9 +193,9 @@
 
       const conWhats = S.hay(r.whatsapp);
       const extrasCollage = conWhats && (!oc.deseos || !oc.canciones) ? `
-        <section id="deseos" class="v-sec collage dos">
+        <section id="deseos" class="v-sec collage dos ${gal[4] ? '' : 'solo'}">
           ${!oc.deseos ? `<div class="olivo-card mini-card rv"><h2 class="v-tit claro">Buenos deseos</h2><button class="mini claro" data-desplegar="caja-deseos">Escribir mis deseos</button></div>` : ''}
-          ${foto(3, 'f-incl3 rv')}
+          ${foto(4, 'f-incl3 rv')}
           ${!oc.canciones ? `<div class="vino-card mini-card rv" id="canciones"><h2 class="v-tit claro">Sugerencia <small>de canciones</small></h2><button class="mini claro" data-desplegar="caja-canciones">Sugerir canción</button></div>` : ''}
           ${ramo('r-deseos')}
         </section>
@@ -208,8 +211,8 @@
         </section>` : '';
 
       const cierre = `
-        <section id="cierre" class="v-cierre">
-          ${foto(0, 'fondo-cierre sin-zoom')}
+        <section id="cierre" class="v-cierre ${gal[5] ? '' : 'sin-foto'}">
+          ${foto(5, 'fondo-cierre sin-zoom')}
           <div class="encaje cierre-encaje rv">${ramo('r-cierre')}<div class="cierre-txt">
             ${S.hay(d.hashtag) ? `<p class="hash">${e(d.hashtag)}</p>` : ''}
             <p class="eyebrow">Con amor</p><p class="nombres-cierre">${e(d.novia)}<i>&amp;</i>${e(d.novio)}</p>
@@ -226,7 +229,7 @@
 <main>
   ${portada}
   ${padres}${cuenta}${padrinos}${itinerario}${ubicacion}
-  <div class="tira rv">${foto(2, '')}</div>
+  ${gal[3] ? `<div class="tira rv">${foto(3, '')}</div>` : ''}
   ${rsvp}${historia}${vestimenta}${regalos}${galeria}${extrasCollage}${hospedaje}${contactos}
   ${cierre}
 </main>`;
@@ -307,6 +310,11 @@ body.plantilla-vino{--fondo:#f4efe8;--fondo2:#ece4d8;--tinta:#5a2230;--suave:#8a
 .plantilla-vino .sin-zoom{cursor:default}
 .plantilla-vino .collage{display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:auto auto;gap:14px;align-items:center}
 .plantilla-vino .padrinos-card{grid-row:1/3}
+.plantilla-vino .collage.solo{grid-template-columns:1fr}
+.plantilla-vino .collage.solo .padrinos-card{grid-row:auto;max-width:380px;width:100%;margin:0 auto}
+.plantilla-vino .collage.dos.solo{grid-template-columns:1fr 1fr;align-items:stretch}
+.plantilla-vino .collage.dos.solo .vino-card{grid-column:2;transform:rotate(1.5deg)}
+.plantilla-vino .v-cierre.sin-foto{background:linear-gradient(160deg,#8f3046,#5a1626)}
 .plantilla-vino .padrinos-card .tq-in{padding:40px 14px}
 .plantilla-vino .padrinos-card p{font-size:18px}
 .plantilla-vino .f-incl1{aspect-ratio:3/4;transform:rotate(3deg);border:5px solid #fff}
