@@ -137,6 +137,7 @@
       hospedaje: [], contactos: { novia: '', novio: '' },
       invitados: [], mesas: { activo: false, texto: '', lista: [], elementos: [] },
       confirmaciones: { url: '', boda: '', clave: '', whatsapp: false },
+      acceso: { activo: false, texto: '' },
       hashtag: '', nota: '', despedida: xv ? 'Gracias por acompañarme en este día tan especial' : 'Gracias por ser parte de nuestra historia',
       musica: 'melodia', adornos: {}, ocultar: {}, encuadres: {}
     };
@@ -366,8 +367,23 @@
         <div class="rv">${S.plano(d)}</div>`, Object.assign({}, o, { clase: (o.clase || '') + ' sin-mesa' }));
     },
 
+    /** Pase de entrada con QR (paquete opcional). Solo se ve en la invitación personalizada de cada familia. */
+    acceso(d, o = {}) {
+      const a = d.acceso || {};
+      if (!a.activo || !(d.confirmaciones && d.confirmaciones.boda)) return '';
+      return seccion('acceso', `${encabezado('Tu acceso', o.titulo || 'Pase de entrada')}
+        <div class="acceso-tarjeta rv">
+          <p class="acceso-para">Pase para</p>
+          <strong class="acceso-nombre" data-invitado-nombre>Invitado</strong>
+          <p class="acceso-lug"><b data-pases>2</b> <span data-pases-palabra>lugares</span><span data-acceso-mesa></span></p>
+          <div class="acceso-qr" data-acceso-qr role="img" aria-label="Código QR de tu pase de entrada"></div>
+          <p class="acceso-nota">${esc(a.texto || 'Presenta este código en la entrada')}</p>
+        </div>
+        <button class="btn rv" type="button" data-acceso-guardar>${ICONOS.foto}Guardar mi pase</button>`, Object.assign({}, o, { clase: (o.clase || '') + ' sin-acceso' }));
+    },
+
     extras(d, o = {}) {
-      return S.mesa(d, o.mesa) + S.hospedaje(d, o.hospedaje) + S.deseos(d, o.deseos) + S.canciones(d, o.canciones) + S.contactos(d, o.contactos);
+      return S.mesa(d, o.mesa) + S.acceso(d, o.acceso) + S.hospedaje(d, o.hospedaje) + S.deseos(d, o.deseos) + S.canciones(d, o.canciones) + S.contactos(d, o.contactos);
     },
 
     cierre(d, o = {}) {
@@ -620,6 +636,18 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 
 /* Mesas */
 .sec-mesa.sin-mesa{display:none}
+.sec-acceso.sin-acceso{display:none}
+.acceso-tarjeta{max-width:360px;margin:6px auto 22px;padding:30px 24px 26px;background:var(--tarjeta,#fff);color:var(--tinta);border:1px solid var(--linea);border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.08);position:relative}
+.acceso-tarjeta::before,.acceso-tarjeta::after{content:"";position:absolute;top:52%;width:26px;height:26px;border-radius:50%;background:var(--fondo);border:1px solid var(--linea)}
+.acceso-tarjeta::before{left:-14px;clip-path:inset(0 0 0 50%)}.acceso-tarjeta::after{right:-14px;clip-path:inset(0 50% 0 0)}
+.acceso-para{font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--acento-texto,var(--acento))}
+.acceso-nombre{display:block;font-family:var(--f-titulo);font-weight:400;font-size:clamp(34px,9vw,44px);line-height:1.15;color:var(--titulo,var(--tinta));margin:6px 0 4px}
+.acceso-lug{font-size:18px;color:var(--suave)}
+.acceso-lug b{color:var(--tinta)}
+.acceso-qr{width:min(230px,70vw);margin:20px auto 12px;padding:12px;background:#fff;border-radius:14px;border:1px dashed var(--linea)}
+.acceso-qr svg{display:block;width:100%;height:auto}
+.acceso-nota{font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+.oscura .acceso-tarjeta{color:var(--tinta)}
 .mesa-txt{font-style:italic;color:var(--suave)}
 .mesa-num{font-family:var(--f-titulo);font-size:clamp(46px,12vw,64px);line-height:1.1;color:var(--titulo,var(--tinta));margin:4px 0 14px}
 .pase-mesa{display:block;font-style:normal;font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.25em;text-transform:uppercase;color:var(--acento-texto,var(--acento));margin-top:6px}
@@ -903,6 +931,45 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
     function recordar(v) { try { localStorage.setItem(claveLocal, JSON.stringify(v)); } catch (e) {} }
     function recordado() { try { return JSON.parse(localStorage.getItem(claveLocal)); } catch (e) { return null; } }
 
+    // Pase de entrada con QR (necesita la librería de QR incluida en la página)
+    var acc = $('[data-acceso-qr]');
+    if (acc && invitado && C.boda && W.qrcode) {
+      var codigo = 'INV1:' + encodeURIComponent(C.boda) + ':' + encodeURIComponent(invitado);
+      var qr = W.qrcode(0, 'M'); qr.addData(codigo); qr.make();
+      var nm = qr.getModuleCount(), qrRuta = '';
+      for (var qy = 0; qy < nm; qy++) for (var qx = 0; qx < nm; qx++) if (qr.isDark(qy, qx)) qrRuta += 'M' + qx + ' ' + qy + 'h1v1h-1z';
+      acc.innerHTML = '<svg viewBox="-1 -1 ' + (nm + 2) + ' ' + (nm + 2) + '" shape-rendering="crispEdges"><rect x="-1" y="-1" width="' + (nm + 2) + '" height="' + (nm + 2) + '" fill="#fff"/><path d="' + qrRuta + '" fill="#111"/></svg>';
+      var etqMesa = mesa && d.mesas && d.mesas.activo ? (/^\d+$/.test(mesa) ? 'Mesa ' + mesa : mesa) : '';
+      $$('[data-acceso-mesa]').forEach(function (e) { e.textContent = etqMesa ? ' · ' + etqMesa : ''; });
+      $$('.sec-acceso').forEach(function (e) { e.classList.remove('sin-acceso'); });
+      var bG = $('[data-acceso-guardar]');
+      if (bG) bG.addEventListener('click', function () {
+        // Dibuja el pase como imagen para guardarlo en el celular
+        var cs = getComputedStyle(document.body), v = function (k, def) { return (cs.getPropertyValue(k) || '').trim() || def; };
+        var cv = document.createElement('canvas'), W2 = 720, H2 = 1080; cv.width = W2; cv.height = H2;
+        var g = cv.getContext('2d'), fondo = v('--fondo', '#fff'), tinta = v('--tinta', '#222'), acento = v('--acento', '#b8955a'), tit = v('--titulo', tinta);
+        var fT = v('--f-titulo', 'serif'), fE = v('--f-etiqueta', 'sans-serif'), fX = v('--f-texto', 'serif');
+        g.fillStyle = fondo; g.fillRect(0, 0, W2, H2);
+        g.strokeStyle = acento; g.lineWidth = 3; g.strokeRect(28, 28, W2 - 56, H2 - 56); g.lineWidth = 1; g.strokeRect(40, 40, W2 - 80, H2 - 80);
+        g.textAlign = 'center'; g.fillStyle = acento; g.font = '600 22px ' + fE; g.fillText('PASE DE ENTRADA', W2 / 2, 120);
+        var quien = d.evento === 'xv' ? 'XV años de ' + d.festejada : d.novia + ' & ' + d.novio;
+        g.fillStyle = tinta; g.font = 'italic 30px ' + fX; g.fillText(quien, W2 / 2, 172);
+        var p2 = String(d.fecha || '').split('-'); if (p2.length === 3) { g.font = '22px ' + fE; g.fillText(p2[2] + ' · ' + p2[1] + ' · ' + p2[0], W2 / 2, 212); }
+        g.fillStyle = tit; var tam = 64; g.font = tam + 'px ' + fT; while (g.measureText(invitado).width > W2 - 120 && tam > 30) { tam -= 4; g.font = tam + 'px ' + fT; }
+        g.fillText(invitado, W2 / 2, 310);
+        g.fillStyle = tinta; g.font = '28px ' + fX; g.fillText(pases + (pases === 1 ? ' lugar' : ' lugares') + (etqMesa ? ' · ' + etqMesa : ''), W2 / 2, 362);
+        var lado = 440, x0 = (W2 - lado) / 2, y0 = 410, c = lado / (nm + 2);
+        g.fillStyle = '#fff'; g.fillRect(x0 - 10, y0 - 10, lado + 20, lado + 20); g.fillStyle = '#111';
+        for (var yy = 0; yy < nm; yy++) for (var xx = 0; xx < nm; xx++) if (qr.isDark(yy, xx)) g.fillRect(Math.floor(x0 + (xx + 1) * c), Math.floor(y0 + (yy + 1) * c), Math.ceil(c), Math.ceil(c));
+        g.fillStyle = tinta; g.font = '22px ' + fE; g.fillText((d.acceso && d.acceso.texto) || 'Presenta este código en la entrada', W2 / 2, y0 + lado + 70);
+        cv.toBlob(function (b) {
+          var a = document.createElement('a'); a.href = URL.createObjectURL(b);
+          a.download = 'pase-' + invitado.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w]+/g, '-').toLowerCase() + '.png';
+          document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+        }, 'image/png');
+      });
+    }
+
     // Formularios cortos (buenos deseos, canciones)
     $$('[data-whats]').forEach(function (f) {
       var n = $('[name=nombre]', f); if (invitado && n) n.value = invitado;
@@ -1046,6 +1113,7 @@ ${r.fuentes ? `<link rel="stylesheet" href="${esc(r.fuentes)}">` : ''}
 </head>
 <body class="plantilla-${r.p.id}">
 ${r.html}
+${r.d.acceso && r.d.acceso.activo && window.QR_FUENTE ? `<script>${window.QR_FUENTE.replace(/<\//g, '<\\/')}<\/script>` : ''}
 <script>(${runtime.toString()})(${dJson});<\/script>
 </body>
 </html>`;

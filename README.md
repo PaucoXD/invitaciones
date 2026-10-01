@@ -11,6 +11,7 @@ llenas un formulario y descargas la invitación lista para publicar.
 | `negocio.js` | **Tus datos de negocio**: nombre, WhatsApp, redes, precios, paquetes, extras y preguntas frecuentes. |
 | `aviso-privacidad.html` | Plantilla de aviso de privacidad (revísala antes de usarla). |
 | `pedido.html` | **Formulario para tu cliente**: llena sus datos, fotos e invitados desde el celular y te llegan listos para abrir en el editor. |
+| `entrada.html` | **Registro de entrada** el día del evento: escanea el pase QR de cada familia o búscala por nombre (`?demo=1` para practicar). |
 | `panel.html` | Panel de confirmaciones para los novios (`?demo=1` para ver un ejemplo). |
 | `manual.html` | **Manual del administrador**: todo explicado paso a paso (también se puede imprimir). |
 | `i/` | Carpeta donde subes las invitaciones terminadas para publicarlas. |
@@ -36,7 +37,7 @@ El editor no aparece en la página pública: tú entras directo a `editor.html`.
 Manda `pedido.html` (botón **📝 Formulario para cliente** en Mis bodas). El cliente elige diseño y llena todo en
 10 pasos desde su celular (se guarda solo; ve una vista previa al final). Al enviarlo, el pedido aparece en
 **Mis bodas → Pedidos de clientes** y con **✎ Abrir en el editor** se abre ya lleno. Las fotos quedan en tu Google
-Drive (carpeta *Pedidos de invitaciones*). Requiere el código de Google versión 3 (vuelve a pegarlo y crea una
+Drive (carpeta *Pedidos de invitaciones*). Requiere el código de Google versión 4 (vuelve a pegarlo y crea una
 nueva versión; acepta el permiso de Drive). Sin Google Sheets, el cliente comparte el archivo por WhatsApp y tú
 lo abres con **📂 Abrir**. Enlaces útiles: `pedido.html?evento=xv`, `pedido.html?plantilla=gala&paquete=Premium`.
 
@@ -67,6 +68,15 @@ Demos: `invitacion.html?plantilla=princesa` (o `mariposas`, `gala`) y `demos/pri
   mesa de novios, entrada), asignas la mesa de cada invitación y cada invitado ve *“Mesa 5”* con el plano
   y su mesa resaltada. *Lista por mesa* descarga un Excel para el salón o el coordinador.
 - **Ver como:** arriba de la vista previa eliges un invitado para ver su invitación personalizada.
+
+## Pase de entrada con QR (paquete)
+
+En el editor, sección **Pase de entrada con QR**: cada familia ve en su enlace personalizado (y en su PDF) un pase
+con su nombre, lugares, mesa y un QR que puede guardar como imagen. El día del evento, en `entrada.html`
+(botón **🔗 Copiar acceso para la entrada** o **🚪 Entrada** en Mis bodas y en el panel) se escanea con la cámara del
+celular: avisa si ya entró, si no está en la lista o si es de otro evento; también se busca por nombre. Funciona en
+varios celulares a la vez y guarda los registros si se va la señal. Requiere Confirmaciones automáticas y el código
+de Google versión 4.
 
 ## Invitación en PDF
 

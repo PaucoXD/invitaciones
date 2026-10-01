@@ -7,6 +7,7 @@
  *   Confirmaciones → una fila por respuesta (confirmación, buenos deseos o canción)
  *   Invitados      → la lista que se sincroniza desde el editor (para saber quién falta)
  *   Bodas          → la clave del panel, nombres y fecha de cada boda
+ *   Entradas       → quién llegó el día del evento (registro con el pase QR desde entrada.html)
  *   Pedidos        → los datos que mandan los clientes desde pedido.html (el archivo completo,
  *                    con fotos, se guarda en la carpeta "Pedidos de invitaciones" de tu Google Drive)
  * La clave de "Mis bodas" (tu panel de administrador) se guarda en las propiedades del script, no en la hoja.
@@ -15,11 +16,12 @@ window.CODIGO_SHEETS = String.raw`// ===== Confirmaciones de invitaciones — pe
 // Después: Implementar → Nueva implementación → App web → Ejecutar como: Yo → Acceso: Cualquier persona.
 // ¿Actualizando? Implementar → Administrar implementaciones → ✏️ → Versión: "Nueva versión" → Implementar (la URL no cambia).
 
-var VERSION = 3;
+var VERSION = 4;
 
 var ENC_CONF = ['Fecha', 'Boda', 'Tipo', 'Invitado', 'Asiste', 'Personas', 'Mensaje', 'Lugares', 'Mesa'];
 var ENC_INV = ['Boda', 'Invitado', 'Lugares', 'Mesa', 'Teléfono'];
 var ENC_BODAS = ['Boda', 'Clave', 'Creada', 'Nombres', 'Fecha'];
+var ENC_ENT = ['Fecha', 'Boda', 'Invitado', 'Personas', 'Registró'];
 var ENC_PED = ['Recibido', 'Pedido', 'Cliente', 'WhatsApp', 'Evento', 'Nombres', 'Fecha del evento', 'Diseño', 'Paquete', 'Archivo', 'Estado'];
 var CARPETA_PEDIDOS = 'Pedidos de invitaciones';
 
@@ -69,12 +71,15 @@ function resumen_() {
     if (f > x.ultima) x.ultima = f;
     if (r[2] === 'deseo') x.deseos++; else if (r[2] === 'cancion') x.canciones++; else x._rsvp[norm_(r[3])] = { asiste: r[4], personas: Number(r[5]) || 0 };
   });
+  var he = ss.getSheetByName('Entradas');
+  if (he) he.getDataRange().getValues().slice(1).forEach(function (r) { var x = b(String(r[1])); x._ent = x._ent || {}; x._ent[norm_(r[2])] = Number(r[3]) || 0; });
   return orden.map(function (id) {
     var x = bodas[id];
     Object.keys(x._rsvp).forEach(function (k) { var r = x._rsvp[k]; x.respondidas++; if (r.asiste === 'No') x.no++; else { x.confirmadas++; x.personas += r.personas; } });
     var enLista = Object.keys(x._rsvp).filter(function (k) { return x._inv[k]; }).length;
     x.pendientes = Math.max(0, x.invitaciones - enLista);
-    delete x._inv; delete x._rsvp;
+    x.llegaron = 0; Object.keys(x._ent || {}).forEach(function (k) { x.llegaron += x._ent[k]; });
+    delete x._inv; delete x._rsvp; delete x._ent;
     return x;
   });
 }
@@ -134,6 +139,13 @@ function doPost(e) {
     var boda = texto_(d.boda, 80);
     if (!boda) return json_({ ok: false, error: 'Falta el ID de la boda' });
 
+    if (d.accion === 'entrada') {
+      // Registro en la puerta: la última fila de cada invitado es la que vale (0 = se deshizo)
+      if (!claveCorrecta_(boda, d.clave, false)) return json_({ ok: false, error: 'Clave incorrecta' });
+      hoja_('Entradas', ENC_ENT).appendRow([new Date(), boda, texto_(d.nombre, 120), Math.max(0, Number(d.personas) || 0), texto_(d.quien, 60)]);
+      return json_({ ok: true });
+    }
+
     if (d.accion === 'invitados') {
       if (!claveCorrecta_(boda, d.clave, true, d.info)) return json_({ ok: false, error: 'Clave incorrecta' });
       var h = hoja_('Invitados', ENC_INV), v = h.getDataRange().getValues();
@@ -176,6 +188,6 @@ function doGet(e) {
   }
   var boda = texto_(p.boda, 80);
   if (!boda || !claveCorrecta_(boda, p.clave, false)) return json_({ ok: false, error: 'ID de boda o clave incorrectos' });
-  return json_({ ok: true, confirmaciones: filas_('Confirmaciones', boda, 1), invitados: filas_('Invitados', boda, 0) });
+  return json_({ ok: true, version: VERSION, confirmaciones: filas_('Confirmaciones', boda, 1), invitados: filas_('Invitados', boda, 0), entradas: filas_('Entradas', boda, 1) });
 }
 `;

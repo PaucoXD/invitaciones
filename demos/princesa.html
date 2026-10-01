@@ -242,6 +242,18 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 
 /* Mesas */
 .sec-mesa.sin-mesa{display:none}
+.sec-acceso.sin-acceso{display:none}
+.acceso-tarjeta{max-width:360px;margin:6px auto 22px;padding:30px 24px 26px;background:var(--tarjeta,#fff);color:var(--tinta);border:1px solid var(--linea);border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.08);position:relative}
+.acceso-tarjeta::before,.acceso-tarjeta::after{content:"";position:absolute;top:52%;width:26px;height:26px;border-radius:50%;background:var(--fondo);border:1px solid var(--linea)}
+.acceso-tarjeta::before{left:-14px;clip-path:inset(0 0 0 50%)}.acceso-tarjeta::after{right:-14px;clip-path:inset(0 50% 0 0)}
+.acceso-para{font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--acento-texto,var(--acento))}
+.acceso-nombre{display:block;font-family:var(--f-titulo);font-weight:400;font-size:clamp(34px,9vw,44px);line-height:1.15;color:var(--titulo,var(--tinta));margin:6px 0 4px}
+.acceso-lug{font-size:18px;color:var(--suave)}
+.acceso-lug b{color:var(--tinta)}
+.acceso-qr{width:min(230px,70vw);margin:20px auto 12px;padding:12px;background:#fff;border-radius:14px;border:1px dashed var(--linea)}
+.acceso-qr svg{display:block;width:100%;height:auto}
+.acceso-nota{font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+.oscura .acceso-tarjeta{color:var(--tinta)}
 .mesa-txt{font-style:italic;color:var(--suave)}
 .mesa-num{font-family:var(--f-titulo);font-size:clamp(46px,12vw,64px);line-height:1.1;color:var(--titulo,var(--tinta));margin:4px 0 14px}
 .pase-mesa{display:block;font-style:normal;font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.25em;text-transform:uppercase;color:var(--acento-texto,var(--acento));margin-top:6px}
@@ -565,6 +577,7 @@ body.plantilla-princesa{--acento-texto:#856633;--fondo:#fff8f9;--fondo2:#fcebef;
           <p class="pie-fecha rv">12 · 06 · 2027</p>
         </footer>
 </main>
+
 <script>(function runtime(d) {
     var W = window;
     (W.__inv || []).forEach(function (f) { try { f(); } catch (e) {} });
@@ -785,6 +798,45 @@ body.plantilla-princesa{--acento-texto:#856633;--fondo:#fff8f9;--fondo2:#fcebef;
     function recordar(v) { try { localStorage.setItem(claveLocal, JSON.stringify(v)); } catch (e) {} }
     function recordado() { try { return JSON.parse(localStorage.getItem(claveLocal)); } catch (e) { return null; } }
 
+    // Pase de entrada con QR (necesita la librería de QR incluida en la página)
+    var acc = $('[data-acceso-qr]');
+    if (acc && invitado && C.boda && W.qrcode) {
+      var codigo = 'INV1:' + encodeURIComponent(C.boda) + ':' + encodeURIComponent(invitado);
+      var qr = W.qrcode(0, 'M'); qr.addData(codigo); qr.make();
+      var nm = qr.getModuleCount(), qrRuta = '';
+      for (var qy = 0; qy < nm; qy++) for (var qx = 0; qx < nm; qx++) if (qr.isDark(qy, qx)) qrRuta += 'M' + qx + ' ' + qy + 'h1v1h-1z';
+      acc.innerHTML = '<svg viewBox="-1 -1 ' + (nm + 2) + ' ' + (nm + 2) + '" shape-rendering="crispEdges"><rect x="-1" y="-1" width="' + (nm + 2) + '" height="' + (nm + 2) + '" fill="#fff"/><path d="' + qrRuta + '" fill="#111"/></svg>';
+      var etqMesa = mesa && d.mesas && d.mesas.activo ? (/^\d+$/.test(mesa) ? 'Mesa ' + mesa : mesa) : '';
+      $$('[data-acceso-mesa]').forEach(function (e) { e.textContent = etqMesa ? ' · ' + etqMesa : ''; });
+      $$('.sec-acceso').forEach(function (e) { e.classList.remove('sin-acceso'); });
+      var bG = $('[data-acceso-guardar]');
+      if (bG) bG.addEventListener('click', function () {
+        // Dibuja el pase como imagen para guardarlo en el celular
+        var cs = getComputedStyle(document.body), v = function (k, def) { return (cs.getPropertyValue(k) || '').trim() || def; };
+        var cv = document.createElement('canvas'), W2 = 720, H2 = 1080; cv.width = W2; cv.height = H2;
+        var g = cv.getContext('2d'), fondo = v('--fondo', '#fff'), tinta = v('--tinta', '#222'), acento = v('--acento', '#b8955a'), tit = v('--titulo', tinta);
+        var fT = v('--f-titulo', 'serif'), fE = v('--f-etiqueta', 'sans-serif'), fX = v('--f-texto', 'serif');
+        g.fillStyle = fondo; g.fillRect(0, 0, W2, H2);
+        g.strokeStyle = acento; g.lineWidth = 3; g.strokeRect(28, 28, W2 - 56, H2 - 56); g.lineWidth = 1; g.strokeRect(40, 40, W2 - 80, H2 - 80);
+        g.textAlign = 'center'; g.fillStyle = acento; g.font = '600 22px ' + fE; g.fillText('PASE DE ENTRADA', W2 / 2, 120);
+        var quien = d.evento === 'xv' ? 'XV años de ' + d.festejada : d.novia + ' & ' + d.novio;
+        g.fillStyle = tinta; g.font = 'italic 30px ' + fX; g.fillText(quien, W2 / 2, 172);
+        var p2 = String(d.fecha || '').split('-'); if (p2.length === 3) { g.font = '22px ' + fE; g.fillText(p2[2] + ' · ' + p2[1] + ' · ' + p2[0], W2 / 2, 212); }
+        g.fillStyle = tit; var tam = 64; g.font = tam + 'px ' + fT; while (g.measureText(invitado).width > W2 - 120 && tam > 30) { tam -= 4; g.font = tam + 'px ' + fT; }
+        g.fillText(invitado, W2 / 2, 310);
+        g.fillStyle = tinta; g.font = '28px ' + fX; g.fillText(pases + (pases === 1 ? ' lugar' : ' lugares') + (etqMesa ? ' · ' + etqMesa : ''), W2 / 2, 362);
+        var lado = 440, x0 = (W2 - lado) / 2, y0 = 410, c = lado / (nm + 2);
+        g.fillStyle = '#fff'; g.fillRect(x0 - 10, y0 - 10, lado + 20, lado + 20); g.fillStyle = '#111';
+        for (var yy = 0; yy < nm; yy++) for (var xx = 0; xx < nm; xx++) if (qr.isDark(yy, xx)) g.fillRect(Math.floor(x0 + (xx + 1) * c), Math.floor(y0 + (yy + 1) * c), Math.ceil(c), Math.ceil(c));
+        g.fillStyle = tinta; g.font = '22px ' + fE; g.fillText((d.acceso && d.acceso.texto) || 'Presenta este código en la entrada', W2 / 2, y0 + lado + 70);
+        cv.toBlob(function (b) {
+          var a = document.createElement('a'); a.href = URL.createObjectURL(b);
+          a.download = 'pase-' + invitado.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w]+/g, '-').toLowerCase() + '.png';
+          document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+        }, 'image/png');
+      });
+    }
+
     // Formularios cortos (buenos deseos, canciones)
     $$('[data-whats]').forEach(function (f) {
       var n = $('[name=nombre]', f); if (invitado && n) n.value = invitado;
@@ -862,6 +914,6 @@ body.plantilla-princesa{--acento-texto:#856633;--fondo:#fff8f9;--fondo2:#fcebef;
         form.parentNode.insertBefore(aviso2, form);
       }
     }
-  })({"evento":"xv","plantilla":"princesa","festejada":"Sofía","iniciales":"","fecha":"2027-06-12","hora":"18:00","zonaHoraria":"-06:00","ciudad":"Guadalajara, Jalisco","introPortada":"Mis XV años","fotoPortada":"","frase":"Hay momentos que se esperan toda una vida; hoy celebro el mío rodeada de quienes más quiero.","fraseAutor":"","tituloFamilia":"Con la bendición de Dios y de mis padres","textoFamilia":"tengo el honor de invitarte a celebrar mis quince años","padresNovia":"Eduardo Ramírez Ochoa\nClaudia Herrera de Ramírez","padresNovio":"","padrinos":[{"rol":"Padrinos de velación","nombres":"Raúl & Gabriela Herrera"},{"rol":"Padrinos de anillo","nombres":"Miguel & Laura Ramírez"},{"rol":"Padrinos de la última muñeca","nombres":"Óscar & Diana Torres"},{"rol":"Chambelán de honor","nombres":"Emilio Ramírez"}],"itinerario":[{"hora":"18:00","evento":"Misa de acción de gracias","detalle":"Templo de San Francisco","icono":"iglesia"},{"hora":"20:00","evento":"Recepción","detalle":"Salón Cristal","icono":"copa"},{"hora":"20:45","evento":"Vals","detalle":"Con mis chambelanes","icono":"corona"},{"hora":"21:30","evento":"Cena","detalle":"","icono":"cena"},{"hora":"22:30","evento":"¡A bailar!","detalle":"","icono":"musica"},{"hora":"02:00","evento":"Fin de la fiesta","detalle":"Gracias por acompañarme","icono":"luna"}],"lugares":[{"tipo":"Misa","hora":"18:00","nombre":"Templo de San Francisco de Asís","direccion":"Av. 16 de Septiembre 289, Centro\nGuadalajara, Jal.","mapa":"","icono":"iglesia"},{"tipo":"Recepción","hora":"20:00","nombre":"Salón Cristal","direccion":"Av. López Mateos Sur 2375\nZapopan, Jal.","mapa":"","icono":"hacienda"}],"vestimenta":{"tipo":"Formal","texto":"Te sugerimos colores de noche y tonos pastel.","colores":["#1f3463","#7c5ea8","#b8c4d6","#c9a75c"],"nota":"El color rosa está reservado para la quinceañera."},"historia":{"titulo":"Mis momentos","texto":"Quince años de risas, aprendizajes y sueños. ¡Gracias por ser parte de ellos!","fotos":[{"src":"","pie":"Mi primer año"},{"src":"","pie":"Con mi familia"},{"src":"","pie":"Hoy"}]},"regalos":{"titulo":"Tu presencia es mi mejor regalo","texto":"pero si deseas obsequiarme algo, aquí algunas opciones","opciones":[{"nombre":"Liverpool","detalle":"Evento #50987654","enlace":"","icono":"regalo"},{"nombre":"Lluvia de sobres","detalle":"El día del evento","enlace":"","icono":"sobre"}],"banco":"","titular":"","clabe":""},"rsvp":{"whatsapp":"5213312345678","fechaLimite":"2027-05-20","pases":2,"texto":""},"hospedaje":[],"contactos":{"novia":"5213312345678","novio":""},"invitados":[{"nombre":"Familia Gómez","pases":4,"mesa":"2"},{"nombre":"Valentina Ruiz","pases":1,"mesa":"6"},{"nombre":"Familia Ortiz","pases":3,"mesa":"4"}],"mesas":{"activo":false,"texto":"","lista":[],"elementos":[]},"hashtag":"#LosXVdeSofi","nota":"","despedida":"Gracias por acompañarme en este día tan especial","musica":"melodia","adornos":{},"ocultar":{},"novia":"","novio":"","confirmaciones":{"url":"","boda":"","whatsapp":false},"encuadres":{},"_rutaAdornos":"plantillas/adornos/","_efecto":"destellos","_efectoColores":["#f4dc9b","#ec9fb3","#f8d3db","#d1a556"]});</script>
+  })({"evento":"xv","plantilla":"princesa","festejada":"Sofía","iniciales":"","fecha":"2027-06-12","hora":"18:00","zonaHoraria":"-06:00","ciudad":"Guadalajara, Jalisco","introPortada":"Mis XV años","fotoPortada":"","frase":"Hay momentos que se esperan toda una vida; hoy celebro el mío rodeada de quienes más quiero.","fraseAutor":"","tituloFamilia":"Con la bendición de Dios y de mis padres","textoFamilia":"tengo el honor de invitarte a celebrar mis quince años","padresNovia":"Eduardo Ramírez Ochoa\nClaudia Herrera de Ramírez","padresNovio":"","padrinos":[{"rol":"Padrinos de velación","nombres":"Raúl & Gabriela Herrera"},{"rol":"Padrinos de anillo","nombres":"Miguel & Laura Ramírez"},{"rol":"Padrinos de la última muñeca","nombres":"Óscar & Diana Torres"},{"rol":"Chambelán de honor","nombres":"Emilio Ramírez"}],"itinerario":[{"hora":"18:00","evento":"Misa de acción de gracias","detalle":"Templo de San Francisco","icono":"iglesia"},{"hora":"20:00","evento":"Recepción","detalle":"Salón Cristal","icono":"copa"},{"hora":"20:45","evento":"Vals","detalle":"Con mis chambelanes","icono":"corona"},{"hora":"21:30","evento":"Cena","detalle":"","icono":"cena"},{"hora":"22:30","evento":"¡A bailar!","detalle":"","icono":"musica"},{"hora":"02:00","evento":"Fin de la fiesta","detalle":"Gracias por acompañarme","icono":"luna"}],"lugares":[{"tipo":"Misa","hora":"18:00","nombre":"Templo de San Francisco de Asís","direccion":"Av. 16 de Septiembre 289, Centro\nGuadalajara, Jal.","mapa":"","icono":"iglesia"},{"tipo":"Recepción","hora":"20:00","nombre":"Salón Cristal","direccion":"Av. López Mateos Sur 2375\nZapopan, Jal.","mapa":"","icono":"hacienda"}],"vestimenta":{"tipo":"Formal","texto":"Te sugerimos colores de noche y tonos pastel.","colores":["#1f3463","#7c5ea8","#b8c4d6","#c9a75c"],"nota":"El color rosa está reservado para la quinceañera."},"historia":{"titulo":"Mis momentos","texto":"Quince años de risas, aprendizajes y sueños. ¡Gracias por ser parte de ellos!","fotos":[{"src":"","pie":"Mi primer año"},{"src":"","pie":"Con mi familia"},{"src":"","pie":"Hoy"}]},"regalos":{"titulo":"Tu presencia es mi mejor regalo","texto":"pero si deseas obsequiarme algo, aquí algunas opciones","opciones":[{"nombre":"Liverpool","detalle":"Evento #50987654","enlace":"","icono":"regalo"},{"nombre":"Lluvia de sobres","detalle":"El día del evento","enlace":"","icono":"sobre"}],"banco":"","titular":"","clabe":""},"rsvp":{"whatsapp":"5213312345678","fechaLimite":"2027-05-20","pases":2,"texto":""},"hospedaje":[],"contactos":{"novia":"5213312345678","novio":""},"invitados":[{"nombre":"Familia Gómez","pases":4,"mesa":"2"},{"nombre":"Valentina Ruiz","pases":1,"mesa":"6"},{"nombre":"Familia Ortiz","pases":3,"mesa":"4"}],"mesas":{"activo":false,"texto":"","lista":[],"elementos":[]},"hashtag":"#LosXVdeSofi","nota":"","despedida":"Gracias por acompañarme en este día tan especial","musica":"melodia","adornos":{},"ocultar":{},"novia":"","novio":"","confirmaciones":{"url":"","boda":"","whatsapp":false},"acceso":{"activo":false,"texto":""},"encuadres":{},"_rutaAdornos":"plantillas/adornos/","_efecto":"destellos","_efectoColores":["#f4dc9b","#ec9fb3","#f8d3db","#d1a556"]});</script>
 </body>
 </html>
