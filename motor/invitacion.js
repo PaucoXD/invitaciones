@@ -20,6 +20,13 @@
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   const br = (s) => esc(s).replace(/\n/g, '<br>');
+  /** Huella corta de un texto (sirve para identificar cada foto subida). */
+  function huella(s) {
+    let h = 5381; s = String(s || '');
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return 'f' + (h >>> 0).toString(36) + s.length.toString(36);
+  }
+  const desesc = (s) => String(s).replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
   const lineas = (s) => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
   const hay = (v) => Array.isArray(v) ? v.length > 0 : !!(v && String(v).trim());
 
@@ -117,7 +124,7 @@
       rsvp: { whatsapp: '', fechaLimite: '', pases: 2, texto: '' },
       hospedaje: [], contactos: { novia: '', novio: '' },
       hashtag: '', nota: '', despedida: 'Gracias por ser parte de nuestra historia',
-      musica: 'melodia', adornos: {}, ocultar: {}
+      musica: 'melodia', adornos: {}, ocultar: {}, encuadres: {}
     };
     for (const k in def) {
       if (d[k] == null) d[k] = def[k];
@@ -367,6 +374,8 @@ main{position:relative;z-index:1}
 .rv{opacity:0;transform:translateY(30px);transition:opacity 1.1s ease,transform 1.1s ease}
 .rv.vis{opacity:1;transform:none}
 .sin-anim .rv{opacity:1;transform:none;transition:none}
+.encuadre{display:block;overflow:hidden;width:100%;height:100%}
+.encuadre>img{width:100%;height:100%;object-fit:cover}
 .orn{display:block;pointer-events:none}
 .orn>img{width:100%;height:auto}
 .orn>img+.fb{display:none}
@@ -862,7 +871,17 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
     d._rutaAdornos = opciones.rutaAdornos != null ? opciones.rutaAdornos : 'plantillas/adornos/';
     d._efecto = p.efecto || null;
     d._efectoColores = p.efectoColores || null;
-    const html = p.render(d, S);
+    let html = p.render(d, S);
+    // Encuadre de fotos: posición (x, y en %) y zoom elegidos en el editor
+    const enc = d.encuadres || {};
+    if (Object.keys(enc).length) {
+      html = html.replace(/<img\b[^>]*?\bsrc="([^"]+)"[^>]*>/g, (tag, src) => {
+        const e = enc[huella(desesc(src))];
+        if (!e) return tag;
+        const x = +e.x || 50, y = +e.y || 50, z = Math.min(Math.max(+e.z || 1, 1), 4);
+        return `<span class="encuadre">${tag.replace('<img', `<img style="object-position:${x}% ${y}%;transform:scale(${z});transform-origin:${x}% ${y}%"`)}</span>`;
+      });
+    }
     const titulo = `${d.novia} & ${d.novio} · Nuestra boda`;
     return { d, p, html, css: CSS_BASE + '\n' + (p.css || ''), fuentes: p.fuentes || '', titulo, descripcion: `${fechaInfo(d).larga}${d.ciudad ? ' — ' + d.ciudad : ''}` };
   }
@@ -914,6 +933,6 @@ ${r.html}
     registrar(p) { Plantillas[p.id] = p; },
     plantillas: Plantillas,
     construir, montar, exportarHTML, normalizar,
-    ICONOS, ICONOS_EVENTO, ICONOS_REGALO, SECCIONES, fechaInfo
+    ICONOS, ICONOS_EVENTO, ICONOS_REGALO, SECCIONES, fechaInfo, huella
   };
 })();

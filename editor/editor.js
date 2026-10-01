@@ -128,7 +128,8 @@
           const f = await elegirArchivo('image/*'); if (!f) return;
           try { set(await leerImagen(f, def.png ? 1400 : 1600, def.png)); pintar(); } catch (e) { avisar('No se pudo leer la imagen'); }
         } }, 'Subir imagen'),
-        el('button', { class: 'b chico peligro', type: 'button', onclick: () => { set(''); pintar(); } }, 'Quitar')));
+        el('button', { class: 'b chico peligro', type: 'button', onclick: () => { quitarEncuadre(obtener(ruta)); set(''); pintar(); } }, 'Quitar'),
+        def.png ? null : el('button', { class: 'b chico', type: 'button', onclick: () => { if (obtener(ruta)) abrirEncuadre(obtener(ruta)); else avisar('Primero sube una imagen'); } }, '✥ Ajustar posición')));
       pintar();
     } else if (t === 'colores') {
       control = el('div', { class: 'colores' });
@@ -193,6 +194,51 @@
 
     if (!def.l && !def.ayuda && (t === 'adornos' || t === 'ocultar')) return control;
     return el('div', { class: 'campo' }, def.l ? el('label', {}, def.l) : null, control, def.ayuda ? el('p', { class: 'ayuda' }, def.ayuda) : null);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Ajustar posición y zoom de una foto (arrastrar + control de zoom)
+  // ---------------------------------------------------------------------------
+  function quitarEncuadre(src) {
+    if (!src || !datos.encuadres) return;
+    const e = Object.assign({}, datos.encuadres); delete e[Invitacion.huella(src)]; datos.encuadres = e;
+  }
+  function abrirEncuadre(src) {
+    const k = Invitacion.huella(src);
+    const actual = Object.assign({ x: 50, y: 50, z: 1 }, (datos.encuadres || {})[k]);
+    const guardar = () => { poner('encuadres', Object.assign({}, datos.encuadres, { [k]: { x: Math.round(actual.x), y: Math.round(actual.y), z: +actual.z.toFixed(2) } })); };
+    const marcos = [['Vertical', '3/4'], ['Cuadrado', '1/1'], ['Horizontal', '16/9']];
+    const vistas = marcos.map(([n, r]) => {
+      const im = el('img', { src, draggable: 'false' });
+      return { im, box: el('div', { class: 'enc-box', style: `aspect-ratio:${r}` }, im, el('span', { class: 'enc-mira' })), n };
+    });
+    const pintar = () => vistas.forEach(v => { v.im.style.objectPosition = `${actual.x}% ${actual.y}%`; v.im.style.transformOrigin = `${actual.x}% ${actual.y}%`; v.im.style.transform = `scale(${actual.z})`; });
+    const zoom = el('input', { type: 'range', min: '1', max: '3', step: '0.05', value: actual.z, oninput: (e) => { actual.z = +e.target.value; pintar(); guardar(); } });
+    const modal = el('div', { class: 'modal ver' }, el('div', { class: 'caja' },
+      el('h2', {}, 'Ajustar posición de la foto'),
+      el('p', {}, 'Arrastra la foto para elegir qué parte se ve y usa el zoom para acercar. El ajuste se aplica en toda la invitación; aquí ves cómo queda en marcos de distintas formas.'),
+      el('div', { class: 'enc-vistas' }, vistas.map(v => el('figure', {}, v.box, el('figcaption', {}, v.n)))),
+      el('div', { class: 'campo' }, el('label', {}, 'Zoom'), zoom),
+      el('div', { class: 'caja-pie' },
+        el('button', { class: 'b', type: 'button', onclick: () => { actual.x = 50; actual.y = 50; actual.z = 1; zoom.value = 1; pintar(); guardar(); } }, 'Restablecer'),
+        el('button', { class: 'b pri', type: 'button', onclick: () => modal.remove() }, 'Listo'))));
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+    // Arrastrar: mover la foto mueve el punto de enfoque en sentido contrario
+    vistas.forEach(v => {
+      let ini = null;
+      v.box.addEventListener('pointerdown', (e) => { ini = { px: e.clientX, py: e.clientY, x: actual.x, y: actual.y }; v.box.setPointerCapture(e.pointerId); v.box.classList.add('arrastrando'); });
+      v.box.addEventListener('pointermove', (e) => {
+        if (!ini) return;
+        const r = v.box.getBoundingClientRect(), sens = 100 / actual.z;
+        actual.x = Math.min(100, Math.max(0, ini.x - (e.clientX - ini.px) / r.width * sens));
+        actual.y = Math.min(100, Math.max(0, ini.y - (e.clientY - ini.py) / r.height * sens));
+        pintar();
+      });
+      const fin = () => { if (ini) { ini = null; v.box.classList.remove('arrastrando'); guardar(); } };
+      v.box.addEventListener('pointerup', fin); v.box.addEventListener('pointercancel', fin);
+    });
+    pintar();
+    document.body.append(modal);
   }
 
   // ---------------------------------------------------------------------------

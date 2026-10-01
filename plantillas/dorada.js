@@ -37,7 +37,8 @@
       return `
 ${S.sobre(d, { forro: FORRO })}
 <main>
-  <section class="portada ${foto ? 'con-foto' : ''}" ${foto ? `style="--foto:url('${S.esc(foto)}')"` : ''}>
+  <section class="portada ${foto ? 'con-foto' : ''}">
+    ${foto ? `<div class="foto-fondo"><img src="${S.esc(foto)}" alt=""></div>` : ''}
     <div class="marco rv">
       ${marco}
       ${S.adorno(d, 'abanico', ABANICO, 'abanico')}
@@ -78,7 +79,9 @@ body.plantilla-dorada{--fondo:#0f0e0c;--fondo2:#16140f;--tinta:#efe6d2;--suave:#
 .plantilla-dorada .alt{background:var(--fondo2)}
 .plantilla-dorada .sec{border-top:1px solid rgba(212,175,106,.12)}
 .plantilla-dorada .portada{background:radial-gradient(ellipse at 50% 40%,#1f1b13 0%,#0f0e0c 70%)}
-.plantilla-dorada .portada.con-foto{background:linear-gradient(rgba(10,9,7,.72),rgba(10,9,7,.85)),var(--foto) center/cover}
+.plantilla-dorada .foto-fondo{position:absolute;inset:0;z-index:0}.plantilla-dorada .foto-fondo img{width:100%;height:100%;object-fit:cover}
+.plantilla-dorada .foto-fondo::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(10,9,7,.72),rgba(10,9,7,.85))}
+.plantilla-dorada .portada .marco{z-index:1}
 .plantilla-dorada .marco{position:relative;width:min(520px,100%);padding:120px 40px 80px;border:1px solid var(--linea);outline:1px solid rgba(212,175,106,.18);outline-offset:-14px}
 .plantilla-dorada .esq{position:absolute;width:90px;z-index:1}
 .plantilla-dorada .esq.tl{top:-1px;left:-1px}
