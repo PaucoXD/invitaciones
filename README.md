@@ -1,6 +1,6 @@
 # Estudio de Invitaciones Digitales
 
-Sistema para hacer invitaciones de boda digitales **sin tocar código**: eliges un diseño,
+Sistema para hacer invitaciones digitales de **boda y XV años** **sin tocar código**: eliges un diseño,
 llenas un formulario y descargas la invitación lista para publicar.
 
 ## Qué hay aquí
@@ -17,10 +17,11 @@ llenas un formulario y descargas la invitación lista para publicar.
 | `editor.html` | **El editor.** Formulario + vista previa en vivo + descarga. |
 | `invitacion.html` | Muestra una invitación (`?plantilla=boho`, `?b=nombre-de-boda`). |
 | `demos/` | Un archivo de demostración por diseño, listo para enviar a clientes. |
-| `plantillas/` | Los 6 diseños: Vino y Olivo (collage), Floral Romántica, Rústica Campestre, Boho Terracota, Elegante Negro y Dorado, Jardín Botánico. |
+| `plantillas/` | 6 diseños de boda (Vino y Olivo, Floral Romántica, Rústica Campestre, Boho Terracota, Elegante Negro y Dorado, Jardín Botánico) y 3 de XV años (Princesa Rosa, Mariposas Lila, Noche de Gala). |
 | `plantillas/adornos/` | Aquí van tus ilustraciones PNG propias (ver `LEEME.md`). |
 | `motor/` | El código compartido (no necesitas abrirlo). |
 | `bodas/ejemplo.js` | Datos de la boda ficticia de ejemplo. |
+| `bodas/ejemplo-xv.js` | Datos de unos XV años ficticios de ejemplo. |
 
 ## Tu página de ventas
 
@@ -39,6 +40,14 @@ El editor no aparece en la página pública: tú entras directo a `editor.html`.
    GitHub Pages o Vercel. Con dominio propio queda como `tunegocio.com/valeria-y-santiago`.
 6. **Enlaces de invitados** → pega la dirección publicada y la lista `Nombre | lugares`.
    Te da un enlace por invitado (con su nombre en el sobre) y un botón para mandarlo por WhatsApp.
+
+## XV años
+
+En el editor, arriba de los diseños, elige **👑 XV años**. Aparecen los diseños de XV (Princesa Rosa, Mariposas Lila,
+Noche de Gala) y el formulario cambia: un solo nombre (la quinceañera), textos en primera persona ("Mis XV años",
+"Mis padres", "¿Me acompañarás?"), padrinos y chambelanes, contactos de mamá y papá e íconos de corona, zapatilla,
+mariposa y estrella para el itinerario. Todo lo demás (sobre, invitados, mesas, confirmaciones, panel, PDF) funciona igual.
+Demos: `invitacion.html?plantilla=princesa` (o `mariposas`, `gala`) y `demos/princesa.html`.
 
 ## Invitados y mesas
 

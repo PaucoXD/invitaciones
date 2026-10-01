@@ -51,6 +51,7 @@ window.NEGOCIO = {
     ['¿Cómo confirman mis invitados?', 'Desde la invitación, con un botón. En el paquete Premium las confirmaciones llegan solas a tu panel, donde ves quién va, cuántas personas y quién falta.'],
     ['¿Y los invitados que no usan internet?', 'Incluimos una versión en PDF para imprimir o mandar por WhatsApp, con su nombre y un código QR.'],
     ['¿Cómo pago?', 'Con un anticipo del {anticipo} por transferencia o depósito para apartar, y el resto al entregarte tu invitación.'],
-    ['¿También hacen XV años, bautizos u otros eventos?', 'Sí, escríbenos y te mostramos los diseños disponibles.']
+    ['¿También hacen XV años?', 'Sí. Tenemos diseños especiales para XV años (Princesa Rosa, Mariposas Lila y Noche de Gala) con las mismas funciones: sobre animado, nombre de cada familia, confirmaciones, mesas y PDF.'],
+    ['¿Y bautizos u otros eventos?', 'Escríbenos y te mostramos los diseños disponibles.']
   ]
 };

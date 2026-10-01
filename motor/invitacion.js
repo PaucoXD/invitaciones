@@ -49,9 +49,16 @@
     const [y, m, dd] = iso.split('-').map(Number);
     return `${dd} de ${MESES[m - 1].toLowerCase()} de ${y}`;
   }
+  /** Tipo de evento: 'boda' (dos nombres) o 'xv' (XV años, un solo nombre). */
+  const esXV = (d) => d.evento === 'xv';
+  /** Quién celebra: "Valeria & Santiago" o "Sofía". */
+  const titular = (d) => esXV(d) ? (d.festejada || '') : `${d.novia} & ${d.novio}`;
+  /** "la boda de Valeria & Santiago" / "los XV años de Sofía" */
+  const delEvento = (d) => esXV(d) ? `los XV años de ${d.festejada}` : `la boda de ${d.novia} & ${d.novio}`;
   function iniciales(d) {
-    return (d.iniciales && d.iniciales.trim()) ||
-      `${(d.novia || 'A').trim()[0] || ''} & ${(d.novio || 'B').trim()[0] || ''}`;
+    if (d.iniciales && d.iniciales.trim()) return d.iniciales.trim();
+    if (esXV(d)) return 'XV';
+    return `${(d.novia || 'A').trim()[0] || ''} & ${(d.novio || 'B').trim()[0] || ''}`;
   }
   function enlaceCalendario(d) {
     const f = fechaInfo(d);
@@ -61,7 +68,7 @@
     const z = (x) => x.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
     const recepcion = (d.lugares || [])[1] || (d.lugares || [])[0] || {};
     const q = new URLSearchParams({
-      action: 'TEMPLATE', text: `Boda ${d.novia} & ${d.novio}`, dates: `${z(ini)}/${z(fin)}`,
+      action: 'TEMPLATE', text: esXV(d) ? `XV años de ${d.festejada}` : `Boda ${d.novia} & ${d.novio}`, dates: `${z(ini)}/${z(fin)}`,
       location: [recepcion.nombre, recepcion.direccion].filter(Boolean).join(', ').replace(/\n/g, ' '),
       details: '¡Te esperamos!'
     });
@@ -97,10 +104,14 @@
     hacienda: I('<path d="M2 21h20M4 21V10h16v11M2 10l10-6 10 6M8 21v-5a2 2 0 014 0v5M14 14h3v3h-3z"/>'),
     flecha: I('<path d="M6 9l6 6 6-6"/>'),
     whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>',
+    corona: I('<path d="M3 18h18M4 18L3 8l5 4 4-7 4 7 5-4-1 10"/><circle cx="12" cy="4" r="1"/><circle cx="3" cy="7.5" r=".8"/><circle cx="21" cy="7.5" r=".8"/>'),
+    zapatilla: I('<path d="M3 15c3 0 6-1 8-4l2-3 2 1-1 3c2 2 5 3 7 3v3H3z"/><path d="M15 18v3"/>'),
+    mariposa: I('<path d="M12 7v12M12 9c-2-4-8-6-9-3s2 6 9 5c-6 1-7 5-5 7s4-1 5-4M12 9c2-4 8-6 9-3s-2 6-9 5c6 1 7 5 5 7s-4-1-5-4M11 6l-1.5-2.5M13 6l1.5-2.5"/>'),
+    estrella: I('<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6-4.5-4.2 6.1-.7z"/>'),
     traje: '<svg viewBox="0 0 70 110" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M27 6l8 8 8-8M27 6l-11 6-4 28 8 2 2 64h26l2-64 8-2-4-28-11-6"/><path d="M35 14l-5 16 5 6 5-6-5-16M31 20l4 3 4-3"/><circle cx="35" cy="48" r="1"/><circle cx="35" cy="58" r="1"/></svg>',
     vestido: '<svg viewBox="0 0 70 110" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M28 6c0 8 2 14 7 18 5-4 7-10 7-18"/><path d="M28 6l-4 2 3 26-4 6-13 66h50L47 40l-4-6 3-26-4-2"/><path d="M24 40h22"/></svg>'
   };
-  const ICONOS_EVENTO = ['iglesia', 'anillos', 'copa', 'brindis', 'cena', 'musica', 'pastel', 'foto', 'auto', 'corazon', 'luna'];
+  const ICONOS_EVENTO = ['iglesia', 'anillos', 'copa', 'brindis', 'cena', 'musica', 'pastel', 'foto', 'auto', 'corazon', 'luna', 'corona', 'zapatilla', 'mariposa', 'estrella'];
   const ICONOS_REGALO = ['regalo', 'bolsa', 'banco', 'sobre', 'corazon'];
 
   // ---------------------------------------------------------------------------
@@ -109,23 +120,24 @@
   const SECCIONES = ['frase', 'familia', 'cuenta', 'itinerario', 'ubicacion', 'vestimenta', 'historia', 'regalos', 'hospedaje', 'rsvp', 'deseos', 'canciones', 'contactos', 'cierre'];
   function normalizar(d) {
     d = JSON.parse(JSON.stringify(d || {}));
+    const xv = d.evento === 'xv';
     const def = {
-      plantilla: 'floral', novia: 'Novia', novio: 'Novio', iniciales: '',
+      evento: 'boda', plantilla: xv ? 'princesa' : 'floral', novia: xv ? '' : 'Novia', novio: xv ? '' : 'Novio', festejada: xv ? 'Quinceañera' : '', iniciales: '',
       fecha: '2027-03-20', hora: '17:00', zonaHoraria: '-06:00', ciudad: '',
-      introPortada: 'Nos casamos', fotoPortada: '',
+      introPortada: xv ? 'Mis XV años' : 'Nos casamos', fotoPortada: '',
       frase: '', fraseAutor: '',
-      tituloFamilia: 'Con la bendición de Dios y de nuestros padres',
-      textoFamilia: 'tenemos el honor de invitarte a celebrar la unión de nuestras vidas',
+      tituloFamilia: xv ? 'Con la bendición de Dios y de mis padres' : 'Con la bendición de Dios y de nuestros padres',
+      textoFamilia: xv ? 'tengo el honor de invitarte a celebrar mis quince años' : 'tenemos el honor de invitarte a celebrar la unión de nuestras vidas',
       padresNovia: '', padresNovio: '', padrinos: [],
       itinerario: [], lugares: [],
       vestimenta: { tipo: 'Formal', texto: '', colores: [], nota: '' },
-      historia: { titulo: 'Nuestra historia', texto: '', fotos: [] },
-      regalos: { titulo: 'Tu presencia es nuestro mejor regalo', texto: '', opciones: [], banco: '', titular: '', clabe: '' },
+      historia: { titulo: xv ? 'Mis momentos' : 'Nuestra historia', texto: '', fotos: [] },
+      regalos: { titulo: xv ? 'Tu presencia es mi mejor regalo' : 'Tu presencia es nuestro mejor regalo', texto: '', opciones: [], banco: '', titular: '', clabe: '' },
       rsvp: { whatsapp: '', fechaLimite: '', pases: 2, texto: '' },
       hospedaje: [], contactos: { novia: '', novio: '' },
       invitados: [], mesas: { activo: false, texto: '', lista: [], elementos: [] },
       confirmaciones: { url: '', boda: '', clave: '', whatsapp: false },
-      hashtag: '', nota: '', despedida: 'Gracias por ser parte de nuestra historia',
+      hashtag: '', nota: '', despedida: xv ? 'Gracias por acompañarme en este día tan especial' : 'Gracias por ser parte de nuestra historia',
       musica: 'melodia', adornos: {}, ocultar: {}, encuadres: {}
     };
     for (const k in def) {
@@ -157,7 +169,7 @@
   const iconoEnviar = (d) => conHoja(d) && !d.confirmaciones.whatsapp ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>' : ICONOS.whatsapp;
 
   const S = {
-    esc, br, lineas, hay, fechaInfo, iniciales, ICONOS, adorno, seccion, encabezado,
+    esc, br, lineas, hay, fechaInfo, iniciales, esXV, titular, delEvento, ICONOS, adorno, seccion, encabezado,
 
     sobre(d, o = {}) {
       return `
@@ -177,6 +189,7 @@
     },
 
     nombres(d, tag = 'h1', amp = '&amp;') {
+      if (esXV(d)) return `<${tag} class="nombres nombre-xv"><span class="n1">${esc(d.festejada)}</span></${tag}>`;
       return `<${tag} class="nombres"><span class="n1">${esc(d.novia)}</span><span class="amp">${amp}</span><span class="n2">${esc(d.novio)}</span></${tag}>`;
     },
 
@@ -194,8 +207,9 @@
       if (d.ocultar.familia) return '';
       const [t1, ...t2] = String(d.tituloFamilia).split(' y de ');
       const titulo = t2.length ? `<p class="eyebrow rv">${esc(t1)}</p><h2 class="titulo rv">y de ${esc(t2.join(' y de '))}</h2>` : `<h2 class="titulo rv">${esc(d.tituloFamilia)}</h2>`;
+      if (esXV(d)) d = Object.assign({}, d, { padresNovio: '' });
       const padres = (hay(d.padresNovia) || hay(d.padresNovio)) ? `<div class="padres">
-        ${hay(d.padresNovia) ? `<div class="rv"><h3>Padres de la novia</h3><p>${lineas(d.padresNovia).map(esc).join('<br>')}</p></div>` : ''}
+        ${hay(d.padresNovia) ? `<div class="rv"><h3>${esXV(d) ? 'Mis padres' : 'Padres de la novia'}</h3><p>${lineas(d.padresNovia).map(esc).join('<br>')}</p></div>` : ''}
         ${hay(d.padresNovio) ? `<div class="rv"><h3>Padres del novio</h3><p>${lineas(d.padresNovio).map(esc).join('<br>')}</p></div>` : ''}
       </div>` : '';
       const pad = (d.padrinos || []).filter(p => hay(p.nombres));
@@ -282,13 +296,13 @@
       return `<form id="form-rsvp" class="rv" novalidate>
           <label for="f-nombre">Nombre completo</label>
           <input type="text" id="f-nombre" placeholder="Tu nombre" autocomplete="name">
-          <label>¿Nos acompañarás?</label>
+          <label>${esXV(d) ? '¿Me acompañarás?' : '¿Nos acompañarás?'}</label>
           <div class="opciones">
             <input type="radio" name="asiste" id="asiste-si" value="si" checked><label for="asiste-si">Sí, ahí estaré</label>
             <input type="radio" name="asiste" id="asiste-no" value="no"><label for="asiste-no">No podré asistir</label>
           </div>
           <div id="caja-pases"><label for="f-pases">Número de asistentes</label><select id="f-pases"></select></div>
-          <label for="f-msg">Mensaje para los novios (opcional)</label>
+          <label for="f-msg">Mensaje para ${esXV(d) ? esc(d.festejada) : 'los novios'} (opcional)</label>
           <textarea id="f-msg" placeholder="Escribe unas palabras…"></textarea>
           <button class="btn solido" type="submit">${iconoEnviar(d)}${conHoja(d) && !d.confirmaciones.whatsapp ? 'Enviar confirmación' : 'Confirmar por WhatsApp'}</button>
           ${hay(r.fechaLimite) ? `<p class="limite">Agradeceremos tu confirmación antes del ${esc(fechaTexto(r.fechaLimite))}</p>` : ''}
@@ -306,7 +320,7 @@
     hospedaje(d, o = {}) {
       const hs = (d.hospedaje || []).filter(h => hay(h.nombre));
       if (!hs.length || d.ocultar.hospedaje) return '';
-      return seccion('hospedaje', `${encabezado('Para nuestros invitados', o.titulo || 'Hospedaje')}
+      return seccion('hospedaje', `${encabezado(esXV(d) ? 'Para mis invitados' : 'Para nuestros invitados', o.titulo || 'Hospedaje')}
         <div class="hoteles">${hs.map(h => `<div class="hotel rv"><h4>${esc(h.nombre)}</h4>${hay(h.nota) ? `<p class="hotel-nota">${br(h.nota)}</p>` : ''}${hay(h.direccion) ? `<p class="hotel-dir">${br(h.direccion)}</p>` : ''}<a class="btn" target="_blank" rel="noopener" href="${esc(enlaceMapa(h))}">${ICONOS.mapa}Ver ubicación</a></div>`).join('')}</div>`, o);
     },
 
@@ -320,7 +334,7 @@
     },
     deseos(d, o = {}) {
       if (d.ocultar.deseos || !(hay(d.rsvp.whatsapp) || conHoja(d))) return '';
-      return seccion('deseos', `${encabezado('Déjanos un mensaje', o.titulo || 'Buenos deseos', o.texto || 'Tus palabras serán un recuerdo para siempre')}${S.formWhats(d, 'deseo', { boton: 'Enviar mis buenos deseos' })}`, o);
+      return seccion('deseos', `${encabezado(esXV(d) ? 'Déjame un mensaje' : 'Déjanos un mensaje', o.titulo || 'Buenos deseos', o.texto || 'Tus palabras serán un recuerdo para siempre')}${S.formWhats(d, 'deseo', { boton: 'Enviar mis buenos deseos' })}`, o);
     },
     canciones(d, o = {}) {
       if (d.ocultar.canciones || !(hay(d.rsvp.whatsapp) || conHoja(d))) return '';
@@ -330,13 +344,13 @@
       const c = d.contactos || {};
       if (d.ocultar.contactos || (!hay(c.novia) && !hay(c.novio))) return '';
       const b = (num, quien) => hay(num) ? `<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${esc(String(num).replace(/\D/g, ''))}">${ICONOS.whatsapp}${esc(quien)}</a>` : '';
-      return seccion('contactos', `${encabezado('¿Tienes dudas?', o.titulo || 'Contactos')}<div class="contactos rv">${b(c.novia, d.novia)}${b(c.novio, d.novio)}</div>`, o);
+      return seccion('contactos', `${encabezado('¿Tienes dudas?', o.titulo || 'Contactos')}<div class="contactos rv">${b(c.novia, esXV(d) ? 'Mamá' : d.novia)}${b(c.novio, esXV(d) ? 'Papá' : d.novio)}</div>`, o);
     },
     /** Hospedaje, buenos deseos, canciones y contactos juntos. */
     /** Plano del salón con las mesas (paquete opcional "Mesas"). */
     plano(d) {
       const m = d.mesas || {};
-      const ETQ = { pista: 'Pista', novios: 'Novios', entrada: 'Entrada', barra: 'Barra', dj: 'DJ', pastel: 'Pastel' };
+      const ETQ = { pista: 'Pista', novios: esXV(d) ? 'Mesa de honor' : 'Novios', entrada: 'Entrada', barra: 'Barra', dj: 'DJ', pastel: 'Pastel' };
       return `<div class="plano">
         ${(m.elementos || []).map(x => `<div class="pl-el pl-${esc(x.tipo)}" style="left:${+x.x || 0}%;top:${+x.y || 0}%;width:${+x.w || 20}%;height:${+x.h || 15}%"><span>${esc(x.texto || ETQ[x.tipo] || '')}</span></div>`).join('')}
         ${(m.lista || []).map(x => `<div class="pl-mesa ${x.forma === 'rectangular' ? 'rect' : ''}" data-mesa="${esc(x.nombre)}" style="left:${+x.x || 0}%;top:${+x.y || 0}%"><span>${esc(x.nombre)}</span></div>`).join('')}
@@ -788,6 +802,8 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
       if (tipo === 'petalos') { e.style.width = sz + 'px'; e.style.height = sz * 0.8 + 'px'; e.style.borderRadius = '80% 0 80% 0'; }
       else if (tipo === 'hojas') { e.style.width = sz * 0.6 + 'px'; e.style.height = sz + 'px'; e.style.borderRadius = '0 100% 0 100%'; }
       else if (tipo === 'destellos') { sz = 3 + Math.random() * 4; e.style.width = e.style.height = sz + 'px'; e.style.borderRadius = '50%'; e.style.boxShadow = '0 0 ' + sz * 2 + 'px ' + c; }
+      else if (tipo === 'mariposas') { e.style.width = sz * 1.3 + 'px'; e.style.height = sz + 'px'; e.style.clipPath = 'polygon(50% 28%,64% 2%,92% 0,100% 22%,84% 50%,98% 76%,78% 100%,56% 80%,50% 62%,44% 80%,22% 100%,2% 76%,16% 50%,0 22%,8% 0,36% 2%)'; e.style.opacity = '.85'; }
+      else if (tipo === 'estrellas') { sz = 7 + Math.random() * 9; e.style.width = e.style.height = sz + 'px'; e.style.clipPath = 'polygon(50% 0,61% 38%,100% 50%,61% 62%,50% 100%,39% 62%,0 50%,39% 38%)'; e.style.filter = 'drop-shadow(0 0 3px ' + c + ')'; }
       else { e.style.width = sz * 0.5 + 'px'; e.style.height = sz * 0.9 + 'px'; }
     }
 
@@ -875,7 +891,8 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
       g.querySelector('button').addEventListener('click', function () { g.remove(); form.style.display = ''; });
       form.style.display = 'none'; form.parentNode.insertBefore(g, form.nextSibling);
     }
-    var claveLocal = 'inv-rsvp:' + (C.boda || d.novia + d.novio) + ':' + (invitado || '');
+    var xv = d.evento === 'xv', quien = xv ? d.festejada : d.novia + ' & ' + d.novio, delEv = xv ? 'los XV años de ' + quien : 'la boda de ' + quien;
+    var claveLocal = 'inv-rsvp:' + (C.boda || quien) + ':' + (invitado || '');
     function recordar(v) { try { localStorage.setItem(claveLocal, JSON.stringify(v)); } catch (e) {} }
     function recordado() { try { return JSON.parse(localStorage.getItem(claveLocal)); } catch (e) { return null; } }
 
@@ -887,12 +904,12 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         var tipo = f.getAttribute('data-whats'), nom = $('[name=nombre]', f).value.trim(), txt = $('[name=texto]', f).value.trim();
         if (!txt) { avisar(tipo === 'cancion' ? 'Escribe una canción' : 'Escribe tu mensaje'); return; }
         var msg = tipo === 'cancion'
-          ? '🎵 Sugerencia de canción para la boda de ' + d.novia + ' & ' + d.novio + ':\n' + txt + (nom ? '\n— ' + nom : '')
-          : '💌 Buenos deseos para ' + d.novia + ' & ' + d.novio + ':\n' + txt + (nom ? '\n— ' + nom : '');
+          ? '🎵 Sugerencia de canción para ' + delEv + ':\n' + txt + (nom ? '\n— ' + nom : '')
+          : '💌 Buenos deseos para ' + quien + ':\n' + txt + (nom ? '\n— ' + nom : '');
         if (usarWa) abrirWa(msg);
         if (!usarHoja) return;
         aHoja({ tipo: tipo, nombre: nom || invitado, mensaje: txt }).then(function (ok) {
-          if (ok) { gracias(f, tipo === 'cancion' ? '¡Anotada!' : '¡Gracias por tus palabras!', tipo === 'cancion' ? 'La pondremos en la lista para la pista.' : 'Los novios recibirán tu mensaje.'); $('[name=texto]', f).value = ''; }
+          if (ok) { gracias(f, tipo === 'cancion' ? '¡Anotada!' : '¡Gracias por tus palabras!', tipo === 'cancion' ? 'La pondremos en la lista para la pista.' : (xv ? quien + ' recibirá tu mensaje.' : 'Los novios recibirán tu mensaje.')); $('[name=texto]', f).value = ''; }
           else if (!usarWa) { avisar('Sin conexión; te abrimos WhatsApp'); abrirWa(msg); }
         });
       });
@@ -933,9 +950,9 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         e.preventDefault();
         var nom = fNombre.value.trim();
         if (!nom) { avisar('Escribe tu nombre, por favor'); fNombre.focus(); return; }
-        var si = $('#asiste-si').checked, msg = $('#f-msg').value.trim(), pareja = d.novia + ' & ' + d.novio;
-        var txt = si ? '¡Hola! Soy ' + nom + ' y confirmo mi asistencia a la boda de ' + pareja + ' 💍\nAsistentes: ' + sel.value
-                     : 'Hola, soy ' + nom + '. Lamentablemente no podré asistir a la boda de ' + pareja + ', ¡pero les deseo lo mejor! 🤍';
+        var si = $('#asiste-si').checked, msg = $('#f-msg').value.trim();
+        var txt = si ? '¡Hola! Soy ' + nom + ' y confirmo mi asistencia a ' + delEv + (xv ? ' 👑' : ' 💍') + '\nAsistentes: ' + sel.value
+                     : 'Hola, soy ' + nom + '. Lamentablemente no podré asistir a ' + delEv + ', ¡pero ' + (xv ? 'le' : 'les') + ' deseo lo mejor! 🤍';
         if (msg) txt += '\n\nMensaje: ' + msg;
         if (!usarHoja && !numWa) { avisar('Falta configurar el número de WhatsApp'); return; }
         if (usarWa) abrirWa(txt);
@@ -944,7 +961,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         aHoja({ tipo: 'rsvp', nombre: nom, asiste: si, personas: personas, mensaje: msg, pases: pases, mesa: mesa }).then(function (ok) {
           if (ok) {
             recordar({ si: si, personas: personas });
-            gracias(form, si ? '¡Gracias, ' + nom + '!' : 'Gracias por avisarnos', si ? 'Registramos tu confirmación para ' + personas + (personas === 1 ? ' persona' : ' personas') + '. ¡Nos vemos en la boda!' : 'Te vamos a extrañar. Tu respuesta quedó registrada.');
+            gracias(form, si ? '¡Gracias, ' + nom + '!' : 'Gracias por avisarnos', si ? 'Registramos tu confirmación para ' + personas + (personas === 1 ? ' persona' : ' personas') + '. ¡Nos vemos en ' + (xv ? 'la fiesta' : 'la boda') + '!' : 'Te vamos a extrañar. Tu respuesta quedó registrada.');
           } else if (!usarWa) { avisar('Sin conexión; te abrimos WhatsApp'); abrirWa(txt); }
         });
       });
@@ -980,7 +997,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         return `<span class="encuadre">${tag.replace('<img', `<img style="object-position:${x}% ${y}%;transform:scale(${z});transform-origin:${x}% ${y}%"`)}</span>`;
       });
     }
-    const titulo = `${d.novia} & ${d.novio} · Nuestra boda`;
+    const titulo = esXV(d) ? `${d.festejada} · Mis XV años` : `${d.novia} & ${d.novio} · Nuestra boda`;
     return { d, p, html, css: CSS_BASE + '\n' + (p.css || ''), fuentes: p.fuentes || '', titulo, descripcion: `${fechaInfo(d).larga}${d.ciudad ? ' — ' + d.ciudad : ''}` };
   }
 
@@ -1013,7 +1030,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(r.titulo)}</title>
 <meta name="description" content="${esc(r.descripcion)}">
-<meta property="og:title" content="${esc(r.d.novia)} & ${esc(r.d.novio)} · ¡Nos casamos!">
+<meta property="og:title" content="${esXV(r.d) ? `${esc(r.d.festejada)} · ¡Mis XV años!` : `${esc(r.d.novia)} & ${esc(r.d.novio)} · ¡Nos casamos!`}">
 <meta property="og:description" content="${esc(r.descripcion)}">
 ${r.d.fotoPortada && !/^data:/.test(r.d.fotoPortada) ? `<meta property="og:image" content="${esc(r.d.fotoPortada)}">` : ''}
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1031,6 +1048,6 @@ ${r.html}
     registrar(p) { Plantillas[p.id] = p; },
     plantillas: Plantillas,
     construir, montar, exportarHTML, normalizar,
-    ICONOS, ICONOS_EVENTO, ICONOS_REGALO, SECCIONES, fechaInfo, huella, S
+    ICONOS, ICONOS_EVENTO, ICONOS_REGALO, SECCIONES, fechaInfo, huella, titular, esXV, S
   };
 })();
