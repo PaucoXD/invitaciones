@@ -11,6 +11,7 @@ llenas un formulario y descargas la invitación lista para publicar.
 | `negocio.js` | **Tus datos de negocio**: nombre, WhatsApp, redes, precios, paquetes, extras y preguntas frecuentes. |
 | `aviso-privacidad.html` | Plantilla de aviso de privacidad (revísala antes de usarla). |
 | `panel.html` | Panel de confirmaciones para los novios (`?demo=1` para ver un ejemplo). |
+| `mis-bodas.html` | **Tu panel de administrador**: todas tus bodas, días que faltan y avance de confirmaciones (`?demo=1` para ver un ejemplo). |
 | `editor.html` | **El editor.** Formulario + vista previa en vivo + descarga. |
 | `invitacion.html` | Muestra una invitación (`?plantilla=boho`, `?b=nombre-de-boda`). |
 | `demos/` | Un archivo de demostración por diseño, listo para enviar a clientes. |
@@ -76,6 +77,18 @@ el celular lo recuerda y pueden agregarlo a su pantalla de inicio. El botón *Co
 del editor arma el mensaje de WhatsApp con el enlace directo, el código y la clave.
 
 Ejemplo del panel con datos ficticios: `panel.html?demo=1`. El código de Google está en `servidor/codigo-sheets.js`.
+
+## Mis bodas (tu panel de administrador)
+
+`mis-bodas.html` muestra todas tus bodas con su fecha, cuántos días faltan, personas confirmadas,
+pendientes, buenos deseos y canciones, con alertas cuando la boda está cerca y falta gente por responder.
+Desde ahí abres el panel de cada boda o copias el acceso para los novios.
+
+- La **primera vez** que entras, la clave que escribas (mínimo 6 caracteres) queda como tu clave de administrador.
+  Se guarda en las propiedades del script de Google, no en la hoja.
+- Las bodas aparecen al usar **Sincronizar lista de invitados** en el editor (ahí se envían nombres y fecha).
+- Si instalaste el código de Google antes de esta función, vuelve a pegarlo y crea una **nueva versión**
+  (Implementar → Administrar implementaciones → ✏️ → Nueva versión). La URL no cambia.
 
 ## Personalización por invitado
 
