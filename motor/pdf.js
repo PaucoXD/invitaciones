@@ -157,8 +157,10 @@
     if (!d.ocultar.vestimenta && hay(v.tipo)) bloque(`<p class="pdf-eye">Código de vestimenta</p><h2>${esc(v.tipo)}</h2>${hay(v.texto) ? `<p>${br(v.texto)}</p>` : ''}${(v.colores || []).length ? `<div class="pdf-colores">${v.colores.map(c => `<span style="background:${esc(c)}"></span>`).join('')}</div>` : ''}${hay(v.nota) ? `<p style="font-style:italic;color:var(--suave);margin-top:6px">${esc(v.nota)}</p>` : ''}`);
     const gal = fotos.galeria || [];
     if (!d.ocultar.historia && (gal.length || hay(d.historia.texto))) {
-      bloque(`<h2>${esc(d.historia.titulo || 'Nuestra historia')}</h2>${hay(d.historia.texto) ? `<p style="font-style:italic;color:var(--suave)">${br(d.historia.texto)}</p>` : ''}
-        ${gal.length ? `<div class="pdf-galeria n${gal.length}">${gal.map(g => `<figure><img src="${g.src}" width="${g.w}" height="${g.h}" style="width:${g.w}px;height:${g.h}px" alt="">${hay(g.pie) ? `<figcaption>${esc(g.pie)}</figcaption>` : ''}</figure>`).join('')}</div>` : ''}`);
+      // Primer bloque con título y hasta 4 fotos; las demás en grupos de 6 (se acomodan solas en las hojas)
+      const figs = (lista) => lista.length ? `<div class="pdf-galeria">${lista.map(g => `<figure><img src="${g.src}" width="${g.w}" height="${g.h}" style="width:${g.w}px;height:${g.h}px" alt="">${hay(g.pie) ? `<figcaption>${esc(g.pie)}</figcaption>` : ''}</figure>`).join('')}</div>` : '';
+      bloque(`<h2>${esc(d.historia.titulo || 'Nuestra historia')}</h2>${hay(d.historia.texto) ? `<p style="font-style:italic;color:var(--suave)">${br(d.historia.texto)}</p>` : ''}${figs(gal.slice(0, 4))}`);
+      for (let i = 4; i < gal.length; i += 6) bloque(`<p class="pdf-eye">Más momentos</p>${figs(gal.slice(i, i + 6))}`);
     }
     const rg = d.regalos || {}, ops = (rg.opciones || []).filter(x => hay(x.nombre)), clabe = String(rg.clabe || '').replace(/\s/g, '');
     if (!d.ocultar.regalos && (ops.length || clabe)) bloque(`<h2>Mesa de regalos</h2>${hay(rg.texto) ? `<p style="font-style:italic;color:var(--suave)">${esc(rg.texto)}</p>` : ''}
@@ -201,6 +203,7 @@
   // ---------------------------------------------------------------------------
   // Fotos: se recortan antes (la conversión a PDF no respeta "cover" ni el ajuste de posición)
   // ---------------------------------------------------------------------------
+  const MAX_FOTOS = 30;
   const TAM = { portada: [176, 212], g1: [330, 230], g2: [192, 240], g3: [192, 150] };
   function cargarImagen(src) {
     return new Promise((ok) => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => ok(im); im.onerror = () => ok(null); im.src = src; });
@@ -222,7 +225,7 @@
     const enc = datos.encuadres || {}, e = (src) => enc[I.huella(src)];
     const out = { portada: '', galeria: [] };
     if (datos.fotoPortada) out.portada = await recortar(datos.fotoPortada, ...TAM.portada, e(datos.fotoPortada));
-    const fs = ((datos.historia && datos.historia.fotos) || []).filter(f => f.src).slice(0, 4);
+    const fs = ((datos.historia && datos.historia.fotos) || []).filter(f => f.src).slice(0, MAX_FOTOS);
     const t = fs.length === 1 ? TAM.g1 : fs.length === 2 ? TAM.g2 : TAM.g3;
     for (const f of fs) { const src = await recortar(f.src, ...t, e(f.src)); if (src) out.galeria.push({ src, pie: f.pie, w: t[0], h: t[1] }); }
     return out;
