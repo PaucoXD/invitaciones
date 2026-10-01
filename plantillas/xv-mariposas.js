@@ -108,7 +108,7 @@ body.plantilla-mariposas{--acento-texto:#7d6839;--fondo:#fbf8fd;--fondo2:#f3ecfa
 .plantilla-mariposas .portada{padding-top:150px}
 .plantilla-mariposas .glic-arriba{position:absolute;top:-8px;left:50%;width:max(760px,110%);transform:translateX(-50%);z-index:1;transform-origin:50% 0;animation:mecerG 9s ease-in-out infinite}
 @keyframes mecerG{0%,100%{rotate:0deg}50%{rotate:.6deg}}
-.plantilla-mariposas .ventana{position:relative;width:min(480px,100%);padding:70px 30px 60px;border-radius:30px;background:rgba(255,254,255,.82);border:1px solid var(--linea);box-shadow:0 20px 50px rgba(94,70,130,.10);z-index:2}
+.plantilla-mariposas .ventana{position:relative;width:min(480px,100%);padding:70px 30px 60px;border-radius:30px;background:#fffeff;border:1px solid var(--linea);box-shadow:0 20px 50px rgba(94,70,130,.10);z-index:2}
 .plantilla-mariposas .ventana::before{content:"";position:absolute;inset:10px;border:1px solid rgba(201,167,92,.45);border-radius:22px;pointer-events:none}
 .plantilla-mariposas .circulo{width:min(250px,72%);aspect-ratio:1;margin:0 auto 24px;border-radius:50%;overflow:hidden;border:6px solid #fff;box-shadow:0 0 0 1.5px var(--acento),0 14px 34px rgba(94,70,130,.18)}
 .plantilla-mariposas .circulo img{width:100%;height:100%;object-fit:cover}
