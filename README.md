@@ -7,7 +7,10 @@ llenas un formulario y descargas la invitación lista para publicar.
 
 | Archivo / carpeta | Para qué sirve |
 |---|---|
-| `index.html` | Catálogo de diseños (sirve como vitrina para tus clientes). |
+| `index.html` | **Página de ventas**: diseños, paquetes con precios, extras, panel de ejemplo, preguntas y botones de WhatsApp. |
+| `negocio.js` | **Tus datos de negocio**: nombre, WhatsApp, redes, precios, paquetes, extras y preguntas frecuentes. |
+| `aviso-privacidad.html` | Plantilla de aviso de privacidad (revísala antes de usarla). |
+| `panel.html` | Panel de confirmaciones para los novios (`?demo=1` para ver un ejemplo). |
 | `editor.html` | **El editor.** Formulario + vista previa en vivo + descarga. |
 | `invitacion.html` | Muestra una invitación (`?plantilla=boho`, `?b=nombre-de-boda`). |
 | `demos/` | Un archivo de demostración por diseño, listo para enviar a clientes. |
@@ -15,6 +18,13 @@ llenas un formulario y descargas la invitación lista para publicar.
 | `plantillas/adornos/` | Aquí van tus ilustraciones PNG propias (ver `LEEME.md`). |
 | `motor/` | El código compartido (no necesitas abrirlo). |
 | `bodas/ejemplo.js` | Datos de la boda ficticia de ejemplo. |
+
+## Tu página de ventas
+
+Abre `negocio.js` y cambia tu **nombre**, tu **WhatsApp** (con código de país, por ejemplo `5215512345678`),
+redes, **precios**, lo que incluye cada paquete, los extras y las preguntas frecuentes. La página se actualiza sola.
+Todos los botones abren WhatsApp con un mensaje ya escrito (paquete o diseño elegido).
+El editor no aparece en la página pública: tú entras directo a `editor.html`.
 
 ## Cómo hacer una invitación para un cliente
 

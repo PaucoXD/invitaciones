@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aviso de privacidad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<script src="negocio.js"></script>
+<!--
+  PLANTILLA de aviso de privacidad simplificado/integral para México (LFPDPPP).
+  Es un punto de partida: revísalo y ajústalo con un profesional antes de usarlo.
+  Los datos del negocio se toman de negocio.js.
+-->
+<style>
+  body{font-family:Inter,system-ui,sans-serif;background:#faf6f1;color:#2e2721;line-height:1.7;margin:0}
+  main{max-width:760px;margin:0 auto;padding:40px 20px 70px}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:44px;line-height:1.1;margin-bottom:6px}
+  h2{font-size:17px;margin:26px 0 6px}
+  p,li{color:#4a4038;font-size:15px}
+  ul{padding-left:22px}
+  a{color:#8e3b4a}
+  .fecha{color:#857a6e;font-size:13px}
+  .volver{display:inline-block;margin-bottom:24px;font-size:14px}
+</style>
+</head>
+<body>
+<main>
+  <a class="volver" href="index.html">← Volver</a>
+  <h1>Aviso de privacidad</h1>
+  <p class="fecha">Última actualización: <span id="fecha"></span></p>
+
+  <h2>Responsable</h2>
+  <p><b class="n-marca">Tu Marca Invitaciones</b>, con domicilio en <span class="n-ciudad">México</span>, es responsable del tratamiento de los datos personales que nos proporcionas, conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.</p>
+
+  <h2>Datos que recabamos</h2>
+  <ul>
+    <li><b>De nuestros clientes:</b> nombre, teléfono o WhatsApp, correo, fecha y lugar del evento, fotografías y la información que decidan incluir en su invitación.</li>
+    <li><b>De los invitados</b> (proporcionados por el cliente o por el propio invitado al confirmar): nombre, número de lugares y mesa asignada, respuesta de asistencia, mensajes, canciones sugeridas y, si el cliente lo incluye, número de WhatsApp.</li>
+  </ul>
+  <p>No recabamos datos personales sensibles.</p>
+
+  <h2>Para qué usamos tus datos</h2>
+  <ul>
+    <li>Diseñar, publicar y entregar la invitación digital y sus versiones en PDF.</li>
+    <li>Registrar las confirmaciones de asistencia y mostrarlas a los anfitriones del evento.</li>
+    <li>Comunicarnos contigo sobre tu pedido, cambios y pagos.</li>
+  </ul>
+  <p>De manera adicional, y solo si nos lo autorizas, podremos mostrar tu invitación (sin datos de invitados) como ejemplo de nuestro trabajo.</p>
+
+  <h2>Con quién compartimos tus datos</h2>
+  <p>Las confirmaciones de los invitados se comparten únicamente con los anfitriones del evento. Para operar el servicio usamos proveedores de alojamiento y almacenamiento (por ejemplo, servicios de hospedaje web y Google Sheets), que tratan los datos por nuestra cuenta. No vendemos ni rentamos datos personales.</p>
+
+  <h2>Cuánto tiempo los conservamos</h2>
+  <p>Conservamos la invitación y las confirmaciones mientras el cliente lo solicite y, como máximo, hasta 6 meses después del evento, salvo que nos pidas eliminarlos antes.</p>
+
+  <h2>Tus derechos (ARCO)</h2>
+  <p>Puedes acceder, rectificar, cancelar u oponerte al tratamiento de tus datos, así como revocar tu consentimiento, escribiéndonos a <span class="n-contacto">nuestro WhatsApp o correo</span>. Responderemos en un plazo máximo de 20 días hábiles.</p>
+
+  <h2>Cambios a este aviso</h2>
+  <p>Cualquier cambio se publicará en esta misma página.</p>
+</main>
+<script>
+  const N = window.NEGOCIO || {};
+  document.querySelectorAll('.n-marca').forEach(e => { if (N.marca) e.textContent = N.marca; });
+  document.querySelectorAll('.n-ciudad').forEach(e => { if (N.ciudad) e.textContent = N.ciudad; });
+  const contacto = [N.correo, N.whatsapp && ('WhatsApp ' + N.whatsapp)].filter(Boolean).join(' o ');
+  document.querySelectorAll('.n-contacto').forEach(e => { if (contacto) e.textContent = contacto; });
+  document.getElementById('fecha').textContent = new Date(document.lastModified).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+  if (N.marca) document.title = 'Aviso de privacidad · ' + N.marca;
+</script>
+</body>
+</html>
