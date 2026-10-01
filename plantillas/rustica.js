@@ -65,7 +65,7 @@
       const ramo = (c) => S.adorno(d, 'ramo', RAMO, c);
       const foto = d.fotoPortada;
       return `
-${S.sobre(d, { forro: ENCAJE, sello: `<span class="cordel-v"></span>${S.esc(S.iniciales(d)).replace('&amp;', '<i>&amp;</i>')}` })}
+${S.sobre(d, { forro: ENCAJE, selloExtra: '<span class="cordel-v"></span>' })}
 <main>
   <section class="portada">
     <span class="luces" aria-hidden="true">${LUCES}</span>
@@ -99,9 +99,9 @@ body.plantilla-rustica{--fondo:#f7f0e4;--fondo2:#ebdfc9;--tinta:#3d3428;--suave:
   --fondo-sobre:#ece1cd;--sobre-c1:#b88f62;--sobre-c2:#c9a273;--sobre-c3:#d1ad80;--sello:#f7efe0;--sello-texto:#5e6f57;--sello-borde:#a87b4f}
 .plantilla-rustica{font-size:18px}
 .plantilla-rustica::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.55;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .35 0 0 0 0 .22 0 0 0 .12 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.plantilla-rustica .sello{text-shadow:none;border:1.5px dashed #a87b4f;font-size:24px}
+.plantilla-rustica .sello{text-shadow:none;font-size:24px}.plantilla-rustica .mitad{border:1.5px dashed #a87b4f}.plantilla-rustica .mitad-2{border-left:none}.plantilla-rustica .abierto .cordel-v,.plantilla-rustica .abierto .sobre-frente::before{opacity:0;transition:opacity .4s ease .3s}
 .plantilla-rustica .sello::before{inset:-3px;border-radius:50%;background:#f7efe0}
-.plantilla-rustica .cordel-v{position:absolute;left:50%;top:-104px;bottom:-48px;width:3px;background:repeating-linear-gradient(45deg,#b08a5a 0 3px,#8f6b40 3px 6px);transform:translateX(-50%);z-index:-2}
+.plantilla-rustica .cordel-v{position:absolute;left:50%;top:-104px;bottom:-48px;width:3px;background:repeating-linear-gradient(45deg,#b08a5a 0 3px,#8f6b40 3px 6px);transform:translateX(-50%);z-index:-2;transition:opacity .4s ease .3s}
 .plantilla-rustica .sobre-frente::before{content:"";position:absolute;left:0;right:0;top:62%;height:3px;background:repeating-linear-gradient(45deg,#b08a5a 0 3px,#8f6b40 3px 6px);z-index:2}
 .plantilla-rustica .titulo{font-size:clamp(46px,11vw,70px)}
 .plantilla-rustica .eyebrow{letter-spacing:.35em;font-weight:600}
