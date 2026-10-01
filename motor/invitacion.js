@@ -606,6 +606,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         sobreEl.appendChild(ch);
       }
       play();
+      if (!quieto) setTimeout(function () { lluviaDelSobre(sobreEl); }, 1150);
       setTimeout(function () {
         document.body.classList.remove('bloqueado');
         if (btnM && d.musica) btnM.classList.add('ver');
@@ -635,6 +636,42 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
     reloj(); var tReloj = setInterval(reloj, 1000);
     limpiar.push(function () { clearInterval(tReloj); });
 
+    // Forma de cada partícula según la plantilla
+    function forma(e, tipo, c, sz) {
+      e.style.background = c;
+      if (tipo === 'petalos') { e.style.width = sz + 'px'; e.style.height = sz * 0.8 + 'px'; e.style.borderRadius = '80% 0 80% 0'; }
+      else if (tipo === 'hojas') { e.style.width = sz * 0.6 + 'px'; e.style.height = sz + 'px'; e.style.borderRadius = '0 100% 0 100%'; }
+      else if (tipo === 'destellos') { sz = 3 + Math.random() * 4; e.style.width = e.style.height = sz + 'px'; e.style.borderRadius = '50%'; e.style.boxShadow = '0 0 ' + sz * 2 + 'px ' + c; }
+      else { e.style.width = sz * 0.5 + 'px'; e.style.height = sz * 0.9 + 'px'; }
+    }
+
+    // Pétalos que salen disparados del sobre al abrirse
+    function lluviaDelSobre(sobreEl) {
+      if (!sobreEl.animate) return;
+      var r = sobreEl.getBoundingClientRect(), ox = r.left + r.width / 2, oy = r.top + r.height * 0.12;
+      var tipo = d._efecto || 'hojas';
+      var cols = d._efectoColores || ['#8a9a7b', '#b9c4a7', '#d8c08f'];
+      var capa = document.createElement('div'); capa.className = 'efecto'; capa.style.zIndex = 150; document.body.appendChild(capa);
+      for (var i = 0; i < 40; i++) {
+        var e = document.createElement('i'), c = cols[i % cols.length];
+        // En la plantilla dorada se mezclan confeti y destellos
+        forma(e, tipo === 'destellos' && i % 2 ? 'confeti' : tipo, c, 12 + Math.random() * 14);
+        e.style.left = ox + 'px'; e.style.top = oy + 'px'; e.style.animation = 'none';
+        capa.appendChild(e);
+        var ang = -Math.PI / 2 + (Math.random() - 0.5) * 2.2, fuerza = 140 + Math.random() * 220;
+        var x1 = Math.cos(ang) * fuerza, y1 = Math.sin(ang) * fuerza, x2 = x1 * 1.5 + (Math.random() - 0.5) * 120, y2 = y1 + 420 + Math.random() * 260;
+        var giro = (Math.random() - 0.5) * 900, dur = 2600 + Math.random() * 1400;
+        e.animate([
+          { transform: 'translate(0,0) rotate(0deg) scale(.3)', opacity: 0 },
+          { transform: 'translate(' + x1 * 0.6 + 'px,' + y1 * 0.6 + 'px) rotate(' + giro * 0.2 + 'deg) scale(1)', opacity: 1, offset: 0.12 },
+          { transform: 'translate(' + x1 + 'px,' + y1 + 'px) rotate(' + giro * 0.45 + 'deg) scale(1)', opacity: 1, offset: 0.35, easing: 'ease-in' },
+          { transform: 'translate(' + x2 + 'px,' + y2 + 'px) rotate(' + giro + 'deg) scale(.9)', opacity: 0 }
+        ], { duration: dur, delay: Math.random() * 350, easing: 'cubic-bezier(.15,.7,.35,1)', fill: 'both' });
+      }
+      var t = setTimeout(function () { capa.remove(); }, 4600);
+      limpiar.push(function () { clearTimeout(t); capa.remove(); });
+    }
+
     // Efecto que cae (pétalos, hojas, destellos, confeti dorado)
     function iniciarEfecto() {
       var tipo = d._efecto; if (!tipo || (W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
@@ -649,10 +686,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         e.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
         e.style.animationDuration = t + 's';
         e.style.opacity = 0.5 + Math.random() * 0.4;
-        if (tipo === 'petalos') { e.style.width = sz + 'px'; e.style.height = sz * 0.8 + 'px'; e.style.background = c; e.style.borderRadius = '80% 0 80% 0'; }
-        else if (tipo === 'hojas') { e.style.width = sz * 0.6 + 'px'; e.style.height = sz + 'px'; e.style.background = c; e.style.borderRadius = '0 100% 0 100%'; }
-        else if (tipo === 'destellos') { sz = 3 + Math.random() * 4; e.style.width = e.style.height = sz + 'px'; e.style.background = c; e.style.borderRadius = '50%'; e.style.boxShadow = '0 0 ' + sz * 2 + 'px ' + c; }
-        else { e.style.width = sz * 0.5 + 'px'; e.style.height = sz * 0.9 + 'px'; e.style.background = c; }
+        forma(e, tipo, c, sz);
         capa.appendChild(e); total++;
         setTimeout(function () { e.remove(); total--; }, t * 1000);
       }
