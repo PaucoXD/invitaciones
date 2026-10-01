@@ -124,6 +124,7 @@
       rsvp: { whatsapp: '', fechaLimite: '', pases: 2, texto: '' },
       hospedaje: [], contactos: { novia: '', novio: '' },
       invitados: [], mesas: { activo: false, texto: '', lista: [], elementos: [] },
+      confirmaciones: { url: '', boda: '', clave: '', whatsapp: false },
       hashtag: '', nota: '', despedida: 'Gracias por ser parte de nuestra historia',
       musica: 'melodia', adornos: {}, ocultar: {}, encuadres: {}
     };
@@ -150,6 +151,10 @@
     const img = src ? `<img src="${esc(src)}" alt="" onerror="this.remove()">` : '';
     return `<span class="orn orn-${slot} ${clase}" aria-hidden="true">${img}<span class="fb">${fallback || ''}</span></span>`;
   }
+
+  /** ¿Las respuestas se guardan en Google Sheets? ¿También se abre WhatsApp? */
+  const conHoja = (d) => hay(d.confirmaciones && d.confirmaciones.url);
+  const iconoEnviar = (d) => conHoja(d) && !d.confirmaciones.whatsapp ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>' : ICONOS.whatsapp;
 
   const S = {
     esc, br, lineas, hay, fechaInfo, iniciales, ICONOS, adorno, seccion, encabezado,
@@ -203,7 +208,7 @@
       const n = cortas ? ['D', 'H', 'M', 'S'] : ['Días', 'Horas', 'Minutos', 'Segundos'];
       return `<div class="reloj rv">${u('d', n[0])}<b>:</b>${u('h', n[1])}<b>:</b>${u('m', n[2])}<b>:</b>${u('s', n[3])}</div>`;
     },
-    enlaceCalendario, enlaceMapa,
+    enlaceCalendario, enlaceMapa, conHoja,
 
     cuenta(d, o = {}) {
       if (d.ocultar.cuenta) return '';
@@ -285,7 +290,7 @@
           <div id="caja-pases"><label for="f-pases">Número de asistentes</label><select id="f-pases"></select></div>
           <label for="f-msg">Mensaje para los novios (opcional)</label>
           <textarea id="f-msg" placeholder="Escribe unas palabras…"></textarea>
-          <button class="btn solido" type="submit">${ICONOS.whatsapp}Confirmar por WhatsApp</button>
+          <button class="btn solido" type="submit">${iconoEnviar(d)}${conHoja(d) && !d.confirmaciones.whatsapp ? 'Enviar confirmación' : 'Confirmar por WhatsApp'}</button>
           ${hay(r.fechaLimite) ? `<p class="limite">Agradeceremos tu confirmación antes del ${esc(fechaTexto(r.fechaLimite))}</p>` : ''}
         </form>`;
     },
@@ -310,15 +315,15 @@
       return `<form class="form-whats" data-whats="${tipo}" novalidate>
         <input type="text" name="nombre" placeholder="Tu nombre" autocomplete="name" data-nombre-invitado>
         ${tipo === 'cancion' ? '<input type="text" name="texto" placeholder="Canción y artista">' : '<textarea name="texto" placeholder="Escribe tus buenos deseos…"></textarea>'}
-        <button class="btn solido" type="submit">${ICONOS.whatsapp}${esc(o.boton)}</button>
+        <button class="btn solido" type="submit">${iconoEnviar(d)}${esc(o.boton)}</button>
       </form>`;
     },
     deseos(d, o = {}) {
-      if (d.ocultar.deseos || !hay(d.rsvp.whatsapp)) return '';
+      if (d.ocultar.deseos || !(hay(d.rsvp.whatsapp) || conHoja(d))) return '';
       return seccion('deseos', `${encabezado('Déjanos un mensaje', o.titulo || 'Buenos deseos', o.texto || 'Tus palabras serán un recuerdo para siempre')}${S.formWhats(d, 'deseo', { boton: 'Enviar mis buenos deseos' })}`, o);
     },
     canciones(d, o = {}) {
-      if (d.ocultar.canciones || !hay(d.rsvp.whatsapp)) return '';
+      if (d.ocultar.canciones || !(hay(d.rsvp.whatsapp) || conHoja(d))) return '';
       return seccion('canciones', `${encabezado('¡Que no pare la fiesta!', o.titulo || 'Sugiere una canción', o.texto || '¿Qué canción no puede faltar en la pista?')}${S.formWhats(d, 'cancion', { boton: 'Enviar canción' })}`, o);
     },
     contactos(d, o = {}) {
@@ -584,6 +589,14 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 .en-portada.ya *,.en-portada.ya *::before,.en-portada.ya *::after{animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important;transition-delay:0s!important}
 .en-portada .sobre-atras,.en-portada .sobre-frente{animation:none!important}
 
+/* Respuesta registrada */
+.gracias{max-width:460px;margin:10px auto 0;padding:30px 24px;text-align:center;border:1px solid var(--linea);background:var(--tarjeta,var(--fondo))}
+.gracias-ico{display:inline-flex;width:54px;height:54px;border-radius:50%;align-items:center;justify-content:center;background:var(--acento2);color:var(--fondo);font-size:26px;margin-bottom:12px}
+.gracias strong{display:block;font-family:var(--f-titulo);font-weight:400;font-size:32px;line-height:1.2;color:var(--titulo,var(--tinta))}
+.gracias p{color:var(--suave);margin-top:6px}
+.gracias-otra{margin-top:16px;background:none;border:none;color:var(--acento);font-family:var(--f-etiqueta);font-size:11px;letter-spacing:.15em;text-transform:uppercase;text-decoration:underline;cursor:pointer}
+.ya-respondio{max-width:460px;margin:0 auto 14px;padding:10px 14px;font-size:15px;color:var(--acento2);border:1px dashed var(--acento2);text-align:center}
+
 /* Mesas */
 .sec-mesa.sin-mesa{display:none}
 .mesa-txt{font-style:italic;color:var(--suave)}
@@ -845,18 +858,43 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
       });
     });
 
-    // Formularios cortos por WhatsApp (buenos deseos, canciones)
+    // Confirmaciones automáticas: se guardan en la hoja de Google Sheets de los novios
+    var C = d.confirmaciones || {}, numWa = String((d.rsvp && d.rsvp.whatsapp) || '').replace(/\D/g, '');
+    var usarHoja = !!(C.url && C.boda), usarWa = !!numWa && (!usarHoja || C.whatsapp);
+    function aHoja(obj) {
+      if (!usarHoja || d._prueba || /[?&]preview/.test(location.search)) return Promise.resolve(!usarHoja ? false : true);
+      obj.boda = C.boda;
+      return fetch(C.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(obj) })
+        .then(function () { return true; }, function () { return false; });
+    }
+    function abrirWa(txt) { if (numWa) W.open('https://wa.me/' + numWa + '?text=' + encodeURIComponent(txt), '_blank'); }
+    function gracias(form, titulo, texto) {
+      var g = document.createElement('div'); g.className = 'gracias';
+      g.innerHTML = '<span class="gracias-ico">✓</span><strong></strong><p></p><button type="button" class="gracias-otra">Enviar otra respuesta</button>';
+      g.querySelector('strong').textContent = titulo; g.querySelector('p').textContent = texto;
+      g.querySelector('button').addEventListener('click', function () { g.remove(); form.style.display = ''; });
+      form.style.display = 'none'; form.parentNode.insertBefore(g, form.nextSibling);
+    }
+    var claveLocal = 'inv-rsvp:' + (C.boda || d.novia + d.novio) + ':' + (invitado || '');
+    function recordar(v) { try { localStorage.setItem(claveLocal, JSON.stringify(v)); } catch (e) {} }
+    function recordado() { try { return JSON.parse(localStorage.getItem(claveLocal)); } catch (e) { return null; } }
+
+    // Formularios cortos (buenos deseos, canciones)
     $$('[data-whats]').forEach(function (f) {
       var n = $('[name=nombre]', f); if (invitado && n) n.value = invitado;
       f.addEventListener('submit', function (e) {
         e.preventDefault();
-        var nom = $('[name=nombre]', f).value.trim(), txt = $('[name=texto]', f).value.trim();
-        if (!txt) { avisar(f.getAttribute('data-whats') === 'cancion' ? 'Escribe una canción' : 'Escribe tu mensaje'); return; }
-        var num = String((d.rsvp && d.rsvp.whatsapp) || '').replace(/\D/g, '');
-        var msg = f.getAttribute('data-whats') === 'cancion'
+        var tipo = f.getAttribute('data-whats'), nom = $('[name=nombre]', f).value.trim(), txt = $('[name=texto]', f).value.trim();
+        if (!txt) { avisar(tipo === 'cancion' ? 'Escribe una canción' : 'Escribe tu mensaje'); return; }
+        var msg = tipo === 'cancion'
           ? '🎵 Sugerencia de canción para la boda de ' + d.novia + ' & ' + d.novio + ':\n' + txt + (nom ? '\n— ' + nom : '')
           : '💌 Buenos deseos para ' + d.novia + ' & ' + d.novio + ':\n' + txt + (nom ? '\n— ' + nom : '');
-        W.open('https://wa.me/' + num + '?text=' + encodeURIComponent(msg), '_blank');
+        if (usarWa) abrirWa(msg);
+        if (!usarHoja) return;
+        aHoja({ tipo: tipo, nombre: nom || invitado, mensaje: txt }).then(function (ok) {
+          if (ok) { gracias(f, tipo === 'cancion' ? '¡Anotada!' : '¡Gracias por tus palabras!', tipo === 'cancion' ? 'La pondremos en la lista para la pista.' : 'Los novios recibirán tu mensaje.'); $('[name=texto]', f).value = ''; }
+          else if (!usarWa) { avisar('Sin conexión; te abrimos WhatsApp'); abrirWa(msg); }
+        });
       });
     });
 
@@ -899,10 +937,24 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         var txt = si ? '¡Hola! Soy ' + nom + ' y confirmo mi asistencia a la boda de ' + pareja + ' 💍\nAsistentes: ' + sel.value
                      : 'Hola, soy ' + nom + '. Lamentablemente no podré asistir a la boda de ' + pareja + ', ¡pero les deseo lo mejor! 🤍';
         if (msg) txt += '\n\nMensaje: ' + msg;
-        var num = String((d.rsvp && d.rsvp.whatsapp) || '').replace(/\D/g, '');
-        if (!num) { avisar('Falta configurar el número de WhatsApp'); return; }
-        W.open('https://wa.me/' + num + '?text=' + encodeURIComponent(txt), '_blank');
+        if (!usarHoja && !numWa) { avisar('Falta configurar el número de WhatsApp'); return; }
+        if (usarWa) abrirWa(txt);
+        if (!usarHoja) return;
+        var personas = si ? parseInt(sel.value, 10) || 1 : 0;
+        aHoja({ tipo: 'rsvp', nombre: nom, asiste: si, personas: personas, mensaje: msg, pases: pases, mesa: mesa }).then(function (ok) {
+          if (ok) {
+            recordar({ si: si, personas: personas });
+            gracias(form, si ? '¡Gracias, ' + nom + '!' : 'Gracias por avisarnos', si ? 'Registramos tu confirmación para ' + personas + (personas === 1 ? ' persona' : ' personas') + '. ¡Nos vemos en la boda!' : 'Te vamos a extrañar. Tu respuesta quedó registrada.');
+          } else if (!usarWa) { avisar('Sin conexión; te abrimos WhatsApp'); abrirWa(txt); }
+        });
       });
+      // Si ya respondió desde este celular, se lo recordamos
+      var previa = usarHoja && recordado();
+      if (previa) {
+        var aviso2 = document.createElement('p'); aviso2.className = 'ya-respondio';
+        aviso2.textContent = previa.si ? '✓ Ya confirmaste tu asistencia (' + previa.personas + (previa.personas === 1 ? ' persona' : ' personas') + '). Si necesitas cambiarla, envía de nuevo.' : '✓ Ya nos avisaste que no podrás asistir. Si cambian tus planes, envía de nuevo.';
+        form.parentNode.insertBefore(aviso2, form);
+      }
     }
   }
 
@@ -916,6 +968,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
     d._rutaAdornos = opciones.rutaAdornos != null ? opciones.rutaAdornos : 'plantillas/adornos/';
     d._efecto = p.efecto || null;
     d._efectoColores = p.efectoColores || null;
+    d.confirmaciones = { url: d.confirmaciones.url || '', boda: d.confirmaciones.boda || '', whatsapp: !!d.confirmaciones.whatsapp };
     let html = p.render(d, S);
     // Encuadre de fotos: posición (x, y en %) y zoom elegidos en el editor
     const enc = d.encuadres || {};

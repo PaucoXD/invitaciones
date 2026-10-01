@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Panel de confirmaciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<!--
+  Panel de los novios. Se abre con el enlace que da el editor:
+    panel.html?u=<URL de la app de Google>&b=<ID de boda>&k=<clave>&n=<nombres>&l=<dirección de la invitación>
+  Demostración sin configurar nada: panel.html?demo=1
+-->
+<style>
+  :root{--bg:#f6f2ed;--card:#fff;--ink:#2b241f;--muted:#857a6e;--line:#ebe3d8;--accent:#9b5f68;--ok:#3f7a52;--ok-bg:#e8f3eb;--no:#a9473e;--no-bg:#f8e9e7;--pend:#9a6b12;--pend-bg:#fbf1dc}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45}
+  button,input{font:inherit;color:inherit}
+  .wrap{max-width:1040px;margin:0 auto;padding:22px 16px 60px}
+  header{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(30px,7vw,42px);line-height:1.05}
+  h1 small{display:block;font-family:Inter,sans-serif;font-size:11px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+  .act{display:flex;gap:8px;flex-wrap:wrap}
+  .b{border:1px solid var(--line);background:var(--card);padding:8px 14px;border-radius:9px;cursor:pointer;font-weight:500;display:inline-flex;gap:6px;align-items:center;text-decoration:none;white-space:nowrap}
+  .b:hover{background:#faf7f3}
+  .b.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+  .b.chico{padding:5px 10px;font-size:12.5px}
+  .act-hora{font-size:12px;color:var(--muted);align-self:center}
+  .tarjetas{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .t{background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--line)}
+  .t b{display:block;font-size:30px;font-weight:700;line-height:1.1}
+  .t span{color:var(--muted);font-size:12.5px}
+  .t.ok b{color:var(--ok)}.t.no b{color:var(--no)}.t.pend b{color:var(--pend)}
+  .barra{margin:14px 0 22px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .barra-txt{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:8px;gap:10px;flex-wrap:wrap}
+  .pista{height:12px;border-radius:8px;background:#efe8df;overflow:hidden;display:flex}
+  .pista i{display:block;height:100%}
+  .pista .ok{background:var(--ok)}.pista .no{background:var(--no)}
+  .tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:14px;overflow-x:auto}
+  .tab{border:none;background:none;padding:10px 14px;cursor:pointer;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+  .tab.on{color:var(--ink);border-color:var(--accent)}
+  .tab em{font-style:normal;background:#efe8df;border-radius:10px;padding:1px 7px;font-size:11.5px;margin-left:4px}
+  .filtros{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .chip{border:1px solid var(--line);background:var(--card);padding:6px 12px;border-radius:20px;cursor:pointer;font-size:12.5px;font-weight:500}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .buscar{flex:1;min-width:180px;padding:8px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card)}
+  .lista{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .fila{display:grid;grid-template-columns:1.6fr .7fr .5fr 1.1fr 1.6fr 112px;gap:10px;align-items:center;padding:11px 14px;border-top:1px solid var(--line)}
+  .fila:first-child{border-top:none}
+  .fila.enc{background:#faf7f3;font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  .nom{font-weight:600}
+  .nom small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+  .est{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600}
+  .est.ok{background:var(--ok-bg);color:var(--ok)}.est.no{background:var(--no-bg);color:var(--no)}.est.pend{background:var(--pend-bg);color:var(--pend)}
+  .msg{color:var(--muted);font-size:12.5px;font-style:italic;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .vacio{padding:30px;text-align:center;color:var(--muted)}
+  .mensajes{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+  .mensaje{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .mensaje p{font-family:'Cormorant Garamond',serif;font-size:19px;font-style:italic;line-height:1.35}
+  .mensaje small{display:block;margin-top:8px;color:var(--muted)}
+  .aviso{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;max-width:620px;margin:40px auto;text-align:center}
+  .aviso h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:30px;margin-bottom:8px}
+  .aviso p{color:var(--muted);margin-bottom:12px}
+  .demo{background:var(--pend-bg);color:var(--pend);border-radius:10px;padding:8px 12px;font-size:12.5px;margin-bottom:14px}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;transition:transform .3s;z-index:9}
+  .toast.ver{transform:translate(-50%,0)}
+  .fila.simple{grid-template-columns:1fr auto}
+  @media (max-width:760px){
+    .fila.simple{grid-template-columns:1fr auto!important;grid-template-areas:none!important}
+    .tarjetas{grid-template-columns:repeat(2,1fr)}
+    .fila{grid-template-columns:1fr auto;grid-template-areas:"n e" "d a"}
+    .fila.enc{display:none}
+    .fila .c-nom{grid-area:n}.fila .c-est{grid-area:e;text-align:right}
+    .fila .c-lug,.fila .c-mesa{display:none}
+    .fila .c-msg{grid-area:d}.fila .c-acc{grid-area:a}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="aviso"><h2>Cargando…</h2></div></div>
+<div class="toast" id="toast"></div>
+<script>
+(function () {
+  'use strict';
+  const q = new URLSearchParams(location.search);
+  const cfg = { url: q.get('u') || '', boda: q.get('b') || '', clave: q.get('k') || '', nombres: q.get('n') || '', enlace: q.get('l') || '', demo: q.has('demo') };
+  const app = document.getElementById('app');
+  let datos = null, tab = 'invitados', filtro = 'todos', busqueda = '', ultima = null, timer = null;
+
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+  const fecha = (iso) => { const f = new Date(iso); return isNaN(f) ? '' : f.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' }) + ' ' + f.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }); };
+  function avisar(t) { const a = document.getElementById('toast'); a.textContent = t; a.classList.add('ver'); setTimeout(() => a.classList.remove('ver'), 2400); }
+
+  // ---------- Datos ----------
+  function demo() {
+    const fam = ['Familia López', 'Ana y Luis Pérez', 'Tía Carmen', 'Familia Hernández', 'Jorge y Patricia Salinas', 'Familia Ríos', 'Sofía Martínez', 'Familia Treviño', 'Diego y Fernanda', 'Abuelos Morales', 'Familia Castañeda', 'Lucía Gómez'];
+    const pases = [4, 2, 1, 5, 2, 4, 1, 3, 2, 2, 4, 1];
+    const invitados = fam.map((n, i) => ({ Invitado: n, Lugares: pases[i], Mesa: String(1 + (i % 6)), 'Teléfono': '' }));
+    const h = Date.now();
+    const confirmaciones = [
+      [0, 'Sí', 4, '¡Ahí estaremos! Felicidades 💕'], [1, 'Sí', 2, ''], [2, 'No', '', 'Me duele perderme su boda, los quiero'], [3, 'Sí', 4, 'Uno de los niños no podrá ir'],
+      [5, 'Sí', 4, ''], [6, 'Sí', 1, '¡Lista para bailar!'], [9, 'Sí', 2, 'Dios los bendiga, hijos']
+    ].map(([i, a, p, m], k) => ({ Fecha: new Date(h - (8 - k) * 36e5 * 9).toISOString(), Tipo: 'rsvp', Invitado: fam[i], Asiste: a, Personas: p, Mensaje: m, Lugares: pases[i], Mesa: '' }));
+    confirmaciones.push(
+      { Fecha: new Date(h - 5e6).toISOString(), Tipo: 'deseo', Invitado: 'Tía Carmen', Mensaje: 'Que su amor crezca cada día más. ¡Los quiero mucho!' },
+      { Fecha: new Date(h - 3e6).toISOString(), Tipo: 'deseo', Invitado: 'Sofía Martínez', Mensaje: 'Gracias por invitarme a este día tan especial ✨' },
+      { Fecha: new Date(h - 2e6).toISOString(), Tipo: 'cancion', Invitado: 'Familia López', Mensaje: 'La Bikina — Luis Miguel' },
+      { Fecha: new Date(h - 1e6).toISOString(), Tipo: 'cancion', Invitado: 'Diego', Mensaje: 'Vivir mi vida — Marc Anthony' },
+      { Fecha: new Date(h - 9e5).toISOString(), Tipo: 'cancion', Invitado: 'Ana', Mensaje: 'La Bikina — Luis Miguel' });
+    return { ok: true, invitados, confirmaciones };
+  }
+  async function cargar() {
+    if (cfg.demo) { datos = demo(); cfg.nombres = cfg.nombres || 'Valeria & Santiago'; ultima = new Date(); pintar(); return; }
+    if (!cfg.url || !cfg.boda || !cfg.clave) return pintarAviso('Falta configurar el panel', 'Abre este panel con el enlace que te dio quien hizo tu invitación (incluye tu clave).', true);
+    try {
+      const u = cfg.url + (cfg.url.includes('?') ? '&' : '?') + 'boda=' + encodeURIComponent(cfg.boda) + '&clave=' + encodeURIComponent(cfg.clave) + '&t=' + Date.now();
+      const r = await fetch(u); const j = await r.json();
+      if (!j.ok) return pintarAviso('No pudimos abrir el panel', j.error || 'Revisa el enlace.');
+      datos = j; ultima = new Date(); pintar();
+    } catch (e) { if (!datos) pintarAviso('Sin conexión', 'No pudimos leer las confirmaciones. Revisa tu internet e inténtalo de nuevo.'); else avisar('No se pudo actualizar'); }
+  }
+
+  /** Une la lista de invitados con la última respuesta de cada uno. */
+  function procesar() {
+    const conf = (datos.confirmaciones || []).slice().sort((a, b) => new Date(a.Fecha) - new Date(b.Fecha));
+    const rsvp = conf.filter(c => (c.Tipo || 'rsvp') === 'rsvp');
+    const ultimaDe = new Map(); rsvp.forEach(c => ultimaDe.set(norm(c.Invitado), c));
+    const filas = (datos.invitados || []).map(i => {
+      const r = ultimaDe.get(norm(i.Invitado)); if (r) ultimaDe.delete(norm(i.Invitado));
+      return { nombre: i.Invitado, lugares: +i.Lugares || '', mesa: i.Mesa || '', tel: String(i['Teléfono'] || ''), resp: r, estado: !r ? 'pend' : r.Asiste === 'No' ? 'no' : 'ok' };
+    });
+    // Respuestas de personas que no están en la lista
+    ultimaDe.forEach(r => filas.push({ nombre: r.Invitado, lugares: +r.Lugares || '', mesa: r.Mesa || '', tel: '', resp: r, estado: r.Asiste === 'No' ? 'no' : 'ok', fuera: true }));
+    const n = (e) => filas.filter(f => f.estado === e);
+    return {
+      filas,
+      personas: n('ok').reduce((a, f) => a + (+f.resp.Personas || 0), 0),
+      confirmadas: n('ok').length, no: n('no').length, pendientes: n('pend').length,
+      lugaresPend: n('pend').reduce((a, f) => a + (+f.lugares || 0), 0),
+      lugares: filas.filter(f => !f.fuera).reduce((a, f) => a + (+f.lugares || 0), 0),
+      deseos: conf.filter(c => c.Tipo === 'deseo').reverse(),
+      canciones: conf.filter(c => c.Tipo === 'cancion').reverse()
+    };
+  }
+
+  // ---------- Vista ----------
+  function pintarAviso(t, p, ayuda) {
+    app.innerHTML = `<div class="aviso"><h2>${esc(t)}</h2><p>${esc(p)}</p>${ayuda ? '<a class="b pri" href="?demo=1">Ver un ejemplo del panel</a>' : '<button class="b pri" id="reintentar">Reintentar</button>'}</div>`;
+    const r = document.getElementById('reintentar'); if (r) r.onclick = cargar;
+  }
+  function recordatorio(f) {
+    let link = '';
+    if (cfg.enlace) link = cfg.enlace + (cfg.enlace.includes('?') ? '&' : '?') + 'invitado=' + encodeURIComponent(f.nombre) + (f.lugares ? '&pases=' + f.lugares : '') + (f.mesa ? '&mesa=' + encodeURIComponent(f.mesa) : '');
+    const txt = `¡Hola ${f.nombre}! 💌 Les recordamos con cariño confirmar su asistencia a la boda de ${cfg.nombres || 'los novios'}.` + (link ? ` Pueden hacerlo aquí: ${link}` : '');
+    const tel = f.tel.replace(/\D/g, '');
+    return 'https://wa.me/' + tel + '?text=' + encodeURIComponent(txt);
+  }
+  function pintar() {
+    const r = procesar();
+    const total = r.filas.filter(f => !f.fuera).length || r.filas.length;
+    const pct = (x) => total ? Math.round(x / total * 100) : 0;
+    const verFilas = r.filas.filter(f => (filtro === 'todos' || f.estado === filtro) && (!busqueda || norm(f.nombre).includes(norm(busqueda))));
+    const etiqueta = { ok: 'Confirmado', no: 'No asistirá', pend: 'Pendiente' };
+    const canciones = new Map(); r.canciones.forEach(c => { const k = norm(c.Mensaje); const x = canciones.get(k) || { t: c.Mensaje, n: 0, de: [] }; x.n++; x.de.push(c.Invitado); canciones.set(k, x); });
+
+    app.innerHTML = `
+      ${cfg.demo ? '<p class="demo">Ejemplo con datos ficticios: así verán los novios su panel.</p>' : ''}
+      <header>
+        <h1><small>Confirmaciones</small>${esc(cfg.nombres || 'Nuestra boda')}</h1>
+        <div class="act"><span class="act-hora">Actualizado ${ultima ? ultima.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+          <button class="b" id="b-act">⟳ Actualizar</button><button class="b" id="b-csv">⬇ Excel</button></div>
+      </header>
+      <div class="tarjetas">
+        <div class="t ok"><b>${r.personas}</b><span>personas confirmadas${r.lugares ? ` de ${r.lugares} lugares` : ''}</span></div>
+        <div class="t"><b>${r.confirmadas + r.no}<small style="font-size:16px;color:var(--muted)"> / ${total}</small></b><span>invitaciones respondidas</span></div>
+        <div class="t pend"><b>${r.pendientes}</b><span>pendientes${r.lugaresPend ? ` (${r.lugaresPend} lugares)` : ''}</span></div>
+        <div class="t no"><b>${r.no}</b><span>no asistirán</span></div>
+      </div>
+      <div class="barra"><div class="barra-txt"><span>✓ ${pct(r.confirmadas)}% confirmó · ✕ ${pct(r.no)}% no asistirá</span><span>${pct(r.pendientes)}% sin responder</span></div>
+        <div class="pista"><i class="ok" style="width:${pct(r.confirmadas)}%"></i><i class="no" style="width:${pct(r.no)}%"></i></div></div>
+      <div class="tabs">
+        <button class="tab ${tab === 'invitados' ? 'on' : ''}" data-tab="invitados">Invitados<em>${r.filas.length}</em></button>
+        <button class="tab ${tab === 'deseos' ? 'on' : ''}" data-tab="deseos">Buenos deseos<em>${r.deseos.length}</em></button>
+        <button class="tab ${tab === 'canciones' ? 'on' : ''}" data-tab="canciones">Canciones<em>${r.canciones.length}</em></button>
+      </div>
+      ${tab === 'invitados' ? `
+        <div class="filtros">
+          ${[['todos', 'Todos'], ['ok', 'Confirmados'], ['pend', 'Pendientes'], ['no', 'No asistirán']].map(([k, t]) => `<button class="chip ${filtro === k ? 'on' : ''}" data-filtro="${k}">${t}</button>`).join('')}
+          <input class="buscar" id="buscar" placeholder="Buscar invitado…" value="${esc(busqueda)}">
+        </div>
+        <div class="lista">
+          <div class="fila enc"><span>Invitado</span><span>Lugares</span><span>Mesa</span><span>Estado</span><span>Mensaje</span><span></span></div>
+          ${verFilas.length ? verFilas.map(f => `<div class="fila">
+            <span class="c-nom nom">${esc(f.nombre)}${f.fuera ? '<small>No está en tu lista</small>' : f.resp ? `<small>${fecha(f.resp.Fecha)}</small>` : ''}</span>
+            <span class="c-lug">${f.estado === 'ok' ? `<b>${esc(f.resp.Personas || 1)}</b> de ${esc(f.lugares || '—')}` : esc(f.lugares || '—')}</span>
+            <span class="c-mesa">${esc(f.mesa || '—')}</span>
+            <span class="c-est"><span class="est ${f.estado}">${etiqueta[f.estado]}${f.estado === 'ok' ? ' · ' + esc(f.resp.Personas || 1) : ''}</span></span>
+            <span class="c-msg msg">${esc(f.resp && f.resp.Mensaje || '')}</span>
+            <span class="c-acc">${f.estado === 'pend' ? `<a class="b chico" target="_blank" rel="noopener" href="${esc(recordatorio(f))}">💬 Recordar</a>` : ''}</span>
+          </div>`).join('') : '<p class="vacio">No hay invitados en esta vista.</p>'}
+        </div>` : ''}
+      ${tab === 'deseos' ? (r.deseos.length ? `<div class="mensajes">${r.deseos.map(m => `<div class="mensaje"><p>“${esc(m.Mensaje)}”</p><small>— ${esc(m.Invitado || 'Anónimo')} · ${fecha(m.Fecha)}</small></div>`).join('')}</div>` : '<p class="vacio">Todavía no hay mensajes.</p>') : ''}
+      ${tab === 'canciones' ? (canciones.size ? `<div class="lista">${[...canciones.values()].sort((a, b) => b.n - a.n).map(c => `<div class="fila simple"><span class="nom">🎵 ${esc(c.t)}<small>Sugerida por ${esc(c.de.join(', '))}</small></span><span class="est ok">${c.n} ${c.n === 1 ? 'voto' : 'votos'}</span></div>`).join('')}</div>` : '<p class="vacio">Todavía no hay canciones.</p>') : ''}`;
+
+    app.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { tab = b.dataset.tab; pintar(); });
+    app.querySelectorAll('[data-filtro]').forEach(b => b.onclick = () => { filtro = b.dataset.filtro; pintar(); });
+    const bus = document.getElementById('buscar');
+    if (bus) bus.oninput = (e) => { busqueda = e.target.value; const pos = e.target.selectionStart; pintar(); const n = document.getElementById('buscar'); n.focus(); n.setSelectionRange(pos, pos); };
+    document.getElementById('b-act').onclick = () => { cargar().then(() => avisar('Actualizado ✓')); };
+    document.getElementById('b-csv').onclick = () => csv(r);
+  }
+  function csv(r) {
+    const qq = (s) => `"${String(s == null ? '' : s).replace(/"/g, '""')}"`;
+    const est = { ok: 'Confirmado', no: 'No asistirá', pend: 'Pendiente' };
+    const filas = r.filas.map(f => [f.nombre, f.lugares, f.mesa, est[f.estado], f.estado === 'ok' ? f.resp.Personas : '', f.resp ? f.resp.Mensaje : '', f.resp ? fecha(f.resp.Fecha) : ''].map(qq).join(','));
+    const extra = ['', '', '', '', '', '', ''].join(',');
+    const des = r.deseos.map(d => ['Buenos deseos', d.Invitado, d.Mensaje].map(qq).join(','));
+    const can = r.canciones.map(d => ['Canción', d.Invitado, d.Mensaje].map(qq).join(','));
+    const txt = '﻿Invitado,Lugares,Mesa,Estado,Personas,Mensaje,Fecha\n' + filas.join('\n') + '\n' + extra + '\n' + des.concat(can).join('\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv' })); a.download = 'confirmaciones.csv'; a.click();
+  }
+
+  cargar();
+  timer = setInterval(() => { if (!document.hidden && !cfg.demo) cargar(); }, 60000);
+})();
+</script>
+</body>
+</html>
