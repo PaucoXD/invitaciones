@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invitación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!--
+  Muestra una invitación.
+    invitacion.html                         → boda de ejemplo
+    invitacion.html?b=valeria-santiago      → carga bodas/valeria-santiago.js
+    invitacion.html?plantilla=boho          → cambia la plantilla
+    &invitado=Familia%20López&pases=4       → personaliza para cada invitado
+-->
+<script src="motor/invitacion.js"></script>
+<script src="plantillas/floral.js"></script>
+<script src="plantillas/rustica.js"></script>
+<script src="plantillas/boho.js"></script>
+<script src="plantillas/dorada.js"></script>
+<script src="plantillas/botanica.js"></script>
+<script src="bodas/ejemplo.js"></script>
+</head>
+<body>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var preview = q.has('preview');
+  var opciones = { sinSobre: q.has('sinSobre'), sinAnim: preview };
+
+  function mostrar(datos) {
+    if (q.get('plantilla')) datos = Object.assign({}, datos, { plantilla: q.get('plantilla') });
+    Invitacion.montar(datos, opciones);
+  }
+
+  // Vista previa del editor: recibe los datos por mensaje
+  if (preview) {
+    window.addEventListener('message', function (e) {
+      if (!e.data || e.data.tipo !== 'invitacion') return;
+      var y = window.scrollY;
+      opciones.sinSobre = !e.data.conSobre;
+      mostrar(e.data.datos);
+      window.scrollTo(0, y);
+    });
+    parent.postMessage({ tipo: 'lista' }, '*');
+  }
+
+  var slug = (q.get('b') || '').replace(/[^a-z0-9_-]/gi, '');
+  if (slug) {
+    var s = document.createElement('script');
+    s.src = 'bodas/' + slug + '.js';
+    s.onload = function () { mostrar(window.INVITACION); };
+    s.onerror = function () { document.body.innerHTML = '<p style="font-family:sans-serif;padding:40px;text-align:center">No se encontró la invitación “' + slug + '”.</p>'; };
+    document.head.appendChild(s);
+  } else {
+    mostrar(window.INVITACION);
+  }
+})();
+</script>
+</body>
+</html>
