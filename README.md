@@ -43,6 +43,7 @@ Para quienes no se llevan bien con la tecnología: botón **📄 PDF** en el edi
 - Hoja tamaño **A5** con el mismo diseño de la plantilla; se manda por WhatsApp o se imprime.
 - Los botones de **mapa**, **mesa de regalos** y **confirmar por WhatsApp** se pueden tocar dentro del PDF.
 - Elige **para quién** es: aparece su nombre, lugares y mesa (si contrataron el paquete Mesas, con el plano).
+- Incluye la foto de portada y **todas las fotos de “Historia y fotos”** (hasta 30), con el recorte elegido en *Ajustar posición*.
 - Si escribes la dirección publicada, incluye un **código QR** que abre la invitación digital de esa familia.
 - **Un PDF por invitado (ZIP):** genera todos de una vez.
 - Funciona sin internet: las librerías están en `motor/lib/`.
