@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editor de invitaciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="motor/invitacion.js"></script>
+<script src="plantillas/floral.js"></script>
+<script src="plantillas/rustica.js"></script>
+<script src="plantillas/boho.js"></script>
+<script src="plantillas/dorada.js"></script>
+<script src="plantillas/botanica.js"></script>
+<script src="bodas/ejemplo.js"></script>
+<style>
+  :root{--bg:#f4f1ec;--panel:#fff;--ink:#28231d;--muted:#857b6f;--line:#e7e0d6;--accent:#9b5f68;--accent-ink:#fff;--soft:#faf7f3;--ok:#3f7a52;--danger:#b2463d}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:14px;color:var(--ink);background:var(--bg);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  button,input,select,textarea{font:inherit;color:inherit}
+  /* Barra superior */
+  .barra{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .marca{font-weight:700;font-size:15px;margin-right:auto;display:flex;align-items:center;gap:8px}
+  .marca a{color:inherit;text-decoration:none}
+  .marca span{font-weight:400;color:var(--muted)}
+  .b{border:1px solid var(--line);background:var(--panel);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+  .b:hover{background:var(--soft)}
+  .b.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .b.pri:hover{filter:brightness(.93)}
+  .b.chico{padding:5px 10px;font-size:12px}
+  .b.peligro{color:var(--danger)}
+  .b svg{width:15px;height:15px}
+  /* Distribución */
+  .area{flex:1;display:flex;min-height:0}
+  .formulario{width:460px;max-width:100%;overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding-bottom:80px}
+  .vista{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;padding:14px}
+  .vista-ctrl{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap;justify-content:center}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+  .seg button{border:none;background:none;padding:7px 14px;cursor:pointer;font-weight:500}
+  .seg button.on{background:var(--ink);color:#fff}
+  .marco-vista{flex:1;width:100%;display:flex;justify-content:center;min-height:0}
+  iframe{border:none;background:#fff;height:100%;box-shadow:0 10px 40px rgba(40,30,20,.15)}
+  .cel iframe{width:390px;border-radius:28px;border:10px solid #1d1b19}
+  .compu iframe{width:100%;border-radius:8px}
+  /* Formulario */
+  .plantillas{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;padding:16px}
+  .pl{border:2px solid var(--line);border-radius:10px;padding:10px;cursor:pointer;background:var(--panel);text-align:left;transition:border-color .2s}
+  .pl:hover{border-color:#cbbfae}
+  .pl.on{border-color:var(--accent);box-shadow:0 0 0 3px rgba(155,95,104,.15)}
+  .pl .sw{display:flex;height:26px;border-radius:6px;overflow:hidden;margin-bottom:8px}
+  .pl .sw span{flex:1}
+  .pl b{display:block;font-size:13px}
+  .pl small{color:var(--muted);font-size:11px;line-height:1.3;display:block;margin-top:2px}
+  details{border-top:1px solid var(--line)}
+  summary{padding:15px 18px;cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";font-weight:400;font-size:18px;color:var(--muted)}
+  details[open] summary::after{content:"–"}
+  summary:hover{background:var(--soft)}
+  .cuerpo{padding:4px 18px 20px}
+  .campo{margin-top:12px}
+  .campo>label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px}
+  .campo input[type=text],.campo input[type=date],.campo input[type=time],.campo input[type=number],.campo input[type=url],.campo select,.campo textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--soft);outline:none}
+  .campo input:focus,.campo select:focus,.campo textarea:focus{border-color:var(--accent);background:#fff}
+  .campo textarea{min-height:68px;resize:vertical}
+  .ayuda{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.4}
+  .fila{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .item{border:1px solid var(--line);border-radius:10px;padding:4px 12px 12px;margin-top:12px;background:var(--soft);position:relative}
+  .item .campo input,.item .campo select,.item .campo textarea{background:#fff}
+  .item-ctrl{display:flex;justify-content:flex-end;gap:4px;margin-top:8px}
+  .item-ctrl button{border:1px solid var(--line);background:#fff;border-radius:6px;width:28px;height:26px;cursor:pointer;font-size:13px}
+  .item-ctrl button:hover{background:var(--soft)}
+  .agregar{margin-top:12px;width:100%;justify-content:center;border-style:dashed}
+  .img-campo{display:flex;gap:10px;align-items:center}
+  .img-prev{width:64px;height:64px;border-radius:8px;border:1px dashed var(--line);background:#fff center/cover no-repeat;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;text-align:center}
+  .img-prev.png{background-size:contain;background-color:#f0ece6}
+  .img-btns{display:flex;flex-direction:column;gap:5px;align-items:flex-start}
+  .colores{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .color{position:relative}
+  .color input{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;padding:0;cursor:pointer;background:none}
+  .color input::-webkit-color-swatch-wrapper{padding:2px}
+  .color input::-webkit-color-swatch{border:none;border-radius:50%}
+  .color button{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:11px;cursor:pointer;line-height:1}
+  .check{display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer}
+  .check input{width:16px;height:16px;accent-color:var(--accent)}
+  .aviso-guardado{font-size:12px;color:var(--muted)}
+  /* Modal */
+  .modal{position:fixed;inset:0;background:rgba(30,25,20,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .modal.ver{display:flex}
+  .caja{background:#fff;border-radius:14px;width:min(760px,100%);max-height:90vh;overflow:auto;padding:24px}
+  .caja h2{font-size:19px;margin-bottom:6px}
+  .caja>p{color:var(--muted);margin-bottom:10px;line-height:1.5}
+  .caja .campo textarea{min-height:130px;font-family:ui-monospace,monospace;font-size:13px}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+  td.url{max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:12px}
+  .caja-pie{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;flex-wrap:wrap}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:30px;transition:transform .35s;z-index:60;font-weight:500}
+  .toast.ver{transform:translate(-50%,0)}
+  /* Móvil: formulario y vista se alternan */
+  .solo-movil{display:none}
+  @media (max-width:900px){
+    .solo-movil{display:inline-flex}
+    .formulario{width:100%;border-right:none}
+    .vista{display:none;padding:0}
+    body.ver-vista .formulario{display:none}
+    body.ver-vista .vista{display:flex}
+    .cel iframe,.compu iframe{width:100%;border:none;border-radius:0}
+    .vista-ctrl{padding:8px}
+    .barra .txt{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="barra">
+  <div class="marca"><a href="index.html">✦ Estudio de Invitaciones</a> <span class="aviso-guardado" id="guardado"></span></div>
+  <button class="b solo-movil" id="b-alternar">👁 <span>Vista previa</span></button>
+  <button class="b" id="b-nueva" title="Empezar una invitación en blanco"><span class="txt">Nueva</span><span class="solo-movil">＋</span></button>
+  <button class="b" id="b-abrir" title="Abrir un archivo .json guardado">📂 <span class="txt">Abrir</span></button>
+  <button class="b" id="b-guardar" title="Guardar los datos para editarlos después">💾 <span class="txt">Guardar datos</span></button>
+  <button class="b" id="b-invitados" title="Crear enlaces personalizados para cada invitado">👥 <span class="txt">Enlaces de invitados</span></button>
+  <button class="b pri" id="b-descargar" title="Descargar la invitación lista para publicar">⬇ <span class="txt">Descargar invitación</span></button>
+  <input type="file" id="abrir-archivo" accept=".json,application/json" hidden>
+</div>
+
+<div class="area">
+  <div class="formulario" id="formulario"></div>
+  <div class="vista">
+    <div class="vista-ctrl">
+      <div class="seg" id="dispositivo"><button data-d="cel" class="on">📱 Celular</button><button data-d="compu">💻 Computadora</button></div>
+      <label class="check" style="margin:0"><input type="checkbox" id="con-sobre"> Ver sobre de entrada</label>
+    </div>
+    <div class="marco-vista cel" id="marco-vista"><iframe id="vista" src="invitacion.html?preview=1&sinSobre=1" title="Vista previa"></iframe></div>
+  </div>
+</div>
+
+<!-- Enlaces para invitados -->
+<div class="modal" id="modal-invitados">
+  <div class="caja">
+    <h2>Enlaces personalizados para invitados</h2>
+    <p>Cada invitado verá su nombre en el sobre y cuántos lugares tiene reservados. Primero publica la invitación y pega aquí su dirección.</p>
+    <div class="campo"><label>Dirección de la invitación publicada</label><input type="url" id="inv-base" placeholder="https://tusitio.com/valeria-y-santiago.html"></div>
+    <div class="campo"><label>Lista de invitados — uno por renglón: Nombre | lugares</label>
+      <textarea id="inv-lista" placeholder="Familia López | 4&#10;Ana y Luis Pérez | 2&#10;Tía Carmen | 1"></textarea></div>
+    <div class="campo"><label>Mensaje para WhatsApp ({nombre} y {enlace} se reemplazan)</label>
+      <textarea id="inv-msg" style="min-height:70px;font-family:inherit"></textarea></div>
+    <div id="inv-tabla"></div>
+    <div class="caja-pie">
+      <button class="b" id="inv-csv">Descargar lista (Excel/CSV)</button>
+      <button class="b pri" id="inv-cerrar">Listo</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="editor/editor.js"></script>
+</body>
+</html>
