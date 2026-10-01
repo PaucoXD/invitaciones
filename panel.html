@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#9b5f68">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Confirmaciones">
+<script src="negocio.js" onerror="window.NEGOCIO={}"></script>
 <title>Panel de confirmaciones</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,6 +67,15 @@
   .aviso{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;max-width:620px;margin:40px auto;text-align:center}
   .aviso h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:30px;margin-bottom:8px}
   .aviso p{color:var(--muted);margin-bottom:12px}
+  .entrada{text-align:left}
+  .entrada h2,.entrada>p{text-align:center}
+  .entrada label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-top:14px}
+  .entrada input{display:block;width:100%;margin-top:6px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:16px;background:#fdfbf8}
+  .entrada input::placeholder{color:#b9ada0;font-weight:400}
+  .entrada .b{width:100%;justify-content:center;margin-top:20px;padding:12px}
+  .entrada .error{color:var(--no);background:var(--no-bg);border-radius:8px;padding:8px 10px;font-size:13px}
+  .pista-inicio{font-size:12px;color:var(--muted);margin-top:16px;text-align:center;line-height:1.5}
+  .ver-demo{display:block;text-align:center;margin-top:10px;font-size:13px;color:var(--accent)}
   .demo{background:var(--pend-bg);color:var(--pend);border-radius:10px;padding:8px 12px;font-size:12.5px;margin-bottom:14px}
   .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;transition:transform .3s;z-index:9}
   .toast.ver{transform:translate(-50%,0)}
@@ -85,7 +98,18 @@
 (function () {
   'use strict';
   const q = new URLSearchParams(location.search);
-  const cfg = { url: q.get('u') || '', boda: q.get('b') || '', clave: q.get('k') || '', nombres: q.get('n') || '', enlace: q.get('l') || '', demo: q.has('demo') };
+  const N = window.NEGOCIO || {};
+  const CLAVE_SESION = 'panel-confirmaciones';
+  let guardada = {}; try { guardada = JSON.parse(localStorage.getItem(CLAVE_SESION)) || {}; } catch (e) {}
+  // Si el enlace trae datos se usan; si no, los que se guardaron en este celular
+  const deEnlace = q.get('b') && q.get('k');
+  const cfg = deEnlace
+    ? { url: q.get('u') || N.hojaConfirmaciones || '', boda: q.get('b'), clave: q.get('k'), nombres: q.get('n') || '', enlace: q.get('l') || '' }
+    : Object.assign({ url: N.hojaConfirmaciones || '', boda: q.get('b') || '', clave: '', nombres: '', enlace: '' }, q.get('b') && guardada.boda !== q.get('b') ? {} : guardada);
+  if (!cfg.url) cfg.url = N.hojaConfirmaciones || '';
+  cfg.demo = q.has('demo');
+  function guardarSesion() { try { localStorage.setItem(CLAVE_SESION, JSON.stringify({ url: cfg.url, boda: cfg.boda, clave: cfg.clave, nombres: cfg.nombres, enlace: cfg.enlace })); } catch (e) {} }
+  function salir() { try { localStorage.removeItem(CLAVE_SESION); } catch (e) {} location.href = location.pathname; }
   const app = document.getElementById('app');
   let datos = null, tab = 'invitados', filtro = 'todos', busqueda = '', ultima = null, timer = null;
 
@@ -114,12 +138,14 @@
   }
   async function cargar() {
     if (cfg.demo) { datos = demo(); cfg.nombres = cfg.nombres || 'Valeria & Santiago'; ultima = new Date(); pintar(); return; }
-    if (!cfg.url || !cfg.boda || !cfg.clave) return pintarAviso('Falta configurar el panel', 'Abre este panel con el enlace que te dio quien hizo tu invitación (incluye tu clave).', true);
+    if (!cfg.url || !cfg.boda || !cfg.clave) return pintarEntrada();
     try {
       const u = cfg.url + (cfg.url.includes('?') ? '&' : '?') + 'boda=' + encodeURIComponent(cfg.boda) + '&clave=' + encodeURIComponent(cfg.clave) + '&t=' + Date.now();
       const r = await fetch(u); const j = await r.json();
-      if (!j.ok) return pintarAviso('No pudimos abrir el panel', j.error || 'Revisa el enlace.');
-      datos = j; ultima = new Date(); pintar();
+      if (!j.ok) return pintarEntrada('El código o la clave no coinciden. Revísalos e inténtalo de nuevo.');
+      datos = j; ultima = new Date(); guardarSesion();
+      if (location.search && !cfg.demo) history.replaceState(null, '', location.pathname); // quita la clave de la barra de direcciones
+      pintar();
     } catch (e) { if (!datos) pintarAviso('Sin conexión', 'No pudimos leer las confirmaciones. Revisa tu internet e inténtalo de nuevo.'); else avisar('No se pudo actualizar'); }
   }
 
@@ -147,6 +173,30 @@
   }
 
   // ---------- Vista ----------
+  /** Pantalla de entrada: código de la boda + clave (se recuerda en este celular). */
+  function pintarEntrada(error) {
+    app.innerHTML = `<form class="aviso entrada" id="f-entrada" autocomplete="on">
+      <h2>Panel de confirmaciones</h2>
+      <p>Escribe el código de tu boda y tu clave. Te los dio quien hizo tu invitación.</p>
+      ${error ? `<p class="error">${esc(error)}</p>` : ''}
+      ${N.hojaConfirmaciones ? '' : `<label>Dirección de la hoja<input id="e-url" type="url" placeholder="https://script.google.com/…/exec" value="${esc(cfg.url)}"></label>`}
+      <label>Código de la boda<input id="e-boda" autocapitalize="none" autocomplete="username" placeholder="valeria-y-santiago-ab12" value="${esc(cfg.boda)}" required></label>
+      <label>Clave<input id="e-clave" type="password" autocomplete="current-password" placeholder="••••••" required></label>
+      <button class="b pri" type="submit">Entrar</button>
+      <p class="pista-inicio">💡 Después de entrar, agrégalo a tu pantalla de inicio para abrirlo como app:<br>iPhone: Compartir → <b>Agregar a inicio</b> · Android: menú ⋮ → <b>Agregar a la pantalla principal</b></p>
+      <a href="?demo=1" class="ver-demo">Ver un ejemplo del panel</a>
+    </form>`;
+    const f = document.getElementById('f-entrada');
+    (cfg.boda ? f.querySelector('#e-clave') : f.querySelector('#e-boda')).focus();
+    f.onsubmit = (e) => {
+      e.preventDefault();
+      const u = f.querySelector('#e-url'); if (u) cfg.url = u.value.trim();
+      cfg.boda = f.querySelector('#e-boda').value.trim(); cfg.clave = f.querySelector('#e-clave').value.trim();
+      if (!cfg.url) return pintarEntrada('Falta la dirección de la hoja.');
+      app.innerHTML = '<div class="aviso"><h2>Entrando…</h2></div>';
+      cargar();
+    };
+  }
   function pintarAviso(t, p, ayuda) {
     app.innerHTML = `<div class="aviso"><h2>${esc(t)}</h2><p>${esc(p)}</p>${ayuda ? '<a class="b pri" href="?demo=1">Ver un ejemplo del panel</a>' : '<button class="b pri" id="reintentar">Reintentar</button>'}</div>`;
     const r = document.getElementById('reintentar'); if (r) r.onclick = cargar;
@@ -171,7 +221,7 @@
       <header>
         <h1><small>Confirmaciones</small>${esc(cfg.nombres || 'Nuestra boda')}</h1>
         <div class="act"><span class="act-hora">Actualizado ${ultima ? ultima.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) : ''}</span>
-          <button class="b" id="b-act">⟳ Actualizar</button><button class="b" id="b-csv">⬇ Excel</button></div>
+          <button class="b" id="b-act">⟳ Actualizar</button><button class="b" id="b-csv">⬇ Excel</button>${cfg.demo ? '' : '<button class="b" id="b-salir" title="Cerrar sesión en este celular">Salir</button>'}</div>
       </header>
       <div class="tarjetas">
         <div class="t ok"><b>${r.personas}</b><span>personas confirmadas${r.lugares ? ` de ${r.lugares} lugares` : ''}</span></div>
@@ -211,6 +261,7 @@
     if (bus) bus.oninput = (e) => { busqueda = e.target.value; const pos = e.target.selectionStart; pintar(); const n = document.getElementById('buscar'); n.focus(); n.setSelectionRange(pos, pos); };
     document.getElementById('b-act').onclick = () => { cargar().then(() => avisar('Actualizado ✓')); };
     document.getElementById('b-csv').onclick = () => csv(r);
+    const bs = document.getElementById('b-salir'); if (bs) bs.onclick = () => { if (confirm('¿Cerrar el panel en este celular? Necesitarás tu código y clave para volver a entrar.')) salir(); };
   }
   function csv(r) {
     const qq = (s) => `"${String(s == null ? '' : s).replace(/"/g, '""')}"`;
