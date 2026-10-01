@@ -232,7 +232,7 @@
   ${portada}
   ${padres}${cuenta}${padrinos}${itinerario}${ubicacion}
   ${gal[3] ? `<div class="tira rv">${foto(3, '')}</div>` : ''}
-  ${rsvp}${S.mesa(d, { clase: 'v-mesa' })}${historia}${vestimenta}${regalos}${galeria}${extrasCollage}${hospedaje}${contactos}
+  ${rsvp}${S.mesa(d, { clase: 'v-mesa' })}${S.acceso(d, { clase: 'v-mesa' })}${historia}${vestimenta}${regalos}${galeria}${extrasCollage}${hospedaje}${contactos}
   ${cierre}
 </main>`;
     },

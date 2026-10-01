@@ -180,6 +180,17 @@
         <p>${hay(r.fechaLimite) ? `Por favor confírmanos antes del <b>${esc(fechaTexto(r.fechaLimite))}</b>` : 'Por favor confírmanos tu asistencia'}<br>por WhatsApp al <b>${esc(formatoTel(r.whatsapp))}</b></p>
         <a class="pdf-btn lleno" href="${esc(wa(r.whatsapp, msg))}">Confirmar por WhatsApp</a>`);
     }
+    const ac = d.acceso || {}, bodaId = d.confirmaciones && d.confirmaciones.boda;
+    if (ac.activo && bodaId && inv && inv.nombre && window.qrcode) {
+      const codigo = 'INV1:' + encodeURIComponent(bodaId) + ':' + encodeURIComponent(inv.nombre);
+      bloque(`<p class="pdf-eye">Tu acceso</p><h2>Pase de entrada</h2>
+        <div style="display:flex;align-items:center;justify-content:center;gap:18px;margin-top:6px;text-align:left">
+          <img src="${qrDataURL(codigo)}" width="150" height="150" style="width:150px;height:150px;background:#fff;padding:6px;border:1px dashed var(--linea)" alt="">
+          <div><p style="font-family:var(--f-titulo);font-size:30px;line-height:1.1;color:var(--titulo,var(--tinta))">${esc(inv.nombre)}</p>
+          <p>${esc(inv.pases || d.rsvp.pases)} ${+(inv.pases || d.rsvp.pases) === 1 ? 'lugar' : 'lugares'}${conMesa ? ' · ' + esc(etqMesa(inv.mesa)) : ''}</p>
+          <p class="pdf-eye" style="margin-top:8px">${esc(ac.texto || 'Presenta este código en la entrada')}</p></div>
+        </div>`);
+    }
     const cierre = [hay(d.nota) ? `<p style="font-style:italic;color:var(--suave)">${br(d.nota)}</p>` : '', hay(d.hashtag) ? `<p class="pdf-eye" style="margin-top:6px">${esc(d.hashtag)}</p>` : '', `<h2 style="margin-top:8px">${esc(d.despedida)}</h2>`].join('');
     bloque(cierre);
 

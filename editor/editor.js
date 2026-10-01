@@ -231,6 +231,23 @@
           const t = window.CODIGO_SHEETS || '';
           (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => avisar('Código copiado ✓ Pégalo en Apps Script'), () => descargar('confirmaciones.gs', t, 'text/plain'));
         } }, '📋 Copiar código para Google Sheets'));
+    } else if (t === 'accesoHerramientas') {
+      const c = datos.confirmaciones || {};
+      if (!c.url || !c.boda) return el('p', { class: 'conf-estado mal' }, 'Primero llena “Confirmaciones automáticas” (dirección de Google e ID) y sincroniza la lista de invitados.');
+      const enlace = () => {
+        const p = new URLSearchParams({ b: c.boda, k: c.clave || '' });
+        if (!(window.NEGOCIO && NEGOCIO.hojaConfirmaciones === c.url)) p.set('u', c.url);
+        return new URL('entrada.html?' + p.toString(), location.href).href;
+      };
+      return el('div', {},
+        el('p', { class: 'ayuda' }, 'Para ver el pase en la vista previa, elige una familia arriba en “Ver como”. El pase solo aparece en los enlaces personalizados de cada invitado (y en su PDF).'),
+        el('div', { class: 'conf-herr' },
+          el('a', { class: 'b chico', href: enlace(), target: '_blank', rel: 'noopener', style: 'text-decoration:none' }, '📷 Abrir registro de entrada'),
+          el('button', { class: 'b chico', type: 'button', onclick: () => {
+            const msg = `Registro de entrada de ${quien()} 🚪\n\nAbre este enlace en el celular de quien esté en la puerta y toca “Escanear pase”:\n👉 ${enlace()}\n\nCódigo: ${c.boda}\nClave: ${c.clave}\n\nTambién puedes buscar a las familias por nombre si alguien no trae su pase.`;
+            navigator.clipboard.writeText(msg).then(() => avisar('Acceso para la entrada copiado ✓ Mándalo a quien estará en la puerta'));
+          } }, '🔗 Copiar acceso para la entrada')),
+        el('p', { class: 'ayuda' }, 'Usa la misma clave del panel. Si cambias la lista de invitados, vuelve a “Sincronizar lista de invitados”.'));
     } else if (t === 'confHerramientas') {
       const estado = el('p', { class: 'conf-estado' });
       const c = () => datos.confirmaciones || {};
@@ -558,6 +575,10 @@
       { fila: [{ k: 'confirmaciones.boda', l: 'ID de la boda', lxv: 'ID del evento' }, { k: 'confirmaciones.clave', l: 'Clave del panel' }] },
       { k: 'confirmaciones.whatsapp', t: 'check', texto: 'Además abrir WhatsApp cuando el invitado confirme' },
       { t: 'confHerramientas' }] },
+    { sec: 'Pase de entrada con QR ✦ paquete', campos: [
+      { k: 'acceso.activo', t: 'check', repintar: true, texto: 'Activar pase de entrada con QR', ayuda: 'Cada familia ve en su invitación un pase con su nombre, lugares y un código QR. El día del evento, en la puerta, se escanea con el celular para registrar quién llegó. Necesita “Confirmaciones automáticas”.' },
+      { k: 'acceso.texto', l: 'Texto debajo del código (opcional)', ph: 'Presenta este código en la entrada' },
+      { t: 'accesoHerramientas' }] },
     { sec: 'Hospedaje', campos: [
       { k: 'hospedaje', t: 'lista', boton: 'Agregar hotel', nuevo: { nombre: '', nota: '', direccion: '', mapa: '' }, item: [
         { k: 'nombre', l: 'Hotel' }, { k: 'nota', l: 'Nota (tarifa, código, distancia)', ph: 'Código: BODAVS' }, { k: 'direccion', t: 'area', l: 'Dirección' }, { k: 'mapa', t: 'url', l: 'Enlace de Google Maps (opcional)' }] }] },

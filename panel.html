@@ -221,7 +221,7 @@
       <header>
         <h1><small>Confirmaciones</small>${esc(cfg.nombres || 'Nuestra boda')}</h1>
         <div class="act"><span class="act-hora">Actualizado ${ultima ? ultima.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) : ''}</span>
-          <button class="b" id="b-act">⟳ Actualizar</button><button class="b" id="b-csv">⬇ Excel</button>${cfg.demo ? '' : '<button class="b" id="b-salir" title="Cerrar sesión en este celular">Salir</button>'}</div>
+          <button class="b" id="b-act">⟳ Actualizar</button><button class="b" id="b-csv">⬇ Excel</button>${!cfg.demo && datos && datos.version >= 4 ? `<a class="b" href="${esc('entrada.html?' + new URLSearchParams(Object.assign({ b: cfg.boda, k: cfg.clave }, cfg.url !== N.hojaConfirmaciones ? { u: cfg.url } : {})))}" target="_blank" rel="noopener" title="Registrar quién llega el día del evento">🚪 Entrada</a>` : ''}${cfg.demo ? '' : '<button class="b" id="b-salir" title="Cerrar sesión en este celular">Salir</button>'}</div>
       </header>
       <div class="tarjetas">
         <div class="t ok"><b>${r.personas}</b><span>personas confirmadas${r.lugares ? ` de ${r.lugares} lugares` : ''}</span></div>
