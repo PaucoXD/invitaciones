@@ -208,7 +208,7 @@
         el('button', { class: 'b chico', type: 'button', onclick: () => $('#b-invitados').click() }, '🔗 Enlaces para enviar'));
     } else if (t === 'confAyuda') {
       const c = datos.confirmaciones = Object.assign({ url: '', boda: '', clave: '', whatsapp: false }, datos.confirmaciones);
-      if (!c.boda || !c.clave) { c.boda = c.boda || slug(); c.clave = c.clave || Math.random().toString(36).slice(2, 8); setTimeout(cambio, 0); }
+      if (!c.boda || !c.clave) { c.boda = c.boda || slug() + '-' + Math.random().toString(36).slice(2, 6); c.clave = c.clave || Math.random().toString(36).slice(2, 8); setTimeout(cambio, 0); }
       return el('div', {},
         el('p', { class: 'ayuda' }, 'Las confirmaciones, buenos deseos y canciones se guardan solos en una hoja de Google Sheets (gratis) y los novios los ven en su panel. Se instala una sola vez y sirve para todas tus bodas:'),
         el('ol', { class: 'pasos-conf' },
@@ -244,7 +244,8 @@
             marcar(`Enviando ${lista.length} invitaciones…`, true);
             try {
               const r = await (await fetch(c().url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'invitados', boda: c().boda, clave: c().clave, invitados: lista }) })).json();
-              marcar(r.ok ? `✓ Lista sincronizada: ${r.invitados} invitaciones. El panel ya sabe quién falta por responder.` : 'Error: ' + (r.error || ''), r.ok);
+              marcar(r.ok ? `✓ Lista sincronizada: ${r.invitados} invitaciones. El panel ya sabe quién falta por responder.`
+                : /clave/i.test(r.error || '') ? 'Ese ID de boda ya existe en tu hoja con otra clave. Abre los datos guardados de esta boda (botón “Abrir”) o cambia el ID de la boda.' : 'Error: ' + (r.error || ''), r.ok);
             } catch (e) { marcar('No se pudo sincronizar. Prueba la conexión primero.', false); }
           } }, '👥 Sincronizar lista de invitados'),
           el('button', { class: 'b chico', type: 'button', onclick: () => { if (listo()) window.open(enlacePanel(), '_blank'); } }, '📊 Abrir panel'),
