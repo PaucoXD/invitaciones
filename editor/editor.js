@@ -8,8 +8,9 @@
   // ---------------------------------------------------------------------------
   // Estado
   // ---------------------------------------------------------------------------
-  let datos;
+  let datos, pedido = null;
   try { datos = JSON.parse(localStorage.getItem(CLAVE)); } catch (e) { datos = null; }
+  try { pedido = JSON.parse(localStorage.getItem(CLAVE + '.pedido')); } catch (e) { pedido = null; }
   if (!datos) datos = JSON.parse(JSON.stringify(window.INVITACION));
   datos = Invitacion.normalizar(datos);
   const qp = new URLSearchParams(location.search);
@@ -596,6 +597,7 @@
     const abiertos = new Set([...form.querySelectorAll('details[open]')].map(d => d.dataset.sec));
     const scroll = form.scrollTop;
     form.innerHTML = '';
+    const cp = cajaPedido(); if (cp) form.append(cp);
     form.append(...pintarPlantillas());
     FORM.forEach(s => {
       const det = el('details', { 'data-sec': s.sec }, el('summary', {}, (xv() && s.secxv) || s.sec),
@@ -621,6 +623,7 @@
       padrinos: [], vestimenta: { tipo: 'Formal', colores: [] }, historia: { titulo: base.historia.titulo, fotos: [] },
       regalos: { titulo: base.regalos.titulo, texto: base.regalos.texto, opciones: [] }, rsvp: { pases: 2 }, musica: 'melodia'
     });
+    ponerPedido(null);
     pintarFormulario(); cambio();
   });
 
@@ -633,11 +636,50 @@
     const f = e.target.files[0]; if (!f) return;
     const r = new FileReader();
     r.onload = () => {
-      try { datos = Invitacion.normalizar(JSON.parse(r.result)); pintarFormulario(); cambio(); avisar('Invitación abierta ✓'); }
-      catch (err) { avisar('Ese archivo no es de invitación'); }
+      try {
+        const j = JSON.parse(r.result);
+        if (j && j.tipo === 'pedido-invitacion') return abrirPedido(j);
+        datos = Invitacion.normalizar(j); ponerPedido(null); pintarFormulario(); cambio(); avisar('Invitación abierta ✓');
+      } catch (err) { avisar('Ese archivo no es de invitación'); }
     };
     r.readAsText(f); e.target.value = '';
   });
+
+  // ---------------------------------------------------------------------------
+  // Pedidos del formulario del cliente (pedido.html)
+  // ---------------------------------------------------------------------------
+  function ponerPedido(info) {
+    pedido = info;
+    try { if (info) localStorage.setItem(CLAVE + '.pedido', JSON.stringify(info)); else localStorage.removeItem(CLAVE + '.pedido'); } catch (e) {}
+  }
+  function abrirPedido(p, folio) {
+    datos = Invitacion.normalizar(p.datos);
+    ponerPedido(Object.assign({ folio: folio || '' }, p.cliente));
+    pintarFormulario(); cambio();
+    avisar(`Pedido de ${p.cliente && p.cliente.nombre || 'cliente'} abierto ✓`);
+  }
+  function cajaPedido() {
+    if (!pedido) return null;
+    const tel = String(pedido.tel || '').replace(/\D/g, ''), wa = tel ? (tel.length === 10 ? '521' + tel : tel) : '';
+    const fila = (t, v) => v ? el('p', {}, el('b', {}, t + ': '), v) : null;
+    return el('div', { class: 'pedido-info' },
+      el('div', { class: 'pedido-cab' }, el('b', {}, `📝 Pedido de ${pedido.nombre || 'cliente'}`), pedido.folio ? el('span', {}, `Folio ${pedido.folio}`) : null,
+        el('button', { class: 'b chico', type: 'button', title: 'Ocultar estos datos', onclick: () => { ponerPedido(null); pintarFormulario(); } }, '✕')),
+      fila('WhatsApp', pedido.tel), fila('Paquete', pedido.paquete), fila('Canción', pedido.cancion), fila('Comentarios', pedido.comentarios),
+      wa ? el('a', { class: 'b chico', href: `https://wa.me/${wa}`, target: '_blank', rel: 'noopener', style: 'text-decoration:none' }, 'Escribirle por WhatsApp') : null);
+  }
+  if (qp.get('pedido')) (async () => {
+    let s = {}; try { s = JSON.parse(localStorage.getItem('mis-bodas-admin')) || {}; } catch (e) {}
+    const url = s.url || (window.NEGOCIO && NEGOCIO.hojaConfirmaciones) || '';
+    if (!url || !s.clave) return avisar('Para abrir pedidos entra primero a “Mis bodas”');
+    avisar('Abriendo pedido…');
+    try {
+      const r = await (await fetch(`${url}${url.includes('?') ? '&' : '?'}accion=pedido&id=${encodeURIComponent(qp.get('pedido'))}&clave=${encodeURIComponent(s.clave)}`)).json();
+      if (!r.ok) throw new Error(/boda o clave/i.test(r.error || '') ? 'tu código de Google es de una versión anterior; actualízalo (manual, sección 3.0)' : r.error);
+      abrirPedido(r.pedido, qp.get('pedido'));
+      history.replaceState(null, '', location.pathname);
+    } catch (e) { avisar('No se pudo abrir el pedido: ' + (e.message || 'sin conexión')); }
+  })();
 
   async function aDataURL(url) {
     const r = await fetch(url); if (!r.ok) throw new Error(r.status);

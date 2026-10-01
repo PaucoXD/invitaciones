@@ -7,17 +7,21 @@
  *   Confirmaciones → una fila por respuesta (confirmación, buenos deseos o canción)
  *   Invitados      → la lista que se sincroniza desde el editor (para saber quién falta)
  *   Bodas          → la clave del panel, nombres y fecha de cada boda
+ *   Pedidos        → los datos que mandan los clientes desde pedido.html (el archivo completo,
+ *                    con fotos, se guarda en la carpeta "Pedidos de invitaciones" de tu Google Drive)
  * La clave de "Mis bodas" (tu panel de administrador) se guarda en las propiedades del script, no en la hoja.
  */
 window.CODIGO_SHEETS = String.raw`// ===== Confirmaciones de invitaciones — pegar en Extensiones → Apps Script =====
 // Después: Implementar → Nueva implementación → App web → Ejecutar como: Yo → Acceso: Cualquier persona.
 // ¿Actualizando? Implementar → Administrar implementaciones → ✏️ → Versión: "Nueva versión" → Implementar (la URL no cambia).
 
-var VERSION = 2;
+var VERSION = 3;
 
 var ENC_CONF = ['Fecha', 'Boda', 'Tipo', 'Invitado', 'Asiste', 'Personas', 'Mensaje', 'Lugares', 'Mesa'];
 var ENC_INV = ['Boda', 'Invitado', 'Lugares', 'Mesa', 'Teléfono'];
 var ENC_BODAS = ['Boda', 'Clave', 'Creada', 'Nombres', 'Fecha'];
+var ENC_PED = ['Recibido', 'Pedido', 'Cliente', 'WhatsApp', 'Evento', 'Nombres', 'Fecha del evento', 'Diseño', 'Paquete', 'Archivo', 'Estado'];
+var CARPETA_PEDIDOS = 'Pedidos de invitaciones';
 
 function hoja_(nombre, encabezados) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -74,6 +78,40 @@ function resumen_() {
     return x;
   });
 }
+/** Pedido del formulario del cliente: el archivo con fotos va a Drive y una fila a la hoja "Pedidos". */
+function guardarPedido_(texto) {
+  if (texto.length > 40 * 1024 * 1024) return { ok: false, error: 'El pedido es demasiado grande. Manda menos fotos.' };
+  var p = JSON.parse(texto);
+  if (!p || p.tipo !== 'pedido-invitacion' || !p.datos) return { ok: false, error: 'Pedido no válido' };
+  var c = p.cliente || {}, d = p.datos || {};
+  if (!c.nombre || !c.tel) return { ok: false, error: 'Falta tu nombre o tu WhatsApp' };
+  var id = Utilities.formatDate(new Date(), 'GMT', 'yyMMdd') + '-' + Utilities.getUuid().slice(0, 4);
+  var it = DriveApp.getFoldersByName(CARPETA_PEDIDOS);
+  var carpeta = it.hasNext() ? it.next() : DriveApp.createFolder(CARPETA_PEDIDOS);
+  var archivo = carpeta.createFile('pedido-' + id + '.json', texto, 'application/json');
+  var nombres = d.evento === 'xv' ? 'XV años de ' + (d.festejada || '') : (d.novia || '') + ' & ' + (d.novio || '');
+  hoja_('Pedidos', ENC_PED).appendRow([new Date(), id, texto_(c.nombre, 120), texto_(c.tel, 30), d.evento === 'xv' ? 'XV años' : 'Boda',
+    texto_(nombres, 120), texto_(d.fecha, 20), texto_(d.plantilla, 40), texto_(c.paquete, 60), archivo.getId(), 'Nuevo']);
+  return { ok: true, pedido: id };
+}
+function pedidos_() {
+  var h = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Pedidos');
+  if (!h) return [];
+  return h.getDataRange().getValues().slice(1).map(function (r) {
+    return { recibido: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), pedido: String(r[1]), cliente: String(r[2]), tel: String(r[3]), evento: String(r[4]),
+      nombres: String(r[5]), fecha: r[6] instanceof Date ? Utilities.formatDate(r[6], 'GMT', 'yyyy-MM-dd') : String(r[6] || ''), plantilla: String(r[7]), paquete: String(r[8]), estado: String(r[10] || 'Nuevo') };
+  }).reverse();
+}
+function leerPedido_(id) {
+  var h = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Pedidos');
+  if (!h) return null;
+  var v = h.getDataRange().getValues();
+  for (var i = 1; i < v.length; i++) if (String(v[i][1]) === String(id)) {
+    if (String(v[i][10]) === 'Nuevo') h.getRange(i + 1, 11).setValue('Abierto');
+    return JSON.parse(DriveApp.getFileById(String(v[i][9])).getBlob().getDataAsString());
+  }
+  return null;
+}
 function filas_(nombre, boda, colBoda) {
   var h = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(nombre);
   if (!h) return [];
@@ -91,6 +129,7 @@ function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.waitLock(15000);
   try {
+    if (e.postData.contents.indexOf('"tipo":"pedido-invitacion"') >= 0 && e.postData.contents.indexOf('"tipo":"pedido-invitacion"') < 40) return json_(guardarPedido_(e.postData.contents));
     var d = JSON.parse(e.postData.contents);
     var boda = texto_(d.boda, 80);
     if (!boda) return json_({ ok: false, error: 'Falta el ID de la boda' });
@@ -128,7 +167,12 @@ function doGet(e) {
   if (p.accion === 'ping') return json_({ ok: true, mensaje: 'Conexión correcta', version: VERSION });
   if (p.accion === 'admin') {
     if (!adminCorrecto_(p.clave)) return json_({ ok: false, error: 'Clave de administrador incorrecta' });
-    return json_({ ok: true, version: VERSION, bodas: resumen_() });
+    return json_({ ok: true, version: VERSION, bodas: resumen_(), pedidos: pedidos_() });
+  }
+  if (p.accion === 'pedido') {
+    if (!adminCorrecto_(p.clave)) return json_({ ok: false, error: 'Clave de administrador incorrecta' });
+    var ped = leerPedido_(p.id);
+    return json_(ped ? { ok: true, pedido: ped } : { ok: false, error: 'No se encontró ese pedido' });
   }
   var boda = texto_(p.boda, 80);
   if (!boda || !claveCorrecta_(boda, p.clave, false)) return json_({ ok: false, error: 'ID de boda o clave incorrectos' });

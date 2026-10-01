@@ -55,6 +55,15 @@
   .b{border:1px solid var(--line);background:var(--card);padding:7px 12px;border-radius:9px;cursor:pointer;font-weight:500;font-size:12.5px;text-decoration:none;display:inline-flex;gap:5px;align-items:center}
   .b:hover{background:#faf7f3}
   .b.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+  .pedidos{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:18px}
+  .ped-cab{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .ped-cab h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:24px;margin-right:auto}
+  .nuevo{font-family:Inter,sans-serif;font-size:12px;font-weight:600;background:var(--accent);color:#fff;border-radius:20px;padding:3px 9px;vertical-align:middle}
+  .ped-lista{display:flex;flex-direction:column;gap:8px}
+  .ped{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px;border-radius:12px;background:#faf7f3}
+  .ped.es-nuevo{background:#fbf1dc}
+  .ped b{font-size:15px}.ped small{display:block;color:var(--muted);font-size:12.5px}
+  .ped .acc{margin-top:0}
   .vacio{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px;background:var(--card);border-radius:16px;border:1px dashed var(--line)}
   .entrada{max-width:420px;margin:50px auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px}
   .entrada h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:34px;text-align:center}
@@ -82,7 +91,7 @@
   const CLAVE = 'mis-bodas-admin';
   let ses = {}; try { ses = JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) {}
   const cfg = { url: ses.url || N.hojaConfirmaciones || '', clave: ses.clave || '', demo: q.has('demo') };
-  let bodas = [], filtro = 'proximas', busqueda = '', ultima = null;
+  let bodas = [], pedidos = [], filtro = 'proximas', busqueda = '', ultima = null, verPedidos = false, version = 3;
 
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
@@ -103,15 +112,45 @@
       { boda: 'sofia-y-andres-m2q8', clave: 'zxc987', nombres: 'Sofía & Andrés', fecha: f(-12), invitaciones: 55, lugares: 150, respondidas: 53, confirmadas: 49, personas: 141, no: 4, pendientes: 2, deseos: 31, canciones: 18, ultima: h(400) }
     ];
   }
+  function demoPedidos() {
+    const h = (n) => new Date(Date.now() - n * 36e5).toISOString(), f = (n) => { const d = hoy(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+    return [
+      { recibido: h(3), pedido: '261001-a1b2', cliente: 'Claudia Herrera', tel: '3312345678', evento: 'XV años', nombres: 'XV años de Sofía', fecha: f(120), plantilla: 'princesa', paquete: 'Premium', estado: 'Nuevo' },
+      { recibido: h(50), pedido: '260929-c3d4', cliente: 'Ana Pérez', tel: '5512345678', evento: 'Boda', nombres: 'Ana & Luis', fecha: f(34), plantilla: 'vino', paquete: 'Personalizada', estado: 'Abierto' }
+    ];
+  }
+  const formUrl = () => new URL('pedido.html', location.href).href;
+  function copiarFormulario() {
+    const msg = `¡Hola! 💌 Para hacer tu invitación, llena tus datos aquí (toma unos 10 minutos y se guarda solo):\n\n👉 ${formUrl()}\n\nAhí eliges tu diseño y subes tus fotos y tu lista de invitados.`;
+    navigator.clipboard.writeText(msg).then(() => avisar('Mensaje con el formulario copiado ✓ Pégalo en WhatsApp'));
+  }
+  function seccionPedidos() {
+    if (!pedidos.length) return '';
+    const nuevos = pedidos.filter(p => p.estado === 'Nuevo').length;
+    const lista = verPedidos ? pedidos : pedidos.slice(0, 3);
+    const PL = { floral: 'Floral Romántica', rustica: 'Rústica Campestre', boho: 'Boho Terracota', dorada: 'Elegante Negro y Dorado', vino: 'Vino y Olivo', botanica: 'Jardín Botánico', princesa: 'Princesa Rosa', mariposas: 'Mariposas Lila', gala: 'Noche de Gala' };
+    return `<section class="pedidos"><div class="ped-cab"><h2>📝 Pedidos de clientes ${nuevos ? `<span class="nuevo">${nuevos} ${nuevos === 1 ? 'nuevo' : 'nuevos'}</span>` : ''}</h2>
+        ${pedidos.length > 3 ? `<button class="b" id="ver-ped">${verPedidos ? 'Ver menos' : `Ver los ${pedidos.length}`}</button>` : ''}</div>
+      <div class="ped-lista">${lista.map(p => {
+        const tel = String(p.tel || '').replace(/\D/g, ''), wa = tel.length === 10 ? '521' + tel : tel;
+        return `<article class="ped ${p.estado === 'Nuevo' ? 'es-nuevo' : ''}">
+          <div><b>${esc(p.nombres || p.cliente)}</b><small>${esc(p.evento)} · ${esc(fechaLarga(p.fecha))}</small>
+          <small>${esc(p.cliente)}${p.paquete ? ' · ' + esc(p.paquete) : ''}${PL[p.plantilla] ? ' · ' + PL[p.plantilla] : ''}</small>
+          <small>Recibido ${new Date(p.recibido).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })} · Folio ${esc(p.pedido)} · ${esc(p.estado)}</small></div>
+          <div class="acc">${cfg.demo ? '<span class="b pri" title="En el ejemplo no se abre">✎ Abrir en el editor</span>' : `<a class="b pri" href="editor.html?pedido=${encodeURIComponent(p.pedido)}">✎ Abrir en el editor</a>`}
+            ${wa ? `<a class="b" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}</div>
+        </article>`;
+      }).join('')}</div></section>`;
+  }
   async function cargar() {
-    if (cfg.demo) { bodas = demo(); ultima = new Date(); return pintar(); }
+    if (cfg.demo) { bodas = demo(); pedidos = demoPedidos(); ultima = new Date(); return pintar(); }
     if (!cfg.url || !cfg.clave) return entrada();
     try {
       const r = await fetch(cfg.url + (cfg.url.includes('?') ? '&' : '?') + 'accion=admin&clave=' + encodeURIComponent(cfg.clave) + '&t=' + Date.now());
       const j = await r.json();
       if (!j.ok && /boda o clave/i.test(j.error || '')) return entrada('', true); // código de Google de una versión anterior
       if (!j.ok) return entrada(j.error || 'No se pudo entrar');
-      bodas = j.bodas || []; ultima = new Date();
+      bodas = j.bodas || []; pedidos = j.pedidos || []; version = j.version || 0; ultima = new Date();
       try { localStorage.setItem(CLAVE, JSON.stringify({ url: cfg.url, clave: cfg.clave })); } catch (e) {}
       pintar();
     } catch (e) { if (bodas.length) avisar('No se pudo actualizar'); else entrada('No se pudo conectar. Revisa tu internet y la dirección de la hoja.'); }
@@ -153,6 +192,7 @@
       <div class="barra"><div class="wrap">
         <h1><small>${esc(N.marca || 'Panel de administrador')}</small>Mis bodas</h1>
         <a class="pri" href="editor.html">＋ Nueva invitación</a>
+        <button id="b-form" title="Copia el mensaje con el enlace para que tu cliente llene sus datos">📝 Formulario para cliente</button>
         <a href="index.html" target="_blank" rel="noopener">Mi página</a>
         <a href="manual.html" target="_blank" rel="noopener">❓ Manual</a>
         <button id="b-act">⟳ Actualizar</button>
@@ -166,6 +206,8 @@
           <div class="t ok"><b>${sum(prox, 'personas')}</b><span>personas confirmadas (próximas)</span></div>
           <div class="t pend"><b>${sum(prox, 'pendientes')}</b><span>invitaciones sin responder</span></div>
         </div>
+        ${version < 3 ? '<p class="demo">Para recibir los pedidos del formulario de tus clientes, actualiza tu código de Google a la versión 3 (manual, sección 3.0).</p>' : ''}
+        ${seccionPedidos()}
         <div class="filtros">
           ${[['proximas', 'Próximas'], ['pasadas', 'Pasadas'], ['todas', 'Todas']].map(([k, t]) => `<button class="chip ${filtro === k ? 'on' : ''}" data-f="${k}">${t}</button>`).join('')}
           <input class="buscar" id="buscar" placeholder="Buscar boda…" value="${esc(busqueda)}">
@@ -202,6 +244,8 @@
       </div>`;
 
     app.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { filtro = b.dataset.f; pintar(); });
+    document.getElementById('b-form').onclick = copiarFormulario;
+    const vp = document.getElementById('ver-ped'); if (vp) vp.onclick = () => { verPedidos = !verPedidos; pintar(); };
     const bus = document.getElementById('buscar');
     bus.oninput = (e) => { busqueda = e.target.value; const pos = e.target.selectionStart; pintar(); const x = document.getElementById('buscar'); x.focus(); x.setSelectionRange(pos, pos); };
     document.getElementById('b-act').onclick = () => cargar().then(() => avisar('Actualizado ✓'));

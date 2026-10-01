@@ -10,6 +10,7 @@ llenas un formulario y descargas la invitación lista para publicar.
 | `index.html` | **Página de ventas**: diseños, paquetes con precios, extras, panel de ejemplo, preguntas y botones de WhatsApp. |
 | `negocio.js` | **Tus datos de negocio**: nombre, WhatsApp, redes, precios, paquetes, extras y preguntas frecuentes. |
 | `aviso-privacidad.html` | Plantilla de aviso de privacidad (revísala antes de usarla). |
+| `pedido.html` | **Formulario para tu cliente**: llena sus datos, fotos e invitados desde el celular y te llegan listos para abrir en el editor. |
 | `panel.html` | Panel de confirmaciones para los novios (`?demo=1` para ver un ejemplo). |
 | `manual.html` | **Manual del administrador**: todo explicado paso a paso (también se puede imprimir). |
 | `i/` | Carpeta donde subes las invitaciones terminadas para publicarlas. |
@@ -29,6 +30,15 @@ Abre `negocio.js` y cambia tu **nombre**, tu **WhatsApp** (con código de país,
 redes, **precios**, lo que incluye cada paquete, los extras, las preguntas frecuentes y las **opiniones de clientes** (`testimonios`; la sección solo aparece si agregas alguna). La página se actualiza sola.
 Todos los botones abren WhatsApp con un mensaje ya escrito (paquete o diseño elegido).
 El editor no aparece en la página pública: tú entras directo a `editor.html`.
+
+## Formulario para tu cliente
+
+Manda `pedido.html` (botón **📝 Formulario para cliente** en Mis bodas). El cliente elige diseño y llena todo en
+10 pasos desde su celular (se guarda solo; ve una vista previa al final). Al enviarlo, el pedido aparece en
+**Mis bodas → Pedidos de clientes** y con **✎ Abrir en el editor** se abre ya lleno. Las fotos quedan en tu Google
+Drive (carpeta *Pedidos de invitaciones*). Requiere el código de Google versión 3 (vuelve a pegarlo y crea una
+nueva versión; acepta el permiso de Drive). Sin Google Sheets, el cliente comparte el archivo por WhatsApp y tú
+lo abres con **📂 Abrir**. Enlaces útiles: `pedido.html?evento=xv`, `pedido.html?plantilla=gala&paquete=Premium`.
 
 ## Cómo hacer una invitación para un cliente
 

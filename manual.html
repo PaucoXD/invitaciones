@@ -111,6 +111,7 @@
   <a class="sub" href="#google">Google Sheets</a>
   <a class="sub" href="#clave-admin">Tu clave de Mis bodas</a>
   <a href="#cliente">3. Hacer la invitación de un cliente</a>
+  <a class="sub" href="#formulario">Formulario para tu cliente</a>
   <a class="sub" href="#editor">El editor, botón por botón</a>
   <a class="sub" href="#secciones">Las secciones del formulario</a>
   <a class="sub" href="#fotos">Fotos</a>
@@ -212,12 +213,24 @@
   <h2><span class="n">3</span>Hacer la invitación de un cliente</h2>
   <p class="intro">Abre el <a href="editor.html">editor</a> desde tu sitio publicado (no con doble clic en tu computadora), así funcionan todos los botones.</p>
 
+  <h3 id="formulario">3.0 Formulario para tu cliente (te ahorra copiar datos)</h3>
+  <p>En lugar de pedir los datos por WhatsApp, mándale a tu cliente el formulario <a href="pedido.html" target="_blank" rel="noopener">pedido.html</a>. Ahí, desde su celular, elige su diseño y llena nombres, fecha, lugares, padres y padrinos, programa, vestimenta, mesa de regalos, fotos y su lista de invitados. Se guarda solo mientras lo llena y al final ve una vista previa de su invitación.</p>
+  <ol class="pasos">
+    <li>En <a href="mis-bodas.html">Mis bodas</a> toca <span class="btn">📝 Formulario para cliente</span>: se copia un mensaje con el enlace. Pégalo en WhatsApp.</li>
+    <li>Cuando el cliente toca <b>Enviar mis datos</b>, aparece en Mis bodas en <b>Pedidos de clientes</b> (con la etiqueta "nuevo"). Las fotos se guardan en tu Google Drive, en la carpeta <b>Pedidos de invitaciones</b>.</li>
+    <li>Toca <span class="btn">✎ Abrir en el editor</span>: la invitación se abre ya llena, con un recuadro amarillo con el WhatsApp, paquete y comentarios del cliente.</li>
+    <li>Revisa, ajusta y sigue como siempre (Guardar datos, Descargar, Enlaces…).</li>
+  </ol>
+  <div class="caja tip"><b>Enlaces que puedes mandar</b><code>pedido.html?evento=xv</code> (empieza en XV años) · <code>pedido.html?plantilla=gala</code> (con el diseño ya elegido) · <code>pedido.html?paquete=Premium</code> (con el paquete elegido).</div>
+  <div class="caja ojo"><b>Actualiza tu código de Google (versión 3)</b>Para recibir pedidos, copia otra vez el código desde el editor (sección Confirmaciones automáticas), pégalo en Apps Script y ve a <b>Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión → Implementar</b>. Google te pedirá <b>permiso para usar tu Drive</b> (ahí guarda las fotos): acéptalo. La dirección no cambia.</div>
+  <div class="caja tip"><b>¿Sin Google Sheets?</b>El formulario también funciona: al final el cliente toca <b>Compartir archivo por WhatsApp</b> (o lo descarga) y te lo manda. Tú lo abres en el editor con <span class="btn">📂 Abrir</span>.</div>
+
   <h3 id="editor">3.1 El editor, botón por botón</h3>
   <table>
     <tr><th>Botón</th><th>Para qué sirve</th></tr>
     <tr><td><span class="btn">📋 Mis bodas</span></td><td>Va a tu panel con todas las bodas.</td></tr>
     <tr><td><span class="btn">Nueva</span></td><td>Empieza una invitación en blanco. <b>Antes, guarda la actual</b> con "Guardar datos".</td></tr>
-    <tr><td><span class="btn">📂 Abrir</span></td><td>Abre una boda que guardaste antes (su archivo <code>.json</code>) para editarla.</td></tr>
+    <tr><td><span class="btn">📂 Abrir</span></td><td>Abre una boda que guardaste antes (su archivo <code>.json</code>) o el archivo que te mandó tu cliente desde el formulario.</td></tr>
     <tr><td><span class="btn">💾 Guardar datos</span></td><td>Descarga el archivo <code>.json</code> de esta boda. <b>Es tu respaldo.</b> Hazlo cada vez que termines o cambies algo.</td></tr>
     <tr><td><span class="btn">👥 Enlaces de invitados</span></td><td>Genera un enlace distinto para cada familia y te deja mandarlo por WhatsApp.</td></tr>
     <tr><td><span class="btn">📄 PDF</span></td><td>Crea la versión para imprimir o mandar a quienes no usan internet.</td></tr>
