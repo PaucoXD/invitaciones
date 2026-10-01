@@ -18,7 +18,7 @@ window.NEGOCIO = {
 
   // Dirección de tu app de Google para confirmaciones (termina en /exec). Se pone UNA vez y sirve para todas las bodas:
   // así los novios entran a su panel solo con su código y clave.
-  hojaConfirmaciones: '',
+  hojaConfirmaciones: 'https://script.google.com/macros/s/AKfycbzBNchkRqstwXF31RO4tGv38apvbSu14B8-AepNKcMX9DRieMhzax7MEiRrR8DS_DQFXA/exec',
 
   paquetes: [
     {
