@@ -684,7 +684,7 @@
       { k: 'vestimenta.colores', t: 'colores', l: 'Colores sugeridos' }, { k: 'vestimenta.nota', l: 'Nota', ph: 'El color blanco está reservado para la novia.', phxv: () => datos.evento === 'xv' ? 'El color rosa está reservado para la quinceañera.' : '' }] },
     { sec: 'Historia y fotos', campos: [
       { k: 'historia.titulo', l: 'Título' }, { k: 'historia.texto', t: 'area', l: 'Texto' },
-      { k: 'historia.estilo', t: 'select', l: 'Cómo se ven las fotos', ops: [['cuadricula', 'Cuadrícula'], ['carrusel', 'Carrusel (se deslizan)'], ['collage', 'Collage (mosaico)'], ['polaroid', 'Polaroid']] },
+      { k: 'historia.estilo', t: 'select', l: 'Cómo se ven las fotos', ops: [['cuadricula', 'Cuadrícula'], ['carrusel', 'Carrusel (se deslizan)'], ['collage', 'Collage (mosaico)'], ['polaroid', 'Polaroid'], ['pelicula', 'Película (tira de cine que corre sola)']] },
       { k: 'historia.fotos', t: 'lista', l: 'Fotos', ayudaxv: 'Salen en la galería de la invitación y del PDF. La foto de portada solo va en la portada.', ayuda: 'Salen en la galería. En “Vino y Olivo” además se reparten por la invitación en este orden: 1 historia · 2 y 3 padrinos · 4 franja ancha · 5 buenos deseos · 6 fondo del cierre. La foto de portada solo va en la portada.', boton: 'Agregar foto', nuevo: { src: '', pie: '' }, item: [{ k: 'src', t: 'imagen', l: 'Foto' }, { k: 'pie', l: 'Texto sobre la foto (opcional)' }] }] },
     { sec: 'Mesa de regalos', campos: [
       { k: 'regalos.titulo', l: 'Título' }, { k: 'regalos.texto', l: 'Texto' },
