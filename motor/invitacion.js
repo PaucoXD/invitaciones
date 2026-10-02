@@ -179,7 +179,7 @@
       padresNovia: '', padresNovio: '', padrinos: [],
       itinerario: [], lugares: [],
       vestimenta: { tipo: 'Formal', texto: '', colores: [], nota: '' },
-      historia: { titulo: E.historia, texto: '', fotos: [] },
+      historia: { titulo: E.historia, texto: '', fotos: [], estilo: 'cuadricula' },
       regalos: { titulo: yo ? 'Tu presencia es mi mejor regalo' : 'Tu presencia es nuestro mejor regalo', texto: '', opciones: [], banco: '', titular: '', clabe: '' },
       rsvp: { whatsapp: '', fechaLimite: '', pases: 2, texto: '' },
       hospedaje: [], contactos: { novia: '', novio: '' },
@@ -321,11 +321,18 @@
       const h = d.historia || {};
       const fotos = h.fotos || [];
       if ((!fotos.length && !hay(h.texto)) || d.ocultar.historia) return '';
-      return seccion('historia', `${encabezado('Momentos', h.titulo, h.texto)}
-        ${fotos.length ? `<div class="galeria g${Math.min(fotos.length, 6)}">${fotos.map((f, i) => `<figure class="foto rv${f.src ? '' : ' vacia'}" ${f.src ? `data-zoom="${esc(f.src)}"` : ''}>
+      // Estilo de la galería: cuadrícula, carrusel (deslizable), collage (mosaico) o polaroid
+      const estilo = ['carrusel', 'collage', 'polaroid'].includes(h.estilo) ? h.estilo : 'cuadricula';
+      const figs = fotos.map((f, i) => `<figure class="foto${estilo === 'carrusel' ? '' : ' rv'}${f.src ? '' : ' vacia'}" ${f.src ? `data-zoom="${esc(f.src)}"` : ''}>
           ${f.src ? `<img src="${esc(f.src)}" alt="${esc(f.pie || 'Foto ' + (i + 1))}" loading="lazy">` : `<span class="foto-hueco">${ICONOS.foto}</span>`}
           ${hay(f.pie) ? `<figcaption>${esc(f.pie)}</figcaption>` : ''}
-        </figure>`).join('')}</div>` : ''}`, o);
+        </figure>`).join('');
+      const galeria = !fotos.length ? '' : estilo === 'carrusel'
+        ? `<div class="carrusel-caja rv"><div class="galeria carrusel" tabindex="0" aria-label="Galería de fotos: desliza para ver más">${figs}</div>
+            ${fotos.length > 1 ? `<button type="button" class="car-btn car-prev" aria-label="Foto anterior">‹</button><button type="button" class="car-btn car-next" aria-label="Foto siguiente">›</button>
+            <div class="car-puntos">${fotos.map((_, i) => `<span${i ? '' : ' class="on"'}></span>`).join('')}</div>` : ''}</div>`
+        : `<div class="galeria ${estilo} g${Math.min(fotos.length, 6)}">${figs}</div>`;
+      return seccion('historia', `${encabezado('Momentos', h.titulo, h.texto)}${galeria}`, o);
     },
 
     regalos(d, o = {}) {
@@ -586,7 +593,7 @@ main{position:relative;z-index:1}
 /* Itinerario */
 .linea{position:relative;max-width:580px;margin:40px auto 0}
 .linea::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(var(--linea),var(--linea) 88%,transparent)}
-.evento{display:grid;grid-template-columns:1fr 64px 1fr;align-items:center;margin-bottom:38px}
+.evento{display:grid;grid-template-columns:1fr 64px 1fr;column-gap:18px;align-items:center;margin-bottom:38px}
 .evento .hora{font-size:30px;font-weight:300;color:var(--titulo,var(--tinta));text-align:right}
 .evento .icono{width:54px;height:54px;margin:0 auto;border-radius:50%;position:relative;z-index:1;background:var(--fondo);border:1px solid var(--linea);color:var(--acento2);display:flex;align-items:center;justify-content:center}
 .evento .icono svg{width:24px;height:24px}
@@ -625,6 +632,32 @@ main{position:relative;z-index:1}
 .foto.vacia{cursor:default;display:flex;align-items:center;justify-content:center;border:1px dashed var(--linea)}
 .foto-hueco{width:40px;color:var(--suave);opacity:.6}
 .foto.vacia figcaption{background:none;color:var(--suave)}
+/* Galería en carrusel */
+.carrusel-caja{position:relative;margin:36px auto 0;max-width:900px}
+.galeria.carrusel{display:flex;gap:14px;margin:0;max-width:none;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 10%;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.galeria.carrusel::-webkit-scrollbar{display:none}
+.galeria.carrusel .foto{flex:0 0 80%;max-width:440px;scroll-snap-align:center;aspect-ratio:4/5;border-radius:10px}
+.car-btn{position:absolute;top:calc(50% - 30px);width:42px;height:42px;border-radius:50%;border:1px solid var(--linea);background:var(--fondo);color:var(--titulo,var(--tinta));font-size:26px;line-height:1;cursor:pointer;z-index:2;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.car-prev{left:4px}.car-next{right:4px}
+.car-puntos{display:flex;justify-content:center;gap:8px;margin-top:14px}
+.car-puntos span{width:8px;height:8px;border-radius:50%;background:var(--linea);transition:all .3s}
+.car-puntos span.on{background:var(--acento);width:22px;border-radius:4px}
+/* Galería en collage (mosaico) */
+.galeria.collage{grid-template-columns:repeat(3,1fr);grid-auto-rows:150px;grid-auto-flow:dense;gap:8px}
+.galeria.collage .foto{aspect-ratio:auto;border-radius:8px;height:100%}
+.galeria.collage .foto:nth-child(6n+1){grid-column:span 2;grid-row:span 2}
+.galeria.collage .foto:nth-child(6n+4){grid-row:span 2}
+.galeria.collage .foto:nth-child(6n+5){grid-column:span 2}
+.galeria.collage.g1 .foto{grid-column:1/-1;grid-row:span 3}
+.galeria.collage.g2 .foto{grid-row:span 2}
+/* Galería en polaroid */
+.galeria.polaroid{grid-template-columns:repeat(2,1fr);gap:26px 18px;max-width:640px;padding:6px}
+.galeria.polaroid .foto{aspect-ratio:auto;overflow:visible;background:#fff;padding:9px 9px 40px;border-radius:2px;border:none;box-shadow:0 10px 24px rgba(0,0,0,.18);transform:rotate(-2.5deg)}
+.galeria.polaroid .foto:nth-child(even){transform:rotate(2deg) translateY(14px)}
+.galeria.polaroid .foto:nth-child(3n){transform:rotate(1deg)}
+.galeria.polaroid .foto img{aspect-ratio:1;height:auto;border-radius:0}
+.galeria.polaroid .foto figcaption{position:absolute;left:0;right:0;bottom:6px;padding:0 8px;background:none;color:#4a4038;font-size:20px;text-align:center}
+.galeria.polaroid.g1{grid-template-columns:1fr;max-width:360px}
 .zoom{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
 .zoom img{max-height:92vh;max-width:96vw;object-fit:contain}
 
@@ -747,9 +780,11 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
   .padres{grid-template-columns:1fr;gap:22px}
   .fecha-bloque{gap:12px}.fecha-bloque .lado{width:80px;font-size:10px;letter-spacing:.2em}
   .reloj small{font-size:10px;letter-spacing:.08em}
-  .evento{grid-template-columns:1fr 54px 1fr}.evento .hora{font-size:24px}.evento .que{font-size:17px}
+  .evento{grid-template-columns:1fr 58px 1fr;column-gap:12px}.evento .hora{font-size:24px}.evento .que{font-size:17px}
   .galeria{gap:6px}.foto figcaption{font-size:18px}
-  .galeria.g3{grid-template-columns:repeat(2,1fr)}.galeria.g3 .foto:first-child{grid-column:span 2;aspect-ratio:4/3}
+  .galeria.g3:not(.collage):not(.polaroid){grid-template-columns:repeat(2,1fr)}.galeria.g3:not(.collage):not(.polaroid) .foto:first-child{grid-column:span 2;aspect-ratio:4/3}
+  .galeria.collage{grid-auto-rows:110px;gap:6px}.galeria.polaroid{gap:20px 12px}.galeria.polaroid .foto{padding:7px 7px 32px}.galeria.polaroid .foto figcaption{font-size:16px}
+  .galeria.carrusel .foto{flex-basis:84%}.car-btn{display:none}
   .figuras{gap:30px}
 }
 @media (prefers-reduced-motion:reduce){
@@ -950,6 +985,25 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { avisar('CLABE copiada ✓'); }, function () { avisar(t); });
         else avisar(t);
       });
+    });
+
+    // Galería en carrusel: puntos, flechas y avance solo (se detiene si la persona la toca)
+    $$('.carrusel-caja').forEach(function (caja) {
+      var pista = $('.carrusel', caja), fotos = $$('.foto', pista), puntos = $$('.car-puntos span', caja), auto = null, i = 0;
+      if (fotos.length < 2) return;
+      function ir(n) { i = (n + fotos.length) % fotos.length; var f = fotos[i]; pista.scrollTo({ left: f.offsetLeft - (pista.clientWidth - f.clientWidth) / 2, behavior: 'smooth' }); }
+      pista.addEventListener('scroll', function () {
+        var c = pista.scrollLeft + pista.clientWidth / 2, mejor = 0, dist = Infinity;
+        fotos.forEach(function (f, k) { var x = Math.abs(f.offsetLeft + f.clientWidth / 2 - c); if (x < dist) { dist = x; mejor = k; } });
+        i = mejor; puntos.forEach(function (p, k) { p.classList.toggle('on', k === mejor); });
+      }, { passive: true });
+      var parar = function () { clearInterval(auto); auto = null; };
+      ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(function (t) { pista.addEventListener(t, parar, { passive: true }); });
+      var pr = $('.car-prev', caja), nx = $('.car-next', caja);
+      if (pr) pr.addEventListener('click', function () { parar(); ir(i - 1); });
+      if (nx) nx.addEventListener('click', function () { parar(); ir(i + 1); });
+      if (!(W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches)) auto = setInterval(function () { if (!document.hidden) ir(i + 1); }, 4500);
+      limpiar.push(parar);
     });
 
     // Fotos en grande

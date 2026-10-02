@@ -111,7 +111,7 @@ body.plantilla-dorada{--fondo:#0f0e0c;--fondo2:#16140f;--tinta:#efe6d2;--suave:#
 .plantilla-dorada .lugar::before{content:"";position:absolute;inset:8px;border:1px solid rgba(212,175,106,.18);pointer-events:none}
 .plantilla-dorada .lugar .btn{position:relative;z-index:1}
 .plantilla-dorada .lugar h3{font-size:44px}
-.plantilla-dorada .evento .icono{transform:rotate(45deg);border-radius:0;width:44px;height:44px}
+.plantilla-dorada .evento .icono{transform:rotate(45deg);border-radius:0;width:40px;height:40px}
 .plantilla-dorada .evento .icono svg{transform:rotate(-45deg)}
 .plantilla-dorada .foto{border:1px solid var(--linea);padding:8px;background:transparent}
 .plantilla-dorada .foto img{filter:grayscale(.25) contrast(1.05)}
