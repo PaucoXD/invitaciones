@@ -38,7 +38,7 @@
     const i = $('#ver-como').value; const x = i !== '' && (datos.invitados || [])[+i];
     return x ? { nombre: x.nombre, pases: x.pases, mesa: x.mesa } : null;
   }
-  function enviar() { if (listo) vista.contentWindow.postMessage({ tipo: 'invitacion', datos, conSobre: $('#con-sobre').checked, prueba: invitadoPrueba() }, '*'); }
+  function enviar() { if (listo) vista.contentWindow.postMessage({ tipo: 'invitacion', datos, conSobre: $('#con-sobre').checked, aparta: $('#ver-aparta').checked, prueba: invitadoPrueba() }, '*'); }
   function opcionesVerComo() {
     const s = $('#ver-como'), v = s.value;
     s.innerHTML = '';
@@ -58,6 +58,7 @@
     catch (e) { g.textContent = '· ⚠ fotos muy pesadas para guardado automático: usa “Guardar datos”'; }
   }
   $('#con-sobre').addEventListener('change', enviar);
+  $('#ver-aparta').addEventListener('change', enviar);
   $('#ver-como').addEventListener('focus', opcionesVerComo);
   $('#ver-como').addEventListener('change', enviar);
   $('#dispositivo').addEventListener('click', (e) => {
@@ -284,6 +285,31 @@
           const t = window.CODIGO_SHEETS || '';
           (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => avisar('Código copiado ✓ Pégalo en Apps Script'), () => descargar('confirmaciones.gs', t, 'text/plain'));
         } }, '📋 Copiar código para Google Sheets'));
+    } else if (t === 'aparta') {
+      const estado = el('p', { class: 'conf-estado' });
+      const marcar = (txt, ok) => { estado.textContent = txt; estado.className = 'conf-estado ' + (ok ? 'ok' : 'mal'); };
+      const msg = () => {
+        const base = $('#inv-base').value.trim(), enlace = base ? base.replace(/\.html(\?.*)?$/, '-aparta-la-fecha.html') : '';
+        return `${EV().emoji} ¡Aparta la fecha!\n\n${Invitacion.S.apartaTexto(datos)}${enlace ? `\n\n👉 ${enlace}` : ''}`;
+      };
+      return el('div', {},
+        el('div', { class: 'conf-herr' },
+          el('button', { class: 'b chico', type: 'button', onclick: () => { $('#ver-aparta').checked = true; enviar(); avisar('Vista previa: Aparta la fecha'); } }, '👀 Ver en la vista previa'),
+          el('button', { class: 'b chico', type: 'button', onclick: async () => {
+            descargar(`${slug()}-aparta-la-fecha.html`, Invitacion.exportarHTML(await conAdornos(), { aparta: true }), 'text/html');
+            marcar('✓ Página descargada. Súbela junto a la invitación (misma carpeta) y comparte su enlace.', true);
+          } }, '⬇️ Descargar página'),
+          el('button', { class: 'b chico', type: 'button', onclick: async () => {
+            marcar('Dibujando la imagen…', true);
+            try { descargar(`${slug()}-aparta-la-fecha.png`, await Invitacion.pdf.aparta(datos), 'image/png'); marcar('✓ Imagen descargada (1080×1920). Lista para estados de WhatsApp, Instagram o para mandarla como foto.', true); }
+            catch (e) { console.error(e); marcar('No se pudo dibujar la imagen: ' + e.message, false); }
+          } }, '🖼️ Imagen para estados'),
+          el('button', { class: 'b chico', type: 'button', onclick: () => {
+            const t = msg();
+            (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => avisar('Mensaje copiado ✓'), () => prompt('Copia el mensaje:', t));
+          } }, '📋 Copiar mensaje')),
+        estado,
+        el('p', { class: 'ayuda' }, 'La página usa el diseño elegido pero solo muestra portada, aviso, cuenta regresiva y botón para agendar. El mensaje copiado usa la dirección de “Enlaces de invitados” cambiando el final por -aparta-la-fecha.html.'));
     } else if (t === 'libro') {
       const estado = el('p', { class: 'conf-estado' });
       const marcar = (txt, ok) => { estado.textContent = txt; estado.className = 'conf-estado ' + (ok ? 'ok' : 'mal'); };
@@ -659,6 +685,10 @@
       { k: 'acceso.activo', t: 'check', repintar: true, texto: 'Activar pase de entrada con QR', ayuda: 'Cada familia ve en su invitación un pase con su nombre, lugares y un código QR. El día del evento, en la puerta, se escanea con el celular para registrar quién llegó. Necesita “Confirmaciones automáticas”.' },
       { k: 'acceso.texto', l: 'Texto debajo del código (opcional)', ph: 'Presenta este código en la entrada' },
       { t: 'accesoHerramientas' }] },
+    { sec: 'Aparta la fecha ✦ paquete', campos: [
+      { t: 'nota', texto: 'Un aviso corto que se manda meses antes: nombre, fecha, ciudad y cuenta regresiva con el mismo diseño. Incluye una página para enviar por WhatsApp y una imagen vertical para estados e Instagram.' },
+      { k: 'aparta.texto', t: 'area', l: 'Mensaje (opcional)', ph: () => Invitacion.S.apartaTexto(Object.assign({}, datos, { aparta: {} })) },
+      { t: 'aparta' }] },
     { sec: 'Libro de recuerdos ✦ paquete', campos: [
       { t: 'nota', texto: 'Después del evento: un PDF con el diseño de la invitación que junta los buenos deseos de los invitados, las canciones más pedidas, la lista de quienes asistieron y las fotos. Un recuerdo para regalar o imprimir.' },
       { t: 'libro' }] },
@@ -792,15 +822,18 @@
     const b = await r.blob(); if (!/^image\//.test(b.type)) throw new Error('tipo');
     return new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.readAsDataURL(b); });
   }
-  $('#b-descargar').addEventListener('click', async () => {
-    // Incluye dentro del archivo los adornos guardados en plantillas/adornos/ (si existen)
+  /** Copia de los datos con los adornos de plantillas/adornos/ dentro del archivo (si existen). */
+  async function conAdornos() {
     const d = JSON.parse(JSON.stringify(datos));
     d.adornos = Object.assign({}, d.adornos);
     for (const a of (PL[d.plantilla].adornos || [])) {
       if (d.adornos[a.id]) continue;
       try { d.adornos[a.id] = await aDataURL(`plantillas/adornos/${d.plantilla}-${a.id}.png`); } catch (e) { /* se usa el dibujo incluido */ }
     }
-    descargar(`${slug()}.html`, Invitacion.exportarHTML(d), 'text/html');
+    return d;
+  }
+  $('#b-descargar').addEventListener('click', async () => {
+    descargar(`${slug()}.html`, Invitacion.exportarHTML(await conAdornos()), 'text/html');
     avisar('Invitación descargada. ¡Súbela a tu hosting!');
   });
 

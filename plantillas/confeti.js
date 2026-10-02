@@ -96,6 +96,7 @@ body.plantilla-confeti{font-size:17px}
 .plantilla-confeti .marquesina::before{content:"";position:absolute;inset:-11px;border-radius:18px;padding:11px;background:radial-gradient(circle,#ff7aa6 0 3px,transparent 4px) 11px 11px/22px 22px;
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:foquitos 1.2s steps(2) infinite;pointer-events:none}
 @keyframes foquitos{50%{opacity:.35}}
+.plantilla-confeti.aparta .grande{font-size:clamp(50px,15vw,96px);line-height:.95}
 .plantilla-confeti .grande{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(88px,30vw,170px);line-height:.9;
   background:linear-gradient(100deg,#ff3d7f 0%,#ff7aa6 30%,#f2c14e 70%,#ffe7a0 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .plantilla-confeti .nombres{font-family:'Yellowtail',cursive;font-size:clamp(54px,15vw,86px);color:#fff;margin:6px 0 4px}
