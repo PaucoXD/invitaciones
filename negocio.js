@@ -42,6 +42,7 @@ window.NEGOCIO = {
     { nombre: 'Pase de entrada con QR y registro en la puerta', precio: 400 },
     { nombre: 'Libro de recuerdos en PDF (buenos deseos, canciones y asistentes)', precio: 350 },
     { nombre: 'Aparta la fecha (página + imagen para estados)', precio: 250 },
+    { nombre: 'Video para estados (15 segundos con música)', precio: 300 },
     { nombre: 'Entrega exprés en 24 horas', precio: 300 },
     { nombre: 'Diseño con tus colores', precio: 300 }
   ],
