@@ -215,7 +215,7 @@
           <div class="t ok"><b>${sum(prox, 'personas')}</b><span>personas confirmadas (próximas)</span></div>
           <div class="t pend"><b>${sum(prox, 'pendientes')}</b><span>invitaciones sin responder</span></div>
         </div>
-        ${!cfg.demo && version < 10 ? '<p class="demo">Tu código de Google es la versión ' + version + '; hay una nueva (versión 10: abrir pedidos con fotos sin errores, quién abrió cada invitación y pago del anticipo). Actualízalo: manual, sección 3.0.</p>' : ''}
+        ${!cfg.demo && version < 11 ? '<p class="demo">Tu código de Google es la versión ' + version + '; hay una nueva (versión 11: abrir pedidos con fotos sin errores, quién abrió cada invitación y pago del anticipo). Actualízalo: manual, sección 3.0.</p>' : ''}
         ${seccionPedidos()}
         <div class="filtros">
           ${[['proximas', 'Próximas'], ['pasadas', 'Pasadas'], ['todas', 'Todas']].map(([k, t]) => `<button class="chip ${filtro === k ? 'on' : ''}" data-f="${k}">${t}</button>`).join('')}
