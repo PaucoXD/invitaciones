@@ -841,8 +841,26 @@
   function leerRespuesta(t) {
     try { return JSON.parse(t); } catch (e) {
       const msg = (new DOMParser().parseFromString(t, 'text/html').body.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 220);
-      throw new Error(`Google respondió con un error${msg ? ': “' + msg + '”' : ''}. Actualiza tu código de Google a la versión 7 (manual, sección 3.0) y vuelve a intentar.`);
+      throw new Error(`Google respondió con un error${msg ? ': “' + msg + '”' : ''}. Actualiza tu código de Google a la versión 8 (manual, sección 3.0) y vuelve a intentar.`);
     }
+  }
+  /** Descarga un pedido del formulario en partes (con fotos pesa varios MB). */
+  async function descargarPedido(url, clave, id, progreso) {
+    const pedir = async (n) => {
+      const t = await (await fetch(`${url}${url.includes('?') ? '&' : '?'}accion=pedido&id=${encodeURIComponent(id)}&clave=${encodeURIComponent(clave)}&parte=${n}&t=${Date.now()}`)).text();
+      return leerRespuesta(t);
+    };
+    const r = await pedir(0);
+    if (!r.ok) throw new Error(/boda o clave/i.test(r.error || '') ? 'tu código de Google es de una versión anterior; actualízalo (manual, sección 3.0)' : r.error);
+    if (r.pedido) return r.pedido; // código de Google anterior (todo de una vez)
+    let texto = r.texto;
+    for (let n = 1; n < r.partes; n++) {
+      if (progreso) progreso(n, r.partes);
+      const x = await pedir(n);
+      if (!x.ok) throw new Error(x.error || 'No se pudo leer una parte del pedido');
+      texto += x.texto;
+    }
+    return JSON.parse(texto);
   }
   if (qp.get('pedido')) (async () => {
     let s = {}; try { s = JSON.parse(localStorage.getItem('mis-bodas-admin')) || {}; } catch (e) {}
@@ -853,9 +871,8 @@
       el('b', {}, `Abriendo el pedido ${qp.get('pedido')}…`), el('p', {}, 'Con fotos puede tardar unos segundos.')));
     document.body.append(capa);
     try {
-      const r = leerRespuesta(await (await fetch(`${url}${url.includes('?') ? '&' : '?'}accion=pedido&id=${encodeURIComponent(qp.get('pedido'))}&clave=${encodeURIComponent(s.clave)}`)).text());
-      if (!r.ok) throw new Error(/boda o clave/i.test(r.error || '') ? 'tu código de Google es de una versión anterior; actualízalo (manual, sección 3.0)' : r.error);
-      abrirPedido(r.pedido, qp.get('pedido'));
+      const ped = await descargarPedido(url, s.clave, qp.get('pedido'), (n, t) => { capa.querySelector('p').textContent = `Descargando fotos… ${Math.round(n / t * 100)}%`; });
+      abrirPedido(ped, qp.get('pedido'));
       history.replaceState(null, '', location.pathname);
       capa.remove();
     } catch (e) {

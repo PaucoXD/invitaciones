@@ -18,7 +18,7 @@ window.CODIGO_SHEETS = String.raw`// ===== Confirmaciones de invitaciones — pe
 // Después: Implementar → Nueva implementación → App web → Ejecutar como: Yo → Acceso: Cualquier persona.
 // ¿Actualizando? Implementar → Administrar implementaciones → ✏️ → Versión: "Nueva versión" → Implementar (la URL no cambia).
 
-var VERSION = 7;
+var VERSION = 8;
 
 var ENC_CONF = ['Fecha', 'Boda', 'Tipo', 'Invitado', 'Asiste', 'Personas', 'Mensaje', 'Lugares', 'Mesa'];
 var ENC_INV = ['Boda', 'Invitado', 'Lugares', 'Mesa', 'Teléfono'];
@@ -244,7 +244,9 @@ function doGet_(e) {
     if (!adminCorrecto_(p.clave)) return json_({ ok: false, error: 'Clave de administrador incorrecta' });
     var ped = leerPedido_(p.id);
     if (!ped) return json_({ ok: false, error: 'No se encontró ese pedido' });
-    return ContentService.createTextOutput('{"ok":true,"pedido":' + ped + '}').setMimeType(ContentService.MimeType.JSON);
+    // Con fotos el pedido pesa varios MB y Google no puede mandarlo de una vez: se manda en partes de ~1.5 MB
+    var TAM = 1500000, partes = Math.max(1, Math.ceil(ped.length / TAM)), n = Math.min(Math.max(0, Number(p.parte) || 0), partes - 1);
+    return json_({ ok: true, partes: partes, parte: n, texto: ped.slice(n * TAM, (n + 1) * TAM) });
   }
   var boda = texto_(p.boda, 80);
   if (!boda || !claveCorrecta_(boda, p.clave, false)) return json_({ ok: false, error: 'ID de boda o clave incorrectos' });
