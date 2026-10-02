@@ -60,6 +60,7 @@
 
   window.Invitacion.registrar({
     id: 'vino',
+    eventos: ['boda'],
     nombre: 'Vino y Olivo',
     descripcion: 'Collage de papelería: sobre que se queda abierto, tarjetas, sellos de cera, encaje y alcatraces.',
     colores: ['#7e2638', '#9c9b5f', '#f4efe8', '#b5707e'],

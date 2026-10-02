@@ -16,6 +16,7 @@
 
   window.Invitacion.registrar({
     id: 'botanica',
+    eventos: ['boda', 'bautizo', 'comunion', 'babyshower', 'cumple'],
     nombre: 'Jardín Botánico',
     descripcion: 'Marfil, verde salvia y ramas finas. Elegante y minimalista.',
     colores: ['#fbf8f2', '#8a9a7b', '#3f4a37', '#b8955a'],

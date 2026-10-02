@@ -99,6 +99,9 @@
   'use strict';
   const q = new URLSearchParams(location.search);
   const N = window.NEGOCIO || {};
+  // "XV años de Sofía" → "los XV años de Sofía"; "Bautizo de Mateo" → "el bautizo de Mateo"; "Ana & Luis" → "la boda de Ana & Luis"
+  const ART = { 'XV años': 'los XV años', 'Bautizo': 'el bautizo', 'Primera comunión': 'la primera comunión', 'Baby shower': 'el baby shower', 'Cumpleaños': 'el cumpleaños' };
+  const delEvento = (n) => { const m = /^(XV años|Bautizo|Primera comunión|Baby shower|Cumpleaños) de (.+)$/.exec(n || ''); return m ? `${ART[m[1]]} de ${m[2]}` : 'la boda de ' + (n || 'los novios'); };
   const CLAVE_SESION = 'panel-confirmaciones';
   let guardada = {}; try { guardada = JSON.parse(localStorage.getItem(CLAVE_SESION)) || {}; } catch (e) {}
   // Si el enlace trae datos se usan; si no, los que se guardaron en este celular
@@ -204,7 +207,7 @@
   function recordatorio(f) {
     let link = '';
     if (cfg.enlace) link = cfg.enlace + (cfg.enlace.includes('?') ? '&' : '?') + 'invitado=' + encodeURIComponent(f.nombre) + (f.lugares ? '&pases=' + f.lugares : '') + (f.mesa ? '&mesa=' + encodeURIComponent(f.mesa) : '');
-    const txt = `¡Hola ${f.nombre}! 💌 Les recordamos con cariño confirmar su asistencia a ${/^XV /.test(cfg.nombres) ? 'los ' + cfg.nombres : 'la boda de ' + (cfg.nombres || 'los novios')}.` + (link ? ` Pueden hacerlo aquí: ${link}` : '');
+    const txt = `¡Hola ${f.nombre}! 💌 Les recordamos con cariño confirmar su asistencia ${delEvento(cfg.nombres).replace(/^el /, 'al ').replace(/^(?!al )/, 'a ')}.` + (link ? ` Pueden hacerlo aquí: ${link}` : '');
     const tel = f.tel.replace(/\D/g, '');
     return 'https://wa.me/' + tel + '?text=' + encodeURIComponent(txt);
   }

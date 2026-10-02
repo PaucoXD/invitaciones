@@ -16,7 +16,7 @@ window.CODIGO_SHEETS = String.raw`// ===== Confirmaciones de invitaciones — pe
 // Después: Implementar → Nueva implementación → App web → Ejecutar como: Yo → Acceso: Cualquier persona.
 // ¿Actualizando? Implementar → Administrar implementaciones → ✏️ → Versión: "Nueva versión" → Implementar (la URL no cambia).
 
-var VERSION = 4;
+var VERSION = 5;
 
 var ENC_CONF = ['Fecha', 'Boda', 'Tipo', 'Invitado', 'Asiste', 'Personas', 'Mensaje', 'Lugares', 'Mesa'];
 var ENC_INV = ['Boda', 'Invitado', 'Lugares', 'Mesa', 'Teléfono'];
@@ -94,8 +94,9 @@ function guardarPedido_(texto) {
   var it = DriveApp.getFoldersByName(CARPETA_PEDIDOS);
   var carpeta = it.hasNext() ? it.next() : DriveApp.createFolder(CARPETA_PEDIDOS);
   var archivo = carpeta.createFile('pedido-' + id + '.json', texto, 'application/json');
-  var nombres = d.evento === 'xv' ? 'XV años de ' + (d.festejada || '') : (d.novia || '') + ' & ' + (d.novio || '');
-  hoja_('Pedidos', ENC_PED).appendRow([new Date(), id, texto_(c.nombre, 120), texto_(c.tel, 30), d.evento === 'xv' ? 'XV años' : 'Boda',
+  // El formulario manda el nombre del evento ya armado ("Bautizo de Mateo"); si no, se arma aquí
+  var nombres = p.titulo || (d.evento && d.evento !== 'boda' ? (d.evento === 'xv' ? 'XV años de ' : '') + (d.festejada || '') : (d.novia || '') + ' & ' + (d.novio || ''));
+  hoja_('Pedidos', ENC_PED).appendRow([new Date(), id, texto_(c.nombre, 120), texto_(c.tel, 30), texto_(p.eventoNombre || (d.evento === 'xv' ? 'XV años' : 'Boda'), 40),
     texto_(nombres, 120), texto_(d.fecha, 20), texto_(d.plantilla, 40), texto_(c.paquete, 60), archivo.getId(), 'Nuevo']);
   return { ok: true, pedido: id };
 }

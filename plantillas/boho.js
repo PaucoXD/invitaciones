@@ -36,6 +36,7 @@
 
   window.Invitacion.registrar({
     id: 'boho',
+    eventos: ['boda', 'babyshower', 'cumple', 'bautizo'],
     nombre: 'Boho Terracota',
     descripcion: 'Arcos, sol y pampas en terracota, mostaza y salvia. Cálida y moderna.',
     colores: ['#c2734f', '#d9a548', '#a4a77e', '#f1e2d0'],

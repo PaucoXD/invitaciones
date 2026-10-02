@@ -418,7 +418,7 @@ body.plantilla-princesa{--acento-texto:#856633;--fondo:#fff8f9;--fondo2:#fcebef;
       
       <p class="intro">Mis XV años</p>
       <div class="xv" aria-hidden="true">XV</div>
-      <h1 class="nombres nombre-xv"><span class="n1">Sofía</span></h1>
+      <h1 class="nombres nombre-xv nombre-uno"><span class="n1">Sofía</span></h1>
       <div class="fecha-bloque"><span class="lado">Sábado</span><span class="dia">12<small>Junio</small></span><span class="lado">2027</span></div>
       <p class="ciudad">Guadalajara, Jalisco</p>
     </div>
@@ -573,7 +573,7 @@ body.plantilla-princesa{--acento-texto:#856633;--fondo:#fff8f9;--fondo2:#fcebef;
     <g fill="#fff"><circle cx="120" cy="131" r="3.5"/><circle cx="76" cy="127" r="2.5"/><circle cx="105" cy="131" r="2.5"/><circle cx="135" cy="131" r="2.5"/><circle cx="164" cy="127" r="2.5"/><circle cx="44" cy="120" r="2.5"/><circle cx="196" cy="120" r="2.5"/></g>
   </svg></span></span>
           <p class="rv">Gracias por acompañarme en este día tan especial</p>
-          <p class="nombres nombre-xv"><span class="n1">Sofía</span></p>
+          <p class="nombres nombre-xv nombre-uno"><span class="n1">Sofía</span></p>
           <p class="pie-fecha rv">12 · 06 · 2027</p>
         </footer>
 </main>
@@ -793,7 +793,8 @@ body.plantilla-princesa{--acento-texto:#856633;--fondo:#fff8f9;--fondo2:#fcebef;
       g.querySelector('button').addEventListener('click', function () { g.remove(); form.style.display = ''; });
       form.style.display = 'none'; form.parentNode.insertBefore(g, form.nextSibling);
     }
-    var xv = d.evento === 'xv', quien = xv ? d.festejada : d.novia + ' & ' + d.novio, delEv = xv ? 'los XV años de ' + quien : 'la boda de ' + quien;
+    var EV = d._ev || {}, xv = !!EV.uno, quien = EV.quien || (d.novia + ' & ' + d.novio), delEv = EV.del || 'la boda de ' + quien;
+    var aDel = /^el /.test(delEv) ? 'al ' + delEv.slice(3) : 'a ' + delEv; // "al bautizo", "a la boda"
     var claveLocal = 'inv-rsvp:' + (C.boda || quien) + ':' + (invitado || '');
     function recordar(v) { try { localStorage.setItem(claveLocal, JSON.stringify(v)); } catch (e) {} }
     function recordado() { try { return JSON.parse(localStorage.getItem(claveLocal)); } catch (e) { return null; } }
@@ -819,7 +820,7 @@ body.plantilla-princesa{--acento-texto:#856633;--fondo:#fff8f9;--fondo2:#fcebef;
         g.fillStyle = fondo; g.fillRect(0, 0, W2, H2);
         g.strokeStyle = acento; g.lineWidth = 3; g.strokeRect(28, 28, W2 - 56, H2 - 56); g.lineWidth = 1; g.strokeRect(40, 40, W2 - 80, H2 - 80);
         g.textAlign = 'center'; g.fillStyle = acento; g.font = '600 22px ' + fE; g.fillText('PASE DE ENTRADA', W2 / 2, 120);
-        var quien = d.evento === 'xv' ? 'XV años de ' + d.festejada : d.novia + ' & ' + d.novio;
+        var quien = EV.cabecera || (d.novia + ' & ' + d.novio);
         g.fillStyle = tinta; g.font = 'italic 30px ' + fX; g.fillText(quien, W2 / 2, 172);
         var p2 = String(d.fecha || '').split('-'); if (p2.length === 3) { g.font = '22px ' + fE; g.fillText(p2[2] + ' · ' + p2[1] + ' · ' + p2[0], W2 / 2, 212); }
         g.fillStyle = tit; var tam = 64; g.font = tam + 'px ' + fT; while (g.measureText(invitado).width > W2 - 120 && tam > 30) { tam -= 4; g.font = tam + 'px ' + fT; }
@@ -850,7 +851,7 @@ body.plantilla-princesa{--acento-texto:#856633;--fondo:#fff8f9;--fondo2:#fcebef;
         if (usarWa) abrirWa(msg);
         if (!usarHoja) return;
         aHoja({ tipo: tipo, nombre: nom || invitado, mensaje: txt }).then(function (ok) {
-          if (ok) { gracias(f, tipo === 'cancion' ? '¡Anotada!' : '¡Gracias por tus palabras!', tipo === 'cancion' ? 'La pondremos en la lista para la pista.' : (xv ? quien + ' recibirá tu mensaje.' : 'Los novios recibirán tu mensaje.')); $('[name=texto]', f).value = ''; }
+          if (ok) { gracias(f, tipo === 'cancion' ? '¡Anotada!' : '¡Gracias por tus palabras!', tipo === 'cancion' ? 'La pondremos en la lista para la pista.' : (EV.msgRecibe || 'Los novios recibirán tu mensaje.')); $('[name=texto]', f).value = ''; }
           else if (!usarWa) { avisar('Sin conexión; te abrimos WhatsApp'); abrirWa(msg); }
         });
       });
@@ -892,8 +893,8 @@ body.plantilla-princesa{--acento-texto:#856633;--fondo:#fff8f9;--fondo2:#fcebef;
         var nom = fNombre.value.trim();
         if (!nom) { avisar('Escribe tu nombre, por favor'); fNombre.focus(); return; }
         var si = $('#asiste-si').checked, msg = $('#f-msg').value.trim();
-        var txt = si ? '¡Hola! Soy ' + nom + ' y confirmo mi asistencia a ' + delEv + (xv ? ' 👑' : ' 💍') + '\nAsistentes: ' + sel.value
-                     : 'Hola, soy ' + nom + '. Lamentablemente no podré asistir a ' + delEv + ', ¡pero ' + (xv ? 'le' : 'les') + ' deseo lo mejor! 🤍';
+        var txt = si ? '¡Hola! Soy ' + nom + ' y confirmo mi asistencia ' + aDel + ' ' + (EV.emoji || '💍') + '\nAsistentes: ' + sel.value
+                     : 'Hola, soy ' + nom + '. Lamentablemente no podré asistir ' + aDel + ', ¡pero ' + (EV.les || 'les') + ' deseo lo mejor! 🤍';
         if (msg) txt += '\n\nMensaje: ' + msg;
         if (!usarHoja && !numWa) { avisar('Falta configurar el número de WhatsApp'); return; }
         if (usarWa) abrirWa(txt);
@@ -902,7 +903,7 @@ body.plantilla-princesa{--acento-texto:#856633;--fondo:#fff8f9;--fondo2:#fcebef;
         aHoja({ tipo: 'rsvp', nombre: nom, asiste: si, personas: personas, mensaje: msg, pases: pases, mesa: mesa }).then(function (ok) {
           if (ok) {
             recordar({ si: si, personas: personas });
-            gracias(form, si ? '¡Gracias, ' + nom + '!' : 'Gracias por avisarnos', si ? 'Registramos tu confirmación para ' + personas + (personas === 1 ? ' persona' : ' personas') + '. ¡Nos vemos en ' + (xv ? 'la fiesta' : 'la boda') + '!' : 'Te vamos a extrañar. Tu respuesta quedó registrada.');
+            gracias(form, si ? '¡Gracias, ' + nom + '!' : 'Gracias por avisarnos', si ? 'Registramos tu confirmación para ' + personas + (personas === 1 ? ' persona' : ' personas') + '. ¡Nos vemos en ' + (EV.fiesta || 'la boda') + '!' : 'Te vamos a extrañar. Tu respuesta quedó registrada.');
           } else if (!usarWa) { avisar('Sin conexión; te abrimos WhatsApp'); abrirWa(txt); }
         });
       });
@@ -914,6 +915,6 @@ body.plantilla-princesa{--acento-texto:#856633;--fondo:#fff8f9;--fondo2:#fcebef;
         form.parentNode.insertBefore(aviso2, form);
       }
     }
-  })({"evento":"xv","plantilla":"princesa","festejada":"Sofía","iniciales":"","fecha":"2027-06-12","hora":"18:00","zonaHoraria":"-06:00","ciudad":"Guadalajara, Jalisco","introPortada":"Mis XV años","fotoPortada":"","frase":"Hay momentos que se esperan toda una vida; hoy celebro el mío rodeada de quienes más quiero.","fraseAutor":"","tituloFamilia":"Con la bendición de Dios y de mis padres","textoFamilia":"tengo el honor de invitarte a celebrar mis quince años","padresNovia":"Eduardo Ramírez Ochoa\nClaudia Herrera de Ramírez","padresNovio":"","padrinos":[{"rol":"Padrinos de velación","nombres":"Raúl & Gabriela Herrera"},{"rol":"Padrinos de anillo","nombres":"Miguel & Laura Ramírez"},{"rol":"Padrinos de la última muñeca","nombres":"Óscar & Diana Torres"},{"rol":"Chambelán de honor","nombres":"Emilio Ramírez"}],"itinerario":[{"hora":"18:00","evento":"Misa de acción de gracias","detalle":"Templo de San Francisco","icono":"iglesia"},{"hora":"20:00","evento":"Recepción","detalle":"Salón Cristal","icono":"copa"},{"hora":"20:45","evento":"Vals","detalle":"Con mis chambelanes","icono":"corona"},{"hora":"21:30","evento":"Cena","detalle":"","icono":"cena"},{"hora":"22:30","evento":"¡A bailar!","detalle":"","icono":"musica"},{"hora":"02:00","evento":"Fin de la fiesta","detalle":"Gracias por acompañarme","icono":"luna"}],"lugares":[{"tipo":"Misa","hora":"18:00","nombre":"Templo de San Francisco de Asís","direccion":"Av. 16 de Septiembre 289, Centro\nGuadalajara, Jal.","mapa":"","icono":"iglesia"},{"tipo":"Recepción","hora":"20:00","nombre":"Salón Cristal","direccion":"Av. López Mateos Sur 2375\nZapopan, Jal.","mapa":"","icono":"hacienda"}],"vestimenta":{"tipo":"Formal","texto":"Te sugerimos colores de noche y tonos pastel.","colores":["#1f3463","#7c5ea8","#b8c4d6","#c9a75c"],"nota":"El color rosa está reservado para la quinceañera."},"historia":{"titulo":"Mis momentos","texto":"Quince años de risas, aprendizajes y sueños. ¡Gracias por ser parte de ellos!","fotos":[{"src":"","pie":"Mi primer año"},{"src":"","pie":"Con mi familia"},{"src":"","pie":"Hoy"}]},"regalos":{"titulo":"Tu presencia es mi mejor regalo","texto":"pero si deseas obsequiarme algo, aquí algunas opciones","opciones":[{"nombre":"Liverpool","detalle":"Evento #50987654","enlace":"","icono":"regalo"},{"nombre":"Lluvia de sobres","detalle":"El día del evento","enlace":"","icono":"sobre"}],"banco":"","titular":"","clabe":""},"rsvp":{"whatsapp":"5213312345678","fechaLimite":"2027-05-20","pases":2,"texto":""},"hospedaje":[],"contactos":{"novia":"5213312345678","novio":""},"invitados":[{"nombre":"Familia Gómez","pases":4,"mesa":"2"},{"nombre":"Valentina Ruiz","pases":1,"mesa":"6"},{"nombre":"Familia Ortiz","pases":3,"mesa":"4"}],"mesas":{"activo":false,"texto":"","lista":[],"elementos":[]},"hashtag":"#LosXVdeSofi","nota":"","despedida":"Gracias por acompañarme en este día tan especial","musica":"melodia","adornos":{},"ocultar":{},"novia":"","novio":"","confirmaciones":{"url":"","boda":"","whatsapp":false},"acceso":{"activo":false,"texto":""},"encuadres":{},"_rutaAdornos":"plantillas/adornos/","_efecto":"destellos","_efectoColores":["#f4dc9b","#ec9fb3","#f8d3db","#d1a556"]});</script>
+  })({"evento":"xv","plantilla":"princesa","festejada":"Sofía","iniciales":"","fecha":"2027-06-12","hora":"18:00","zonaHoraria":"-06:00","ciudad":"Guadalajara, Jalisco","introPortada":"Mis XV años","fotoPortada":"","frase":"Hay momentos que se esperan toda una vida; hoy celebro el mío rodeada de quienes más quiero.","fraseAutor":"","tituloFamilia":"Con la bendición de Dios y de mis padres","textoFamilia":"tengo el honor de invitarte a celebrar mis quince años","padresNovia":"Eduardo Ramírez Ochoa\nClaudia Herrera de Ramírez","padresNovio":"","padrinos":[{"rol":"Padrinos de velación","nombres":"Raúl & Gabriela Herrera"},{"rol":"Padrinos de anillo","nombres":"Miguel & Laura Ramírez"},{"rol":"Padrinos de la última muñeca","nombres":"Óscar & Diana Torres"},{"rol":"Chambelán de honor","nombres":"Emilio Ramírez"}],"itinerario":[{"hora":"18:00","evento":"Misa de acción de gracias","detalle":"Templo de San Francisco","icono":"iglesia"},{"hora":"20:00","evento":"Recepción","detalle":"Salón Cristal","icono":"copa"},{"hora":"20:45","evento":"Vals","detalle":"Con mis chambelanes","icono":"corona"},{"hora":"21:30","evento":"Cena","detalle":"","icono":"cena"},{"hora":"22:30","evento":"¡A bailar!","detalle":"","icono":"musica"},{"hora":"02:00","evento":"Fin de la fiesta","detalle":"Gracias por acompañarme","icono":"luna"}],"lugares":[{"tipo":"Misa","hora":"18:00","nombre":"Templo de San Francisco de Asís","direccion":"Av. 16 de Septiembre 289, Centro\nGuadalajara, Jal.","mapa":"","icono":"iglesia"},{"tipo":"Recepción","hora":"20:00","nombre":"Salón Cristal","direccion":"Av. López Mateos Sur 2375\nZapopan, Jal.","mapa":"","icono":"hacienda"}],"vestimenta":{"tipo":"Formal","texto":"Te sugerimos colores de noche y tonos pastel.","colores":["#1f3463","#7c5ea8","#b8c4d6","#c9a75c"],"nota":"El color rosa está reservado para la quinceañera."},"historia":{"titulo":"Mis momentos","texto":"Quince años de risas, aprendizajes y sueños. ¡Gracias por ser parte de ellos!","fotos":[{"src":"","pie":"Mi primer año"},{"src":"","pie":"Con mi familia"},{"src":"","pie":"Hoy"}]},"regalos":{"titulo":"Tu presencia es mi mejor regalo","texto":"pero si deseas obsequiarme algo, aquí algunas opciones","opciones":[{"nombre":"Liverpool","detalle":"Evento #50987654","enlace":"","icono":"regalo"},{"nombre":"Lluvia de sobres","detalle":"El día del evento","enlace":"","icono":"sobre"}],"banco":"","titular":"","clabe":""},"rsvp":{"whatsapp":"5213312345678","fechaLimite":"2027-05-20","pases":2,"texto":""},"hospedaje":[],"contactos":{"novia":"5213312345678","novio":""},"invitados":[{"nombre":"Familia Gómez","pases":4,"mesa":"2"},{"nombre":"Valentina Ruiz","pases":1,"mesa":"6"},{"nombre":"Familia Ortiz","pases":3,"mesa":"4"}],"mesas":{"activo":false,"texto":"","lista":[],"elementos":[]},"hashtag":"#LosXVdeSofi","nota":"","despedida":"Gracias por acompañarme en este día tan especial","musica":"melodia","adornos":{},"ocultar":{},"novia":"","novio":"","confirmaciones":{"url":"","boda":"","whatsapp":false},"acceso":{"activo":false,"texto":""},"encuadres":{},"_rutaAdornos":"plantillas/adornos/","_efecto":"destellos","_efectoColores":["#f4dc9b","#ec9fb3","#f8d3db","#d1a556"],"_ev":{"uno":true,"quien":"Sofía","del":"los XV años de Sofía","cabecera":"XV años de Sofía","emoji":"👑","fiesta":"la fiesta","les":"le","msgRecibe":"Sofía recibirá tu mensaje."}});</script>
 </body>
 </html>

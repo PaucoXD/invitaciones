@@ -46,7 +46,7 @@
 
   window.Invitacion.registrar({
     id: 'mariposas',
-    evento: 'xv',
+    eventos: ['xv', 'comunion', 'bautizo', 'babyshower', 'cumple'],
     nombre: 'Mariposas Lila',
     descripcion: 'XV años: lavanda, glicinas colgantes y mariposas que vuelan.',
     colores: ['#efe6f8', '#b39ad9', '#5e4682', '#d9b86a'],

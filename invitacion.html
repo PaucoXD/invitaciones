@@ -12,6 +12,7 @@
     invitacion.html?b=valeria-santiago      → carga bodas/valeria-santiago.js
     invitacion.html?plantilla=boho          → cambia la plantilla
     invitacion.html?plantilla=princesa      → XV años de ejemplo (princesa, mariposas, gala)
+    invitacion.html?plantilla=nube&evento=bautizo → ejemplo de otro tipo de evento
     &invitado=Familia%20López&pases=4       → personaliza para cada invitado
 -->
 <script src="motor/invitacion.js"></script>
@@ -25,8 +26,10 @@
 <script src="plantillas/xv-princesa.js"></script>
 <script src="plantillas/xv-mariposas.js"></script>
 <script src="plantillas/xv-gala.js"></script>
+<script src="plantillas/nube.js"></script>
 <script src="bodas/ejemplo.js"></script>
 <script src="bodas/ejemplo-xv.js"></script>
+<script src="bodas/ejemplos-eventos.js"></script>
 </head>
 <body>
 <script>
@@ -60,8 +63,11 @@
     s.onerror = function () { document.body.innerHTML = '<p style="font-family:sans-serif;padding:40px;text-align:center">No se encontró la invitación “' + slug + '”.</p>'; };
     document.head.appendChild(s);
   } else {
+    // Ejemplo según el tipo de evento (?evento=bautizo) o el primero del diseño elegido
     var pl = Invitacion.plantillas[q.get('plantilla')];
-    mostrar(pl && pl.evento === 'xv' && window.INVITACION_XV ? window.INVITACION_XV : window.INVITACION);
+    var ev = q.get('evento') || (pl && pl.eventos && pl.eventos[0]) || 'boda';
+    if (pl && pl.eventos && pl.eventos.indexOf(ev) < 0) ev = pl.eventos[0];
+    mostrar(window.ejemploDe ? window.ejemploDe(ev) || window.INVITACION : window.INVITACION);
   }
 })();
 </script>
