@@ -27,6 +27,12 @@ window.NEGOCIO = {
     nota: 'Escribe tu folio en el concepto de la transferencia.'
   },
 
+  // Dirección pública de tu sitio (termina en /). Cuando tengas dominio propio cámbiala, por ejemplo:
+  // sitio: 'https://tudominio.com/',   (manual, sección 4.5)
+  sitio: 'https://paucoxd.github.io/invitaciones/',
+  // Repositorio donde el botón "🌐 Publicar" del editor sube las invitaciones (carpeta i/)
+  github: { usuario: 'PaucoXD', repo: 'invitaciones', rama: 'main', carpeta: 'i' },
+
   // Dirección de tu app de Google para confirmaciones (termina en /exec). Se pone UNA vez y sirve para todas las bodas:
   // así los novios entran a su panel solo con su código y clave.
   hojaConfirmaciones: 'https://script.google.com/macros/s/AKfycbzBNchkRqstwXF31RO4tGv38apvbSu14B8-AepNKcMX9DRieMhzax7MEiRrR8DS_DQFXA/exec',

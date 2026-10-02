@@ -125,10 +125,11 @@
   <a class="sub" href="#video">Video para estados</a>
   <a class="sub" href="#vistas">Quién abrió su invitación</a>
   <a href="#publicar">4. Publicar y enviar</a>
-  <a class="sub" href="#subir">Subir la invitación</a>
+  <a class="sub" href="#subir">Publicar la invitación</a>
   <a class="sub" href="#enlaces">Enlaces por familia</a>
   <a class="sub" href="#pdf">PDF</a>
   <a class="sub" href="#acceso-novios">Acceso de los novios</a>
+  <a class="sub" href="#dominio">Tu propio dominio</a>
   <a href="#cambios">5. Cambios después de enviada</a>
   <a href="#seguimiento">6. Seguimiento: Mis bodas y panel</a>
   <a href="#ventas">7. Tu página de ventas</a>
@@ -248,7 +249,7 @@
     <tr><td><span class="btn">💾 Guardar datos</span></td><td>Descarga el archivo <code>.json</code> de esta boda. <b>Es tu respaldo.</b> Hazlo cada vez que termines o cambies algo.</td></tr>
     <tr><td><span class="btn">👥 Enlaces de invitados</span></td><td>Genera un enlace distinto para cada familia y te deja mandarlo por WhatsApp.</td></tr>
     <tr><td><span class="btn">📄 PDF</span></td><td>Crea la versión para imprimir o mandar a quienes no usan internet.</td></tr>
-    <tr><td><span class="btn">⬇ Descargar invitación</span></td><td>Descarga la invitación terminada (un archivo <code>.html</code>) para publicarla.</td></tr>
+    <tr><td><span class="btn">🌐 Publicar</span></td><td>Sube la invitación a tu sitio y te da su enlace (sección 4.1). Ahí mismo está <b>⬇ Descargar archivo</b> si la quieres como archivo <code>.html</code>.</td></tr>
     <tr><td><b>Celular / Computadora</b></td><td>Cambia cómo se ve la vista previa.</td></tr>
     <tr><td><b>Ver sobre de entrada</b></td><td>Muestra la animación del sobre en la vista previa.</td></tr>
     <tr><td><b>Ver como</b></td><td>Muestra la invitación como la verá una familia en particular (su nombre, lugares, mesa).</td></tr>
@@ -391,21 +392,28 @@
 <section id="publicar">
   <h2><span class="n">4</span>Publicar y enviar</h2>
 
-  <h3 id="subir">4.1 Subir la invitación a internet</h3>
-  <p>Primero, en el editor: <span class="btn">💾 Guardar datos</span> (respaldo) y luego <span class="btn">⬇ Descargar invitación</span>. Obtienes un archivo como <code>valeria-y-santiago.html</code>.</p>
-  <h4>Opción recomendada: en tu mismo sitio de GitHub</h4>
+  <h3 id="subir">4.1 Publicar la invitación (botón 🌐 Publicar)</h3>
+  <p>Con el botón <span class="btn">🌐 Publicar</span> del editor la invitación se sube sola a tu sitio y te da su enlace. No hay que descargar ni subir archivos a mano.</p>
+  <h4>La primera vez: tu llave de GitHub</h4>
   <ol class="pasos">
-    <li>Entra a tu repositorio → carpeta <a href="https://github.com/PaucoXD/invitaciones/tree/main/i" target="_blank" rel="noopener"><code>i</code></a> (de "invitaciones publicadas").</li>
-    <li>Da clic en <span class="btn">Add file</span> → <b>Upload files</b> y arrastra el archivo <code>.html</code>.</li>
-    <li>Da clic en <span class="btn">Commit changes</span>.</li>
-    <li>En 1 a 3 minutos quedará en: <code>https://paucoxd.github.io/invitaciones/i/valeria-y-santiago.html</code></li>
+    <li>En el editor toca <span class="btn">🌐 Publicar</span> y abre <b>🔑 Llave de GitHub</b>.</li>
+    <li>Toca el enlace <b>Fine-grained token</b> (entra con tu cuenta de GitHub).</li>
+    <li>Nombre: <code>publicar invitaciones</code> · Expiración: <b>1 año</b>.</li>
+    <li><b>Repository access</b> → <i>Only select repositories</i> → elige <b>PaucoXD/invitaciones</b>.</li>
+    <li><b>Permissions → Repository permissions → Contents</b> → <b>Read and write</b>.</li>
+    <li><span class="btn">Generate token</span>, cópialo, pégalo en el editor y toca <span class="btn">Guardar llave</span>. Debe decir “✓ Llave guardada”.</li>
   </ol>
-  <div class="caja tip"><b>Nombre del archivo = dirección</b>El nombre del archivo es parte del enlace. Usa nombres cortos, sin espacios ni acentos (el editor ya los genera así).</div>
-  <h4>Otras opciones</h4>
-  <ul>
-    <li><b>Netlify</b> (<a href="https://app.netlify.com/drop" target="_blank" rel="noopener">app.netlify.com/drop</a>): arrastras el archivo y te da un enlace. Crea una cuenta gratis para que no se borre.</li>
-    <li><b>Dominio propio</b> (ej. <code>tumarca.com</code>): se puede conectar a GitHub Pages o Netlify más adelante.</li>
-  </ul>
+  <div class="caja ojo"><b>Cuida tu llave</b>Es como una contraseña: no la mandes por WhatsApp ni la pegues en otro lado. Se guarda solo en el navegador donde la pegaste (en otra computadora la tienes que pegar otra vez). Si crees que alguien la vio, bórrala en GitHub (Settings → Developer settings → Personal access tokens) y crea otra. Cuando venza (al año), el editor te avisará: solo crea una nueva.</div>
+  <h4>Cada invitación</h4>
+  <ol class="pasos">
+    <li>Toca <span class="btn">🌐 Publicar</span>. El nombre del archivo ya viene puesto (ej. <code>valeria-y-santiago</code>); es parte del enlace.</li>
+    <li>Si quieres, marca <b>Publicar también “Aparta la fecha”</b>.</li>
+    <li>Toca <span class="btn">🌐 Publicar</span>. En 1 o 2 minutos queda en línea: <code>https://paucoxd.github.io/invitaciones/i/valeria-y-santiago.html</code></li>
+    <li>Desde ahí puedes <span class="btn">📋 Copiar enlace</span>, mandarlo por WhatsApp o ir a <span class="btn">👥 Enlaces de invitados</span> (ya usa esa dirección).</li>
+  </ol>
+  <div class="caja tip"><b>¿Hiciste cambios?</b>Vuelve a tocar <span class="btn">🌐 Publicar</span> con el mismo nombre: se reemplaza la invitación y <b>el enlace no cambia</b>. Los invitados ven la versión nueva (a veces hay que recargar la página).</div>
+  <h4>Sin el botón (a mano)</h4>
+  <p>En la ventana de Publicar toca <span class="btn">⬇ Descargar archivo</span>. Luego en GitHub: carpeta <a href="https://github.com/PaucoXD/invitaciones/tree/main/i" target="_blank" rel="noopener"><code>i</code></a> → <span class="btn">Add file</span> → <b>Upload files</b> → arrastra el <code>.html</code> → <span class="btn">Commit changes</span>.</p>
   <div class="caja ojo"><b>Repositorio público</b>Tu repositorio de GitHub es público: cualquiera con el enlace puede ver los archivos que subas. No incluyas datos sensibles en las invitaciones (las claves de los paneles NO van dentro de la invitación).</div>
 
   <h3 id="enlaces">4.2 Enviar un enlace a cada familia</h3>
@@ -432,6 +440,25 @@
     <li>Pégalo en WhatsApp a los novios. Incluye un enlace directo (un toque y entran), el código y la clave.</li>
     <li>Recomiéndales agregarlo a su pantalla de inicio: iPhone → Compartir → "Agregar a inicio"; Android → menú ⋮ → "Agregar a la pantalla principal".</li>
   </ol>
+
+  <h3 id="dominio">4.5 Cuando tengas tu propio dominio</h3>
+  <p>Tu sitio puede verse como <code>https://tudominio.com</code> en lugar de <code>paucoxd.github.io/invitaciones</code>. Se sigue usando GitHub Pages (gratis); solo pagas el dominio (unos $200 a $400 al año en GoDaddy, Namecheap, Hostinger, Google/Squarespace, etc.).</p>
+  <ol class="pasos">
+    <li><b>Antes del cambio</b>, en el editor guarda los borradores que tengas a medias con <span class="btn">💾 Guardar datos</span> (el navegador guarda las cosas por dirección: con el dominio nuevo empieza vacío).</li>
+    <li>Compra el dominio. En el panel donde lo compraste, en <b>DNS</b>, agrega:
+      <table>
+        <tr><th>Tipo</th><th>Nombre</th><th>Valor</th></tr>
+        <tr><td>A</td><td>@</td><td><code>185.199.108.153</code></td></tr>
+        <tr><td>A</td><td>@</td><td><code>185.199.109.153</code></td></tr>
+        <tr><td>A</td><td>@</td><td><code>185.199.110.153</code></td></tr>
+        <tr><td>A</td><td>@</td><td><code>185.199.111.153</code></td></tr>
+        <tr><td>CNAME</td><td>www</td><td><code>paucoxd.github.io</code></td></tr>
+      </table></li>
+    <li>En GitHub: tu repositorio → <b>Settings → Pages → Custom domain</b> → escribe <code>tudominio.com</code> → <b>Save</b>. Cuando aparezca la palomita verde (puede tardar de minutos a un día), activa <b>Enforce HTTPS</b>.</li>
+    <li>En <code>negocio.js</code> cambia <code>sitio</code> a <code>'https://tudominio.com/'</code> (sin <code>/invitaciones</code>). Desde ese momento, el botón Publicar, los enlaces de invitados, el PDF y el formulario usan tu dominio.</li>
+    <li>Entra una vez a <code>https://tudominio.com/mis-bodas.html</code> con tu clave y vuelve a pegar tu llave de GitHub en el editor.</li>
+  </ol>
+  <div class="caja tip"><b>Los enlaces que ya mandaste siguen sirviendo</b>GitHub redirige solo: <code>paucoxd.github.io/invitaciones/i/valeria-y-santiago.html</code> → <code>tudominio.com/i/valeria-y-santiago.html</code>. Tus confirmaciones de Google Sheets no cambian.</div>
 </section>
 
 <!-- 5 -->
@@ -441,8 +468,8 @@
   <ol class="pasos">
     <li>Abre el editor → <span class="btn">📂 Abrir</span> → elige el <code>.json</code> de esa boda.</li>
     <li>Haz el cambio y revisa en la vista previa.</li>
-    <li><span class="btn">💾 Guardar datos</span> (respaldo actualizado) → <span class="btn">⬇ Descargar invitación</span>.</li>
-    <li>En GitHub, carpeta <code>i</code> → <b>Add file → Upload files</b> → sube el archivo <b>con el mismo nombre</b> → Commit. Reemplaza al anterior y el enlace sigue igual.</li>
+    <li><span class="btn">💾 Guardar datos</span> (respaldo actualizado) → <span class="btn">🌐 Publicar</span> con el mismo nombre.</li>
+    <li>Se reemplaza la invitación anterior y el enlace sigue igual (a mano: sube el archivo a la carpeta <code>i</code> con el mismo nombre).</li>
     <li>Si cambiaste la lista de invitados y tienen confirmaciones automáticas: <b>Sincronizar lista de invitados</b>. A las familias nuevas mándales su enlace.</li>
   </ol>
   <div class="caja ojo"><b>No cambies</b> el ID de la boda ni la clave del panel después de enviar la invitación.</div>

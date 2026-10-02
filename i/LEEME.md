@@ -1,7 +1,7 @@
 # Invitaciones publicadas
 
-Sube aquí las invitaciones terminadas (el archivo `.html` que descargas del editor):
-**Add file → Upload files → Commit changes**.
+El botón **🌐 Publicar** del editor sube aquí las invitaciones solo (manual, sección 4.1).
+A mano: descarga el `.html` desde la ventana de Publicar y aquí **Add file → Upload files → Commit changes**.
 
 Quedan en: `https://paucoxd.github.io/invitaciones/i/NOMBRE-DEL-ARCHIVO.html`
 
