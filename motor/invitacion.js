@@ -1247,7 +1247,10 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
   /** HTML final de un solo archivo, listo para subir a cualquier hosting. */
   function exportarHTML(datos, opciones = {}) {
     const r = construir(datos, Object.assign({ rutaAdornos: null }, opciones));
-    const dJson = JSON.stringify(r.d).replace(/</g, '\\u003c');
+    // La página publicada no lleva datos privados: ni la lista de invitados (nombres y teléfonos) ni datos del editor.
+    // Cada familia recibe su nombre, lugares y mesa en su propio enlace (?invitado=…&pases=…&mesa=…).
+    const pub = Object.assign({}, r.d, { invitados: [], publicado: undefined, encuadres: undefined });
+    const dJson = JSON.stringify(pub).replace(/</g, '\\u003c');
     return `<!DOCTYPE html>
 <html lang="es">
 <head>
