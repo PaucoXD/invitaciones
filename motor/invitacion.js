@@ -984,6 +984,13 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
     function recordar(v) { try { localStorage.setItem(claveLocal, JSON.stringify(v)); } catch (e) {} }
     function recordado() { try { return JSON.parse(localStorage.getItem(claveLocal)); } catch (e) { return null; } }
 
+    // ¿Quién abrió su invitación? Se avisa a la hoja una vez por visita (no en vistas previas ni en "Aparta la fecha")
+    if (usarHoja && invitado && !d._aparta) {
+      var claveVista = 'inv-vista:' + C.boda + ':' + invitado, yaVista = false;
+      try { yaVista = !!sessionStorage.getItem(claveVista); sessionStorage.setItem(claveVista, '1'); } catch (e) {}
+      if (!yaVista) aHoja({ accion: 'vista', nombre: invitado });
+    }
+
     // Pase de entrada con QR (necesita la librería de QR incluida en la página)
     var acc = $('[data-acceso-qr]');
     if (acc && invitado && C.boda && W.qrcode) {

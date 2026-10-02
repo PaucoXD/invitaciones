@@ -10,19 +10,22 @@
  *   Entradas       → quién llegó el día del evento (registro con el pase QR desde entrada.html)
  *   Pedidos        → los datos que mandan los clientes desde pedido.html (el archivo completo,
  *                    con fotos, se guarda en la carpeta "Pedidos de invitaciones" de tu Google Drive)
+ *                    y el pago del anticipo (comprobante que sube el cliente, o "Pagado" desde Mis bodas)
+ *   Vistas         → quién abrió su invitación personalizada, cuántas veces y cuándo
  * La clave de "Mis bodas" (tu panel de administrador) se guarda en las propiedades del script, no en la hoja.
  */
 window.CODIGO_SHEETS = String.raw`// ===== Confirmaciones de invitaciones — pegar en Extensiones → Apps Script =====
 // Después: Implementar → Nueva implementación → App web → Ejecutar como: Yo → Acceso: Cualquier persona.
 // ¿Actualizando? Implementar → Administrar implementaciones → ✏️ → Versión: "Nueva versión" → Implementar (la URL no cambia).
 
-var VERSION = 5;
+var VERSION = 6;
 
 var ENC_CONF = ['Fecha', 'Boda', 'Tipo', 'Invitado', 'Asiste', 'Personas', 'Mensaje', 'Lugares', 'Mesa'];
 var ENC_INV = ['Boda', 'Invitado', 'Lugares', 'Mesa', 'Teléfono'];
 var ENC_BODAS = ['Boda', 'Clave', 'Creada', 'Nombres', 'Fecha'];
 var ENC_ENT = ['Fecha', 'Boda', 'Invitado', 'Personas', 'Registró'];
-var ENC_PED = ['Recibido', 'Pedido', 'Cliente', 'WhatsApp', 'Evento', 'Nombres', 'Fecha del evento', 'Diseño', 'Paquete', 'Archivo', 'Estado'];
+var ENC_PED = ['Recibido', 'Pedido', 'Cliente', 'WhatsApp', 'Evento', 'Nombres', 'Fecha del evento', 'Diseño', 'Paquete', 'Archivo', 'Estado', 'Pago', 'Comprobante'];
+var ENC_VIS = ['Boda', 'Invitado', 'Primera vez', 'Última vez', 'Veces'];
 var CARPETA_PEDIDOS = 'Pedidos de invitaciones';
 
 function hoja_(nombre, encabezados) {
@@ -65,6 +68,8 @@ function resumen_() {
   if (hb) hb.getDataRange().getValues().slice(1).forEach(function (r) { var x = b(String(r[0])); x.clave = String(r[1]); x.creada = r[2] instanceof Date ? r[2].toISOString() : String(r[2] || ''); x.nombres = String(r[3] || ''); x.fecha = r[4] instanceof Date ? Utilities.formatDate(r[4], 'GMT', 'yyyy-MM-dd') : String(r[4] || ''); });
   var hi = ss.getSheetByName('Invitados');
   if (hi) hi.getDataRange().getValues().slice(1).forEach(function (r) { var x = b(String(r[0])); x.invitaciones++; x.lugares += Number(r[2]) || 0; x._inv[norm_(r[1])] = true; });
+  var hv = ss.getSheetByName('Vistas');
+  if (hv) hv.getDataRange().getValues().slice(1).forEach(function (r) { var x = b(String(r[0])); x._vis = x._vis || {}; x._vis[norm_(r[1])] = true; });
   var hc = ss.getSheetByName('Confirmaciones');
   if (hc) hc.getDataRange().getValues().slice(1).forEach(function (r) {
     var x = b(String(r[1])), f = r[0] instanceof Date ? r[0].toISOString() : String(r[0]);
@@ -79,7 +84,8 @@ function resumen_() {
     var enLista = Object.keys(x._rsvp).filter(function (k) { return x._inv[k]; }).length;
     x.pendientes = Math.max(0, x.invitaciones - enLista);
     x.llegaron = 0; Object.keys(x._ent || {}).forEach(function (k) { x.llegaron += x._ent[k]; });
-    delete x._inv; delete x._rsvp; delete x._ent;
+    x.abrieron = Object.keys(x._vis || {}).filter(function (k) { return x._inv[k]; }).length;
+    delete x._inv; delete x._rsvp; delete x._ent; delete x._vis;
     return x;
   });
 }
@@ -97,7 +103,7 @@ function guardarPedido_(texto) {
   // El formulario manda el nombre del evento ya armado ("Bautizo de Mateo"); si no, se arma aquí
   var nombres = p.titulo || (d.evento && d.evento !== 'boda' ? (d.evento === 'xv' ? 'XV años de ' : '') + (d.festejada || '') : (d.novia || '') + ' & ' + (d.novio || ''));
   hoja_('Pedidos', ENC_PED).appendRow([new Date(), id, texto_(c.nombre, 120), texto_(c.tel, 30), texto_(p.eventoNombre || (d.evento === 'xv' ? 'XV años' : 'Boda'), 40),
-    texto_(nombres, 120), texto_(d.fecha, 20), texto_(d.plantilla, 40), texto_(c.paquete, 60), archivo.getId(), 'Nuevo']);
+    texto_(nombres, 120), texto_(d.fecha, 20), texto_(d.plantilla, 40), texto_(c.paquete, 60), archivo.getId(), 'Nuevo', 'Pendiente', '']);
   return { ok: true, pedido: id };
 }
 function pedidos_() {
@@ -105,7 +111,8 @@ function pedidos_() {
   if (!h) return [];
   return h.getDataRange().getValues().slice(1).map(function (r) {
     return { recibido: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), pedido: String(r[1]), cliente: String(r[2]), tel: String(r[3]), evento: String(r[4]),
-      nombres: String(r[5]), fecha: r[6] instanceof Date ? Utilities.formatDate(r[6], 'GMT', 'yyyy-MM-dd') : String(r[6] || ''), plantilla: String(r[7]), paquete: String(r[8]), estado: String(r[10] || 'Nuevo') };
+      nombres: String(r[5]), fecha: r[6] instanceof Date ? Utilities.formatDate(r[6], 'GMT', 'yyyy-MM-dd') : String(r[6] || ''), plantilla: String(r[7]), paquete: String(r[8]), estado: String(r[10] || 'Nuevo'),
+      pago: String(r[11] || 'Pendiente'), comprobante: String(r[12] || '') };
   }).reverse();
 }
 function leerPedido_(id) {
@@ -117,6 +124,41 @@ function leerPedido_(id) {
     return JSON.parse(DriveApp.getFileById(String(v[i][9])).getBlob().getDataAsString());
   }
   return null;
+}
+/** Fila (1 = encabezado) del pedido en la hoja "Pedidos", o 0 si no existe. */
+function filaPedido_(id) {
+  var h = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Pedidos');
+  if (!h || !id) return 0;
+  var v = h.getDataRange().getValues();
+  for (var i = 1; i < v.length; i++) if (String(v[i][1]) === String(id)) return i + 1;
+  return 0;
+}
+/** El cliente sube la foto o PDF de su transferencia: se guarda en Drive junto al pedido. */
+function guardarComprobante_(d) {
+  var fila = filaPedido_(d.pedido);
+  if (!fila) return { ok: false, error: 'No encontramos ese folio' };
+  var m = /^data:(image\/(?:png|jpeg|webp|heic)|application\/pdf);base64,(.+)$/.exec(String(d.archivo || ''));
+  if (!m) return { ok: false, error: 'Manda una foto o un PDF' };
+  if (m[2].length > 14 * 1024 * 1024) return { ok: false, error: 'El archivo es muy grande (máximo 10 MB)' };
+  var it = DriveApp.getFoldersByName(CARPETA_PEDIDOS);
+  var carpeta = it.hasNext() ? it.next() : DriveApp.createFolder(CARPETA_PEDIDOS);
+  var ext = m[1] === 'application/pdf' ? 'pdf' : m[1].split('/')[1].replace('jpeg', 'jpg');
+  var archivo = carpeta.createFile(Utilities.newBlob(Utilities.base64Decode(m[2]), m[1], 'comprobante-' + texto_(d.pedido, 20) + '.' + ext));
+  var h = hoja_('Pedidos', ENC_PED);
+  h.getRange(fila, 12, 1, 2).setValues([['Comprobante recibido', archivo.getUrl()]]);
+  return { ok: true };
+}
+/** Registra que un invitado abrió su invitación (una fila por invitado). */
+function guardarVista_(boda, nombre) {
+  nombre = texto_(nombre, 120);
+  if (!nombre) return { ok: false };
+  var h = hoja_('Vistas', ENC_VIS), v = h.getDataRange().getValues(), k = norm_(nombre), ahora = new Date();
+  for (var i = 1; i < v.length; i++) if (String(v[i][0]) === boda && norm_(v[i][1]) === k) {
+    h.getRange(i + 1, 4, 1, 2).setValues([[ahora, (Number(v[i][4]) || 0) + 1]]);
+    return { ok: true };
+  }
+  h.appendRow([boda, nombre, ahora, ahora, 1]);
+  return { ok: true };
 }
 function filas_(nombre, boda, colBoda) {
   var h = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(nombre);
@@ -137,8 +179,19 @@ function doPost(e) {
   try {
     if (e.postData.contents.indexOf('"tipo":"pedido-invitacion"') >= 0 && e.postData.contents.indexOf('"tipo":"pedido-invitacion"') < 40) return json_(guardarPedido_(e.postData.contents));
     var d = JSON.parse(e.postData.contents);
+    if (d.accion === 'comprobante') return json_(guardarComprobante_(d));
+    if (d.accion === 'pago') {
+      // Desde Mis bodas: marcar el anticipo como pagado (o regresarlo a pendiente)
+      if (!adminCorrecto_(d.clave)) return json_({ ok: false, error: 'Clave de administrador incorrecta' });
+      var fp = filaPedido_(d.pedido);
+      if (!fp) return json_({ ok: false, error: 'No se encontró ese pedido' });
+      hoja_('Pedidos', ENC_PED).getRange(fp, 12).setValue(texto_(d.pago, 40) || 'Pendiente');
+      return json_({ ok: true });
+    }
     var boda = texto_(d.boda, 80);
     if (!boda) return json_({ ok: false, error: 'Falta el ID de la boda' });
+
+    if (d.accion === 'vista') return json_(guardarVista_(boda, d.nombre));
 
     if (d.accion === 'entrada') {
       // Registro en la puerta: la última fila de cada invitado es la que vale (0 = se deshizo)
@@ -189,6 +242,6 @@ function doGet(e) {
   }
   var boda = texto_(p.boda, 80);
   if (!boda || !claveCorrecta_(boda, p.clave, false)) return json_({ ok: false, error: 'ID de boda o clave incorrectos' });
-  return json_({ ok: true, version: VERSION, confirmaciones: filas_('Confirmaciones', boda, 1), invitados: filas_('Invitados', boda, 0), entradas: filas_('Entradas', boda, 1) });
+  return json_({ ok: true, version: VERSION, confirmaciones: filas_('Confirmaciones', boda, 1), invitados: filas_('Invitados', boda, 0), entradas: filas_('Entradas', boda, 1), vistas: filas_('Vistas', boda, 0) });
 }
 `;

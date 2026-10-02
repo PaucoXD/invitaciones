@@ -55,6 +55,9 @@
   .b{border:1px solid var(--line);background:var(--card);padding:7px 12px;border-radius:9px;cursor:pointer;font-weight:500;font-size:12.5px;text-decoration:none;display:inline-flex;gap:5px;align-items:center}
   .b:hover{background:#faf7f3}
   .b.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+  .pago{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;background:#efe8df;color:var(--muted)}
+  .pago.ok{background:var(--ok-bg);color:var(--ok)}.pago.pend{background:var(--pend-bg);color:var(--pend)}
+  .pago-ver{font-size:12px;color:var(--accent);margin-left:4px}
   .pedidos{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:18px}
   .ped-cab{display:flex;align-items:center;gap:10px;margin-bottom:10px}
   .ped-cab h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:24px;margin-right:auto}
@@ -106,8 +109,8 @@
     const f = (n) => { const d = hoy(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
     const h = (n) => new Date(Date.now() - n * 36e5).toISOString();
     return [
-      { boda: 'valeria-y-santiago-ab12', clave: 'q7k2m9', nombres: 'Valeria & Santiago', fecha: f(9), invitaciones: 62, lugares: 180, respondidas: 47, confirmadas: 41, personas: 128, no: 6, pendientes: 15, deseos: 23, canciones: 12, ultima: h(2) },
-      { boda: 'ana-y-luis-x9z1', clave: 'zz11yy', nombres: 'Ana & Luis', fecha: f(34), invitaciones: 40, lugares: 110, respondidas: 12, confirmadas: 11, personas: 30, no: 1, pendientes: 28, deseos: 5, canciones: 3, ultima: h(20) },
+      { boda: 'valeria-y-santiago-ab12', clave: 'q7k2m9', nombres: 'Valeria & Santiago', fecha: f(9), invitaciones: 62, lugares: 180, respondidas: 47, confirmadas: 41, personas: 128, no: 6, pendientes: 15, deseos: 23, canciones: 12, abrieron: 55, ultima: h(2) },
+      { boda: 'ana-y-luis-x9z1', clave: 'zz11yy', nombres: 'Ana & Luis', fecha: f(34), invitaciones: 40, lugares: 110, respondidas: 12, confirmadas: 11, personas: 30, no: 1, pendientes: 28, deseos: 5, canciones: 3, abrieron: 21, ultima: h(20) },
       { boda: 'mariana-y-diego-k3p0', clave: 'abc123', nombres: 'Mariana & Diego', fecha: f(76), invitaciones: 85, lugares: 240, respondidas: 0, confirmadas: 0, personas: 0, no: 0, pendientes: 85, deseos: 0, canciones: 0, ultima: '' },
       { boda: 'sofia-y-andres-m2q8', clave: 'zxc987', nombres: 'Sofía & Andrés', fecha: f(-12), invitaciones: 55, lugares: 150, respondidas: 53, confirmadas: 49, personas: 141, no: 4, pendientes: 2, deseos: 31, canciones: 18, llegaron: 133, ultima: h(400) }
     ];
@@ -115,8 +118,8 @@
   function demoPedidos() {
     const h = (n) => new Date(Date.now() - n * 36e5).toISOString(), f = (n) => { const d = hoy(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
     return [
-      { recibido: h(3), pedido: '261001-a1b2', cliente: 'Claudia Herrera', tel: '3312345678', evento: 'XV años', nombres: 'XV años de Sofía', fecha: f(120), plantilla: 'princesa', paquete: 'Premium', estado: 'Nuevo' },
-      { recibido: h(50), pedido: '260929-c3d4', cliente: 'Ana Pérez', tel: '5512345678', evento: 'Boda', nombres: 'Ana & Luis', fecha: f(34), plantilla: 'vino', paquete: 'Personalizada', estado: 'Abierto' }
+      { recibido: h(3), pedido: '261001-a1b2', cliente: 'Claudia Herrera', tel: '3312345678', evento: 'XV años', nombres: 'XV años de Sofía', fecha: f(120), plantilla: 'princesa', paquete: 'Premium', estado: 'Nuevo', pago: 'Comprobante recibido', comprobante: '#' },
+      { recibido: h(50), pedido: '260929-c3d4', cliente: 'Ana Pérez', tel: '5512345678', evento: 'Boda', nombres: 'Ana & Luis', fecha: f(34), plantilla: 'vino', paquete: 'Personalizada', estado: 'Abierto', pago: 'Pagado' }
     ];
   }
   const entradaUrl = (b) => { const p = new URLSearchParams({ b: b.boda, k: b.clave }); if (cfg.url !== N.hojaConfirmaciones) p.set('u', cfg.url); return cfg.demo ? 'entrada.html?demo=1' : new URL('entrada.html?' + p, location.href).href; };
@@ -129,7 +132,8 @@
     if (!pedidos.length) return '';
     const nuevos = pedidos.filter(p => p.estado === 'Nuevo').length;
     const lista = verPedidos ? pedidos : pedidos.slice(0, 3);
-    const PL = { floral: 'Floral Romántica', rustica: 'Rústica Campestre', boho: 'Boho Terracota', dorada: 'Elegante Negro y Dorado', vino: 'Vino y Olivo', botanica: 'Jardín Botánico', princesa: 'Princesa Rosa', mariposas: 'Mariposas Lila', gala: 'Noche de Gala' };
+    const PL = { floral: 'Floral Romántica', rustica: 'Rústica Campestre', boho: 'Boho Terracota', dorada: 'Elegante Negro y Dorado', vino: 'Vino y Olivo', botanica: 'Jardín Botánico', princesa: 'Princesa Rosa', mariposas: 'Mariposas Lila', gala: 'Noche de Gala', nube: 'Cielo Tierno', paloma: 'Paloma', caliz: 'Cáliz', globos: 'Globos', confeti: 'Confeti' };
+    const PAGO = { 'Pagado': ['ok', '✓ Anticipo pagado'], 'Comprobante recibido': ['pend', '📎 Comprobante recibido · revisa tu banco'], 'Pendiente': ['', '💳 Anticipo pendiente'] };
     return `<section class="pedidos"><div class="ped-cab"><h2>📝 Pedidos de clientes ${nuevos ? `<span class="nuevo">${nuevos} ${nuevos === 1 ? 'nuevo' : 'nuevos'}</span>` : ''}</h2>
         ${pedidos.length > 3 ? `<button class="b" id="ver-ped">${verPedidos ? 'Ver menos' : `Ver los ${pedidos.length}`}</button>` : ''}</div>
       <div class="ped-lista">${lista.map(p => {
@@ -137,9 +141,12 @@
         return `<article class="ped ${p.estado === 'Nuevo' ? 'es-nuevo' : ''}">
           <div><b>${esc(p.nombres || p.cliente)}</b><small>${esc(p.evento)} · ${esc(fechaLarga(p.fecha))}</small>
           <small>${esc(p.cliente)}${p.paquete ? ' · ' + esc(p.paquete) : ''}${PL[p.plantilla] ? ' · ' + PL[p.plantilla] : ''}</small>
-          <small>Recibido ${new Date(p.recibido).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })} · Folio ${esc(p.pedido)} · ${esc(p.estado)}</small></div>
+          <small>Recibido ${new Date(p.recibido).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })} · Folio ${esc(p.pedido)} · ${esc(p.estado)}</small>
+          ${version >= 6 || cfg.demo ? `<span class="pago ${(PAGO[p.pago] || PAGO.Pendiente)[0]}">${(PAGO[p.pago] || PAGO.Pendiente)[1]}</span>${p.comprobante ? ` <a class="pago-ver" href="${esc(p.comprobante)}" target="_blank" rel="noopener">Ver comprobante</a>` : ''}` : ''}</div>
           <div class="acc">${cfg.demo ? '<span class="b pri" title="En el ejemplo no se abre">✎ Abrir en el editor</span>' : `<a class="b pri" href="editor.html?pedido=${encodeURIComponent(p.pedido)}">✎ Abrir en el editor</a>`}
-            ${wa ? `<a class="b" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}</div>
+            ${wa ? `<a class="b" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
+            ${version >= 6 || cfg.demo ? (p.pago === 'Pagado' ? `<button class="b" data-pago="${esc(p.pedido)}" data-v="Pendiente">Deshacer pago</button>`
+              : `<button class="b" data-pago="${esc(p.pedido)}" data-v="Pagado">✓ Marcar pagado</button><button class="b" data-cobrar="${esc(p.pedido)}" data-paq="${esc(p.paquete)}" data-tel="${esc(wa)}">💳 Enlace de pago</button>`) : ''}</div>
         </article>`;
       }).join('')}</div></section>`;
   }
@@ -207,7 +214,7 @@
           <div class="t ok"><b>${sum(prox, 'personas')}</b><span>personas confirmadas (próximas)</span></div>
           <div class="t pend"><b>${sum(prox, 'pendientes')}</b><span>invitaciones sin responder</span></div>
         </div>
-        ${version < 5 ? '<p class="demo">Hay una versión nueva del código de Google (pedidos de todos los tipos de evento, pase de entrada con QR). Actualízalo: manual, sección 3.0.</p>' : ''}
+        ${!cfg.demo && version < 6 ? '<p class="demo">Hay una versión nueva del código de Google (quién abrió cada invitación y pago del anticipo). Actualízalo: manual, sección 3.0.</p>' : ''}
         ${seccionPedidos()}
         <div class="filtros">
           ${[['proximas', 'Próximas'], ['pasadas', 'Pasadas'], ['todas', 'Todas']].map(([k, t]) => `<button class="chip ${filtro === k ? 'on' : ''}" data-f="${k}">${t}</button>`).join('')}
@@ -228,6 +235,7 @@
                 <span class="d">${b.respondidas}/${total || '?'} respondieron</span>
                 ${b.pendientes ? `<span class="d pend">${b.pendientes} ${b.pendientes === 1 ? 'pendiente' : 'pendientes'}</span>` : ''}
                 ${b.no ? `<span class="d no">${b.no} no ${b.no === 1 ? 'asiste' : 'asisten'}</span>` : ''}
+                ${b.abrieron != null && total ? `<span class="d" title="Invitaciones personalizadas que ya se abrieron">👀 ${b.abrieron}/${total} abrieron</span>` : ''}
                 ${b.llegaron ? `<span class="d ok">🚪 ${b.llegaron} llegaron</span>` : ''}
                 ${b.deseos ? `<span class="d">💌 ${b.deseos}</span>` : ''}${b.canciones ? `<span class="d">🎵 ${b.canciones}</span>` : ''}
               </div>
@@ -249,6 +257,22 @@
     app.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { filtro = b.dataset.f; pintar(); });
     document.getElementById('b-form').onclick = copiarFormulario;
     const vp = document.getElementById('ver-ped'); if (vp) vp.onclick = () => { verPedidos = !verPedidos; pintar(); };
+    app.querySelectorAll('[data-pago]').forEach(b => b.onclick = async () => {
+      const p = pedidos.find(x => x.pedido === b.dataset.pago); if (!p) return;
+      if (cfg.demo) { p.pago = b.dataset.v; return pintar(); }
+      b.disabled = true;
+      try {
+        const r = await (await fetch(cfg.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'pago', clave: cfg.clave, pedido: p.pedido, pago: b.dataset.v }) })).json();
+        if (!r.ok) throw new Error(r.error);
+        p.pago = b.dataset.v; pintar(); avisar(p.pago === 'Pagado' ? 'Anticipo marcado como pagado ✓' : 'Pago regresado a pendiente');
+      } catch (e) { b.disabled = false; avisar('No se pudo guardar: ' + (e.message || 'sin conexión')); }
+    });
+    app.querySelectorAll('[data-cobrar]').forEach(b => b.onclick = () => {
+      const u = new URL('pedido.html', location.href); u.searchParams.set('pagar', b.dataset.cobrar); if (b.dataset.paq) u.searchParams.set('paquete', b.dataset.paq);
+      const msg = `¡Hola! 💌 Para apartar tu invitación, aquí puedes pagar el anticipo o subir tu comprobante de transferencia:\n\n👉 ${u.href}`;
+      if (b.dataset.tel) window.open('https://wa.me/' + b.dataset.tel + '?text=' + encodeURIComponent(msg), '_blank');
+      else navigator.clipboard.writeText(msg).then(() => avisar('Mensaje con el enlace de pago copiado ✓'));
+    });
     const bus = document.getElementById('buscar');
     bus.oninput = (e) => { busqueda = e.target.value; const pos = e.target.selectionStart; pintar(); const x = document.getElementById('buscar'); x.focus(); x.setSelectionRange(pos, pos); };
     document.getElementById('b-act').onclick = () => cargar().then(() => avisar('Actualizado ✓'));
