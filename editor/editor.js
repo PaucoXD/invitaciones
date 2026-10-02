@@ -846,23 +846,30 @@
   }
   /** Descarga un pedido del formulario en partes (con fotos pesa varios MB). */
   async function descargarPedido(url, clave, id, progreso) {
-    const pedir = async (n) => {
-      const t = await (await fetch(`${url}${url.includes('?') ? '&' : '?'}accion=pedido&id=${encodeURIComponent(id)}&clave=${encodeURIComponent(clave)}&parte=${n}&t=${Date.now()}`)).text();
-      return leerRespuesta(t);
-    };
+    const base = `${url}${url.includes('?') ? '&' : '?'}accion=pedido&id=${encodeURIComponent(id)}&clave=${encodeURIComponent(clave)}`;
     // Primero se pregunta la versión del código de Google (respuesta chiquita): así se sabe si falta actualizarlo
     let v = 0;
-    try { v = leerRespuesta(await (await fetch(`${url}${url.includes('?') ? '&' : '?'}accion=ping&t=${Date.now()}`)).text()).version || 0; } catch (e) { /* se intenta de todos modos */ }
-    if (v && v < 9) throw new Error(`Tu Google todavía usa el código versión ${v}. Copia el código otra vez (debe decir versión 9), pégalo en Apps Script y en Implementar → Administrar implementaciones → ✏️ elige “Nueva versión” → Implementar.`);
-    const r = await pedir(0);
-    if (!r.ok) throw new Error(/boda o clave/i.test(r.error || '') ? 'tu código de Google es de una versión anterior; actualízalo (manual, sección 3.0)' : r.error);
-    if (r.pedido) return r.pedido; // código de Google anterior (todo de una vez)
-    let texto = r.texto;
-    for (let n = 1; n < r.partes; n++) {
-      if (progreso) progreso(n, r.partes);
-      const x = await pedir(n);
-      if (!x.ok) throw new Error(x.error || 'No se pudo leer una parte del pedido');
-      texto += x.texto;
+    try { v = leerRespuesta(await (await fetch(`${url}${url.includes('?') ? '&' : '?'}accion=ping&t=${Date.now()}`, { cache: 'no-store' })).text()).version || 0; } catch (e) { /* se intenta de todos modos */ }
+    if (v && v < 10) throw new Error(`Tu Google todavía usa el código versión ${v}. Copia el código otra vez (debe decir versión 10), pégalo en Apps Script y en Implementar → Administrar implementaciones → ✏️ elige “Nueva versión” → Implementar.`);
+    // Se pide el pedido por pedazos; si Google rechaza un pedazo (página HTML), se vuelve a pedir a la mitad del tamaño
+    let tam = 200000, desde = 0, total = Infinity, texto = '', fallos = 0, ultimo = '';
+    while (desde < total) {
+      let r = null;
+      try {
+        const t = await (await fetch(`${base}&desde=${desde}&tam=${tam}&t=${Date.now()}`, { cache: 'no-store' })).text();
+        try { r = JSON.parse(t); } catch (e) { ultimo = (new DOMParser().parseFromString(t, 'text/html').body.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120); }
+      } catch (e) { ultimo = e.message || 'sin conexión'; }
+      if (r && !r.ok) throw new Error(/boda o clave/i.test(r.error || '') ? 'tu código de Google es de una versión anterior; actualízalo (manual, sección 3.0)' : r.error);
+      if (r && r.pedido) return r.pedido; // código de Google muy anterior (todo de una vez)
+      if (!r || r.total == null) {
+        if (++fallos > 8) throw new Error(`Google no pudo mandar el pedido (pedazo desde ${Math.round(desde / 1024)} KB, de ${tam / 1000} KB): “${ultimo}”. Plan B: en Mis bodas toca “⬇ Archivo” y ábrelo aquí con 📂 Abrir.`);
+        tam = Math.max(20000, Math.floor(tam / 2));
+        await new Promise(ok => setTimeout(ok, 600));
+        continue;
+      }
+      total = r.total; texto += r.texto; desde += r.texto.length; fallos = 0;
+      if (!r.texto.length) break;
+      if (progreso) progreso(Math.min(desde, total), total);
     }
     return JSON.parse(texto);
   }

@@ -18,7 +18,7 @@ window.CODIGO_SHEETS = String.raw`// ===== Confirmaciones de invitaciones — pe
 // Después: Implementar → Nueva implementación → App web → Ejecutar como: Yo → Acceso: Cualquier persona.
 // ¿Actualizando? Implementar → Administrar implementaciones → ✏️ → Versión: "Nueva versión" → Implementar (la URL no cambia).
 
-var VERSION = 9;
+var VERSION = 10;
 
 var ENC_CONF = ['Fecha', 'Boda', 'Tipo', 'Invitado', 'Asiste', 'Personas', 'Mensaje', 'Lugares', 'Mesa'];
 var ENC_INV = ['Boda', 'Invitado', 'Lugares', 'Mesa', 'Teléfono'];
@@ -112,7 +112,7 @@ function pedidos_() {
   return h.getDataRange().getValues().slice(1).map(function (r) {
     return { recibido: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), pedido: String(r[1]), cliente: String(r[2]), tel: String(r[3]), evento: String(r[4]),
       nombres: String(r[5]), fecha: r[6] instanceof Date ? Utilities.formatDate(r[6], 'GMT', 'yyyy-MM-dd') : String(r[6] || ''), plantilla: String(r[7]), paquete: String(r[8]), estado: String(r[10] || 'Nuevo'),
-      pago: String(r[11] || 'Pendiente'), comprobante: String(r[12] || '') };
+      pago: String(r[11] || 'Pendiente'), comprobante: String(r[12] || ''), archivo: String(r[9] || '') };
   }).reverse();
 }
 function leerPedido_(id) {
@@ -258,7 +258,12 @@ function doGet_(e) {
     if (!adminCorrecto_(p.clave)) return json_({ ok: false, error: 'Clave de administrador incorrecta' });
     var ped = leerPedido_(p.id);
     if (!ped) return json_({ ok: false, error: 'No se encontró ese pedido' });
-    // Con fotos el pedido pesa varios MB y Google no puede mandarlo de una vez: se manda en partes de ~600 KB
+    // Con fotos el pedido pesa varios MB y Google no puede mandarlo de una vez: se manda en pedazos.
+    // La página pide "desde" y "tam" (y achica el pedazo si Google falla); "parte" es del código anterior.
+    if (p.desde != null) {
+      var desde = Math.max(0, Number(p.desde) || 0), tam = Math.min(Math.max(Number(p.tam) || 200000, 20000), 1500000);
+      return json_({ ok: true, total: ped.length, desde: desde, texto: ped.slice(desde, desde + tam) });
+    }
     var TAM = 600000, partes = Math.max(1, Math.ceil(ped.length / TAM)), n = Math.min(Math.max(0, Number(p.parte) || 0), partes - 1);
     return json_({ ok: true, partes: partes, parte: n, texto: ped.slice(n * TAM, (n + 1) * TAM) });
   }

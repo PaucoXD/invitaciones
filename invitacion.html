@@ -70,23 +70,29 @@
     else {
       aviso('Cargando la invitación del pedido ' + folio + '…<br><small style="color:#756b61">Con fotos puede tardar unos segundos.</small>', true);
       var base = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'accion=pedido&id=' + encodeURIComponent(folio) + '&clave=' + encodeURIComponent(ses.clave);
-      var leer = function (n) {
-        return fetch(base + '&parte=' + n + '&t=' + Date.now()).then(function (r) { return r.text(); })
-          .then(function (t) { try { return JSON.parse(t); } catch (e) { throw new Error('Google respondió con un error. Si ya tienes la versión 9, en Apps Script ejecuta la función “probarPedido” para ver el error exacto.'); } })
-          .then(function (r) { if (!r.ok) throw new Error(r.error || 'error'); return r; });
-      };
-      fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'accion=ping&t=' + Date.now()).then(function (r) { return r.json(); }).catch(function () { return {}; })
-      .then(function (pg) { if (pg.version && pg.version < 9) throw new Error('tu Google todavía usa el código versión ' + pg.version + '. Actualízalo a la versión 9 (manual, sección 3.0).'); return leer(0); })
-      .then(function (r) {
-        if (r.pedido) return r.pedido;
-        var texto = r.texto, n = 1;
-        var siguiente = function () {
-          if (n >= r.partes) return JSON.parse(texto);
-          aviso('Cargando la invitación del pedido ' + folio + '…<br><small style="color:#756b61">Descargando fotos… ' + Math.round(n / r.partes * 100) + '%</small>', true);
-          return leer(n++).then(function (x) { texto += x.texto; return siguiente(); });
-        };
-        return siguiente();
-      }).then(function (p) { mostrar(p.datos); })
+      (async function () {
+        var pg = {};
+        try { pg = await (await fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'accion=ping&t=' + Date.now(), { cache: 'no-store' })).json(); } catch (e) {}
+        if (pg.version && pg.version < 10) throw new Error('tu Google todavía usa el código versión ' + pg.version + '. Actualízalo a la versión 10 (manual, sección 3.0).');
+        // Por pedazos; si Google rechaza uno, se pide a la mitad del tamaño
+        var tam = 200000, desde = 0, total = Infinity, texto = '', fallos = 0;
+        while (desde < total) {
+          var r = null;
+          try { r = JSON.parse(await (await fetch(base + '&desde=' + desde + '&tam=' + tam + '&t=' + Date.now(), { cache: 'no-store' })).text()); } catch (e) { r = null; }
+          if (r && !r.ok) throw new Error(r.error || 'error');
+          if (r && r.pedido) return r.pedido;
+          if (!r || r.total == null) {
+            if (++fallos > 8) throw new Error('Google no pudo mandar el pedido. Plan B: en Mis bodas toca “⬇ Archivo” y ábrelo en el editor con 📂 Abrir.');
+            tam = Math.max(20000, Math.floor(tam / 2));
+            await new Promise(function (ok) { setTimeout(ok, 600); });
+            continue;
+          }
+          total = r.total; texto += r.texto; desde += r.texto.length; fallos = 0;
+          if (!r.texto.length) break;
+          aviso('Cargando la invitación del pedido ' + folio + '…<br><small style="color:#756b61">Descargando fotos… ' + Math.round(Math.min(desde, total) / total * 100) + '%</small>', true);
+        }
+        return JSON.parse(texto);
+      })().then(function (p) { mostrar(p.datos); })
         .catch(function (e) { aviso('No se pudo cargar el pedido: ' + (e.message || 'sin conexión') + '<br><br><a href="" style="color:#8e3b4a">Reintentar</a>'); });
     }
   } else if (slug) {
