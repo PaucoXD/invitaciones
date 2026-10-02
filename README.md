@@ -78,6 +78,13 @@ celular: avisa si ya entró, si no está en la lista o si es de otro evento; tam
 varios celulares a la vez y guarda los registros si se va la señal. Requiere Confirmaciones automáticas y el código
 de Google versión 4.
 
+## Libro de recuerdos (paquete)
+
+Después del evento, en el editor (sección **Libro de recuerdos**) se descarga un PDF con el diseño de la invitación:
+portada, su día en números, todos los buenos deseos con nombre y fecha, las canciones más pedidas, la lista de
+quienes asistieron y las fotos. Lee los mensajes de Google Sheets (Confirmaciones automáticas). **Ver ejemplo**
+arma uno con mensajes ficticios para enseñarlo a tus clientes.
+
 ## Invitación en PDF
 
 Para quienes no se llevan bien con la tecnología: botón **📄 PDF** en el editor.

@@ -157,6 +157,23 @@
     if (w) w.location.href = url; else window.open(url, '_blank');
   }
 
+  /** Mensajes ficticios para enseñar el libro de recuerdos. */
+  function libroEjemplo() {
+    const inv = (datos.invitados || []).filter(x => x.nombre).map(x => x.nombre);
+    const nombres = inv.length >= 6 ? inv : ['Familia López', 'Tía Carmen', 'Ana y Luis Pérez', 'Familia Hernández', 'Los Martínez', 'Abuelos Ramírez', 'Familia Torres', 'Valentina Ruiz'];
+    const textos = xv() ? ['¡Felicidades en tus XV! Que la vida te sonría siempre como hoy. Te queremos mucho.', 'Fue una noche mágica. Gracias por dejarnos ser parte de este día tan especial.', 'Nunca olvides lo mucho que te quieren. ¡Brillaste en el vals!', 'Que cumplas todos tus sueños, princesa. Con cariño de tus tíos.', '¡Qué fiesta! Bailamos hasta el final. Felicidades.', 'Te vimos crecer y hoy estamos muy orgullosos de ti.']
+      : ['Que su amor crezca cada día un poquito más. ¡Gracias por dejarnos ser parte de este día!', 'Fue la boda más bonita. Les deseamos toda la felicidad del mundo.', 'Gracias por la invitación tan especial. ¡Que vivan los novios!', 'Que nunca les falte la risa ni la paciencia. Los queremos mucho.', 'Bailamos hasta que cerraron la pista. ¡Felicidades!', 'Su historia apenas comienza y ya es hermosa. Con cariño, sus tíos.'];
+    const ahora = Date.now(), dia = 864e5;
+    const confirmaciones = [];
+    nombres.forEach((n, i) => {
+      confirmaciones.push({ Fecha: new Date(ahora - (30 - i) * dia).toISOString(), Tipo: 'rsvp', Invitado: n, Asiste: i === 4 ? 'No' : 'Sí', Personas: i === 4 ? '' : 2 + (i % 3), Mensaje: i % 3 === 0 ? textos[(i + 2) % textos.length] : '' });
+      if (i < textos.length) confirmaciones.push({ Fecha: new Date(ahora - (2 - i * .1) * dia).toISOString(), Tipo: 'deseo', Invitado: n, Mensaje: textos[i] });
+    });
+    ['Payaso de rodeo — Caballo Dorado', 'La Bikina — Luis Miguel', 'Vivir mi vida — Marc Anthony', 'Payaso de rodeo — Caballo Dorado', 'Mi gente — J Balvin', 'La Bikina — Luis Miguel', 'Payaso de rodeo — Caballo Dorado', 'Celebration — Kool & The Gang']
+      .forEach((m, i) => confirmaciones.push({ Fecha: new Date(ahora - (10 - i) * dia).toISOString(), Tipo: 'cancion', Invitado: nombres[i % nombres.length], Mensaje: m }));
+    return { ok: true, confirmaciones, invitados: nombres.map(n => ({ Invitado: n, Lugares: 3 })), entradas: nombres.filter((n, i) => i !== 4).map(n => ({ Fecha: new Date().toISOString(), Invitado: n, Personas: 3 })) };
+  }
+
   function campo(def, base) {
     if (def.solo && def.solo !== (datos.evento || 'boda')) return null;
     if (def.fila) return el('div', { class: 'fila' }, def.fila.map(x => campo(x, base)).filter(Boolean));
@@ -263,6 +280,35 @@
           const t = window.CODIGO_SHEETS || '';
           (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => avisar('Código copiado ✓ Pégalo en Apps Script'), () => descargar('confirmaciones.gs', t, 'text/plain'));
         } }, '📋 Copiar código para Google Sheets'));
+    } else if (t === 'libro') {
+      const estado = el('p', { class: 'conf-estado' });
+      const marcar = (txt, ok) => { estado.textContent = txt; estado.className = 'conf-estado ' + (ok ? 'ok' : 'mal'); };
+      const hacer = async (ejemplo) => {
+        const c = datos.confirmaciones || {};
+        let info;
+        if (ejemplo) info = libroEjemplo();
+        else {
+          if (!c.url || !c.boda || !c.clave) { marcar('Este evento no tiene “Confirmaciones automáticas”, así que no hay mensajes guardados. Usa “Ver ejemplo”.', false); return; }
+          marcar('Leyendo los mensajes de Google Sheets…', true);
+          try {
+            info = await (await fetch(`${c.url}${c.url.includes('?') ? '&' : '?'}boda=${encodeURIComponent(c.boda)}&clave=${encodeURIComponent(c.clave)}&t=${Date.now()}`)).json();
+            if (!info.ok) { marcar('La hoja no reconoce este evento. Toca “Sincronizar lista de invitados” en “Confirmaciones automáticas”.', false); return; }
+          } catch (e) { marcar('No se pudo conectar con Google Sheets.', false); return; }
+        }
+        marcar('Armando el libro… (puede tardar unos segundos)', true);
+        try {
+          const r = await Invitacion.pdf.libro(datos, info);
+          descargar(`libro-de-recuerdos-${slug()}${ejemplo ? '-ejemplo' : ''}.pdf`, r.blob, 'application/pdf');
+          const L = r.resumen;
+          marcar(`✓ Libro descargado: ${r.paginas} páginas · ${L.deseos} mensajes · ${L.canciones.length} canciones · ${L.asistentes.length} invitaciones en la lista de asistentes.${!L.deseos && !ejemplo ? ' Todavía no hay buenos deseos: el libro se ve mejor después del evento.' : ''}`, true);
+        } catch (e) { console.error(e); marcar('No se pudo generar el libro: ' + e.message, false); }
+      };
+      return el('div', {},
+        el('div', { class: 'conf-herr' },
+          el('button', { class: 'b chico', type: 'button', onclick: () => hacer(false) }, '📖 Descargar libro de recuerdos'),
+          el('button', { class: 'b chico', type: 'button', onclick: () => hacer(true) }, '👀 Ver ejemplo')),
+        estado,
+        el('p', { class: 'ayuda' }, 'Usa los mensajes que llegaron con “Confirmaciones automáticas” (buenos deseos y los mensajes de la confirmación), las canciones sugeridas y, si usaron el pase de entrada, quiénes llegaron. “Ver ejemplo” arma uno con mensajes ficticios para enseñarlo a tus clientes.'));
     } else if (t === 'accesoHerramientas') {
       const c = datos.confirmaciones || {};
       if (!c.url || !c.boda) return el('p', { class: 'conf-estado mal' }, 'Primero llena “Confirmaciones automáticas” (dirección de Google e ID) y sincroniza la lista de invitados.');
@@ -609,6 +655,9 @@
       { k: 'acceso.activo', t: 'check', repintar: true, texto: 'Activar pase de entrada con QR', ayuda: 'Cada familia ve en su invitación un pase con su nombre, lugares y un código QR. El día del evento, en la puerta, se escanea con el celular para registrar quién llegó. Necesita “Confirmaciones automáticas”.' },
       { k: 'acceso.texto', l: 'Texto debajo del código (opcional)', ph: 'Presenta este código en la entrada' },
       { t: 'accesoHerramientas' }] },
+    { sec: 'Libro de recuerdos ✦ paquete', campos: [
+      { t: 'nota', texto: 'Después del evento: un PDF con el diseño de la invitación que junta los buenos deseos de los invitados, las canciones más pedidas, la lista de quienes asistieron y las fotos. Un recuerdo para regalar o imprimir.' },
+      { t: 'libro' }] },
     { sec: 'Hospedaje', campos: [
       { k: 'hospedaje', t: 'lista', boton: 'Agregar hotel', nuevo: { nombre: '', nota: '', direccion: '', mapa: '' }, item: [
         { k: 'nombre', l: 'Hotel' }, { k: 'nota', l: 'Nota (tarifa, código, distancia)', ph: 'Código: BODAVS' }, { k: 'direccion', t: 'area', l: 'Dirección' }, { k: 'mapa', t: 'url', l: 'Enlace de Google Maps (opcional)' }] }] },

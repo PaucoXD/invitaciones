@@ -110,6 +110,22 @@
 .pl-mesa{position:absolute;width:9%;height:12%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid var(--linea);background:var(--fondo);display:flex;align-items:center;justify-content:center;font-family:var(--f-etiqueta);font-size:9px;color:var(--suave)}
 .pl-mesa.rect{width:15%;height:9.5%;border-radius:3px}
 .pl-mesa.tuya{background:var(--acento2);border-color:var(--acento2);color:var(--fondo);font-weight:700}
+.lib-num{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;max-width:440px;margin:10px auto 0}
+.lib-num div{flex:0 0 128px}
+.lib-num div{border:1px solid var(--linea);background:var(--tarjeta,transparent);padding:14px 10px;border-radius:4px}
+.lib-num b{display:block;font-family:var(--f-titulo);font-weight:400;font-size:42px;line-height:1;color:var(--titulo,var(--tinta))}
+.lib-num span{font-family:var(--f-etiqueta);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--acento)}
+.lib-msg{position:relative;border:1px solid var(--linea);background:var(--tarjeta,transparent);padding:16px 20px 14px 34px;border-radius:4px;text-align:left}
+.lib-msg::before{content:"“";position:absolute;left:10px;top:2px;font-family:Georgia,serif;font-size:44px;line-height:1;color:var(--acento);opacity:.55}
+.lib-msg p{font-style:italic;font-size:14.5px;line-height:1.5;white-space:pre-line}
+.lib-msg b{display:block;margin-top:8px;font-family:var(--f-etiqueta);font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--acento)}
+.lib-msg small{font-family:var(--f-etiqueta);font-size:8.5px;letter-spacing:.1em;color:var(--suave);font-weight:400;text-transform:none;letter-spacing:0;margin-left:6px}
+.lib-can{list-style:none;max-width:420px;margin:0 auto;text-align:left;counter-reset:c}
+.lib-can li{display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px dotted var(--linea);font-size:13.5px;counter-increment:c}
+.lib-can li::before{content:counter(c);font-family:var(--f-titulo);font-size:18px;color:var(--acento);min-width:24px}
+.lib-can li span{flex:1}.lib-can li em{font-style:normal;font-size:11px;color:var(--suave)}
+.lib-nombres{columns:2;column-gap:28px;text-align:left;font-size:13px;max-width:440px;margin:6px auto 0}
+.lib-nombres p{break-inside:avoid;padding:2px 0;border-bottom:1px dotted var(--linea)}
 `;
 
   function construir(datos, opc = {}) {
@@ -201,7 +217,7 @@
       mesa = pagina(`<div class="pdf-bloque"><p class="pdf-eye">Su lugar</p><h2>${esc(inv.nombre)}</h2><p style="font-style:italic;color:var(--suave)">te esperamos en la</p><p class="pdf-mesa-num">${esc(etqMesa(inv.mesa))}</p>${hay(d.mesas.texto) ? `<p>${br(d.mesas.texto)}</p>` : ''}${plano}</div>`, 'pdf-chico');
     }
 
-    return { d, p, css: `.pdf-raiz{${varsDe(p)}}` + CSS, fuentes: p.fuentes || '', portada, bloques: B, mesa, pagina: (c) => pagina(c, 'pdf-chico') };
+    return { d, p, css: `.pdf-raiz{${varsDe(p)}}` + CSS, fuentes: p.fuentes || '', portada, bloques: B, mesa, pagina: (c) => pagina(c, 'pdf-chico'), paginaCon: pagina };
   }
 
   function fechaTexto(iso) {
@@ -357,5 +373,81 @@
     return zip.generateAsync({ type: 'blob' });
   }
 
-  I.pdf = { construir, generar, generarTodos };
+  // ---------------------------------------------------------------------------
+  // Libro de recuerdos: buenos deseos, canciones y asistentes, con el diseño de la invitación
+  // info = lo que devuelve la hoja de Google: { confirmaciones, invitados, entradas }
+  // ---------------------------------------------------------------------------
+  const normN = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+  function datosLibro(info) {
+    const conf = (info.confirmaciones || []).slice().sort((a, b) => new Date(a.Fecha) - new Date(b.Fecha));
+    const vistos = new Set(), mensajes = [];
+    conf.forEach(c => {
+      const t = String(c.Mensaje || '').trim(); if (!t || (c.Tipo === 'cancion')) return;
+      const k = normN(c.Invitado) + '|' + normN(t); if (vistos.has(k)) return; vistos.add(k);
+      mensajes.push({ texto: t.slice(0, 900), nombre: String(c.Invitado || '').trim(), fecha: c.Fecha, rsvp: (c.Tipo || 'rsvp') === 'rsvp' });
+    });
+    const can = new Map();
+    conf.filter(c => c.Tipo === 'cancion' && String(c.Mensaje || '').trim()).forEach(c => {
+      const t = String(c.Mensaje).trim(), k = normN(t).replace(/[^a-z0-9 ]/g, '');
+      const x = can.get(k) || { titulo: t, veces: 0 }; x.veces++; can.set(k, x);
+    });
+    const canciones = [...can.values()].sort((a, b) => b.veces - a.veces).slice(0, 30);
+    const rsvp = new Map(); conf.filter(c => (c.Tipo || 'rsvp') === 'rsvp').forEach(c => rsvp.set(normN(c.Invitado), c));
+    const ent = new Map(); (info.entradas || []).slice().sort((a, b) => new Date(a.Fecha) - new Date(b.Fecha)).forEach(e => ent.set(normN(e.Invitado), +e.Personas || 0));
+    const llegaron = [...ent.values()].reduce((a, b) => a + b, 0);
+    let asistentes;
+    if (llegaron) asistentes = [...ent.entries()].filter(([, n]) => n > 0).map(([k]) => ((info.invitados || []).find(i => normN(i.Invitado) === k) || {}).Invitado || ((info.entradas || []).find(e => normN(e.Invitado) === k) || {}).Invitado);
+    else asistentes = [...rsvp.values()].filter(c => c.Asiste !== 'No').map(c => c.Invitado);
+    asistentes = [...new Set(asistentes.filter(Boolean).map(x => String(x).trim()))].sort((a, b) => a.localeCompare(b, 'es'));
+    const confirmadas = [...rsvp.values()].filter(c => c.Asiste !== 'No').reduce((a, c) => a + (+c.Personas || 0), 0);
+    return { mensajes, canciones, asistentes, llegaron, confirmadas, invitaciones: (info.invitados || []).length, deseos: mensajes.length, nCanciones: conf.filter(c => c.Tipo === 'cancion').length };
+  }
+  function construirLibro(datos, info, fotos) {
+    const base = construir(datos, { fotos });
+    const d = base.d, f = I.fechaInfo(d), xv = S.esXV(d), L = datosLibro(info);
+    const nombres = xv ? esc(d.festejada) : `${esc(d.novia)}<i>&amp;</i>${esc(d.novio)}`;
+    const portada = base.paginaCon(`
+      ${fotos.portada ? `<img class="pp-foto" src="${fotos.portada}" alt="">` : ''}
+      <p class="pp-eye">Libro de recuerdos</p>
+      <h1 class="pp-nombres">${nombres}</h1>
+      <div class="pp-fecha"><span>${f.diaSemana}</span><b>${f.dia}</b><span>${f.anio}</span></div>
+      <p class="pp-mes">${f.mes}${hay(d.ciudad) ? ' · ' + esc(d.ciudad) : ''}</p>
+      <p class="pp-frase">${xv ? 'Las palabras de quienes me acompañaron en mis XV años' : 'Las palabras de quienes nos acompañaron en nuestra boda'}</p>`, 'pdf-portada');
+    const B = [], bloque = (h) => B.push(`<div class="pdf-bloque">${h}</div>`);
+    const num = (n, t) => n ? `<div><b>${n}</b><span>${t}</span></div>` : '';
+    bloque(`<p class="pdf-eye">${xv ? 'Mi día' : 'Nuestro día'}</p><h2>En números</h2><div class="lib-num">
+      ${num(L.invitaciones, 'invitaciones')}${num(L.confirmadas, 'personas confirmaron')}${num(L.llegaron, 'personas llegaron')}${num(L.deseos, 'mensajes')}${num(L.nCanciones, 'canciones sugeridas')}${num(L.asistentes.length && !L.llegaron ? L.asistentes.length : 0, 'familias confirmaron')}</div>`);
+    if (L.mensajes.length) {
+      bloque(`<p class="pdf-eye">Con cariño</p><h2>Buenos deseos</h2><p style="font-style:italic;color:var(--suave)">${xv ? 'Lo que me escribieron' : 'Lo que nos escribieron'} nuestros invitados</p>`.replace('nuestros invitados', xv ? 'mis invitados' : 'nuestros invitados'));
+      L.mensajes.forEach(m => bloque(`<div class="lib-msg"><p>${esc(m.texto)}</p><b>${esc(m.nombre || 'Un invitado')}${m.fecha && !isNaN(new Date(m.fecha)) ? `<small>${new Date(m.fecha).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}</small>` : ''}</b></div>`));
+    }
+    if (L.canciones.length) bloque(`<p class="pdf-eye">La pista</p><h2>Las canciones de la fiesta</h2><ol class="lib-can">${L.canciones.map(c => `<li><span>${esc(c.titulo)}</span>${c.veces > 1 ? `<em>×${c.veces}</em>` : ''}</li>`).join('')}</ol>`);
+    if (L.asistentes.length) {
+      const titulo = `<p class="pdf-eye">Gracias por ${xv ? 'acompañarme' : 'acompañarnos'}</p><h2>${L.llegaron ? 'Estuvieron con ' + (xv ? 'migo' : 'nosotros') : 'Confirmaron su asistencia'}</h2>`.replace('con migo', 'conmigo');
+      for (let i = 0; i < L.asistentes.length; i += 40) bloque(`${i === 0 ? titulo : ''}<div class="lib-nombres">${L.asistentes.slice(i, i + 40).map(n => `<p>${esc(n)}</p>`).join('')}</div>`);
+    }
+    const gal = fotos.galeria || [];
+    if (gal.length) {
+      const figs = (l) => `<div class="pdf-galeria">${l.map(g => `<figure><img src="${g.src}" width="${g.w}" height="${g.h}" style="width:${g.w}px;height:${g.h}px" alt="">${hay(g.pie) ? `<figcaption>${esc(g.pie)}</figcaption>` : ''}</figure>`).join('')}</div>`;
+      for (let i = 0; i < gal.length; i += 6) bloque(`${i === 0 ? `<p class="pdf-eye">Momentos</p><h2>${esc(d.historia.titulo || '')}</h2>` : ''}${figs(gal.slice(i, i + 6))}`);
+    }
+    bloque(`<h2 style="margin-top:8px">${esc(d.despedida)}</h2><p class="pp-nombres" style="font-size:40px">${nombres}</p><p class="pdf-eye">${f.corta}</p>`);
+    return Object.assign({}, base, { portada, bloques: B, mesa: '', resumen: L });
+  }
+  /** PDF del libro de recuerdos. Devuelve { blob, resumen }. */
+  async function libro(datos, info) {
+    await prepararLibs(false);
+    const fotos = await prepararFotos(datos);
+    const r = construirLibro(datos, info || {}, fotos);
+    const cont = prepararRaiz(r);
+    const t = document.createElement('div'); t.innerHTML = r.portada; cont.appendChild(t.firstElementChild);
+    paginar(r, cont);
+    await esperarImagenes(cont);
+    const imgs = [];
+    for (const pag of cont.querySelectorAll('.pdf-pag')) imgs.push(await aImagen(pag));
+    cont.innerHTML = '';
+    return { blob: armarPdf(imgs).output('blob'), resumen: r.resumen, paginas: imgs.length };
+  }
+
+  I.pdf = { construir, generar, generarTodos, libro };
 })();
