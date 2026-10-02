@@ -47,7 +47,7 @@ lo abres con **📂 Abrir**. Enlaces útiles: `pedido.html?evento=xv`, `pedido.h
 1. Abre `editor.html` en el navegador (doble clic funciona).
 2. Elige el diseño arriba y llena las secciones: nombres, fecha, lugares, fotos, regalos, WhatsApp…
 3. **Guardar datos** → descarga un `.json` para poder editar esa boda después (**Abrir**).
-4. **Descargar invitación** → un solo archivo `.html` con todo incluido (fotos, música, diseño).
+4. **🌐 Publicar** → sube la invitación a `i/` del repositorio con la API de GitHub (llave fine-grained con *Contents: Read and write*, guardada solo en el navegador) y da su enlace. **⬇ Descargar archivo** (en la misma ventana) baja el `.html` con todo incluido. La dirección pública sale de `NEGOCIO.sitio` (cámbiala al tener dominio propio).
 5. Súbelo a internet. Opciones gratis: [Netlify Drop](https://app.netlify.com/drop) (arrastras el archivo),
    GitHub Pages o Vercel. Con dominio propio queda como `tunegocio.com/valeria-y-santiago`.
 6. **Enlaces de invitados** → pega la dirección publicada y la lista `Nombre | lugares`.

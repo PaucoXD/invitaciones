@@ -887,6 +887,95 @@
   });
 
   // ---------------------------------------------------------------------------
+  // Publicar en el sitio (GitHub Pages) con la API de GitHub
+  // ---------------------------------------------------------------------------
+  const GH = Object.assign({ usuario: 'PaucoXD', repo: 'invitaciones', rama: 'main', carpeta: 'i' }, (window.NEGOCIO && NEGOCIO.github) || {});
+  const SITIO = ((window.NEGOCIO && NEGOCIO.sitio) || `https://${GH.usuario.toLowerCase()}.github.io/${GH.repo}/`).replace(/\/?$/, '/');
+  const CLAVE_TOKEN = 'gh-token-publicar';
+  const tokenGH = () => { try { return localStorage.getItem(CLAVE_TOKEN) || ''; } catch (e) { return ''; } };
+  const nombreArchivo = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'invitacion';
+  const urlDe = (n, aparta) => `${SITIO}${GH.carpeta}/${n}${aparta ? '-aparta-la-fecha' : ''}.html`;
+  function aBase64(texto) {
+    const b = new TextEncoder().encode(texto); let s = '';
+    for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000));
+    return btoa(s);
+  }
+  async function errorGH(r) {
+    let m = ''; try { m = (await r.json()).message || ''; } catch (e) { /* sin detalle */ }
+    if (r.status === 401) return new Error('La llave de GitHub no es válida o ya venció. Crea una nueva (🔑 Llave de GitHub).');
+    if (r.status === 403 || r.status === 404) return new Error(`La llave no tiene permiso para escribir en ${GH.usuario}/${GH.repo}. Revisa que tenga ese repositorio y “Contents: Read and write”.`);
+    if (r.status === 413 || r.status === 422) return new Error('GitHub no aceptó el archivo' + (m ? ': ' + m : '') + '. Si tiene muchas fotos, prueba con menos o más ligeras.');
+    return new Error(`GitHub respondió ${r.status}${m ? ': ' + m : ''}`);
+  }
+  async function subirArchivo(ruta, html, mensaje) {
+    const api = `https://api.github.com/repos/${GH.usuario}/${GH.repo}/contents/${ruta}`;
+    const cab = { Authorization: 'Bearer ' + tokenGH(), Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+    for (let intento = 0; intento < 2; intento++) {
+      // Si ya existe se necesita su "sha" para reemplazarlo (así el enlace no cambia)
+      let sha;
+      const g = await fetch(`${api}?ref=${encodeURIComponent(GH.rama)}&t=${Date.now()}`, { headers: cab, cache: 'no-store' });
+      if (g.ok) sha = (await g.json()).sha; else if (g.status !== 404) throw await errorGH(g);
+      const r = await fetch(api, { method: 'PUT', headers: cab, body: JSON.stringify({ message: mensaje, content: aBase64(html), branch: GH.rama, sha }) });
+      if (r.ok) return;
+      if (r.status === 409 && !intento) continue; // alguien lo cambió al mismo tiempo: se reintenta
+      throw await errorGH(r);
+    }
+  }
+  const modalPub = $('#modal-publicar');
+  function pintarLlave() {
+    const t = tokenGH();
+    $('#pub-llave-estado').textContent = t ? '· guardada ✓' : '· falta (solo la primera vez)';
+    $('#pub-llave').open = !t;
+    $('#pub-repo').textContent = `${GH.usuario}/${GH.repo}`;
+  }
+  function actualizarUrl() {
+    const n = nombreArchivo($('#pub-nombre').value);
+    $('#pub-url').textContent = urlDe(n); $('#pub-url-aparta').textContent = urlDe(n, true);
+  }
+  $('#b-publicar').addEventListener('click', () => {
+    $('#pub-nombre').value = (datos.publicado && datos.publicado.archivo) || slug();
+    $('#pub-estado').textContent = ''; $('#pub-listo').hidden = true;
+    pintarLlave(); actualizarUrl(); modalPub.classList.add('ver');
+  });
+  $('#pub-nombre').addEventListener('input', actualizarUrl);
+  $('#pub-cerrar').addEventListener('click', () => modalPub.classList.remove('ver'));
+  $('#pub-guardar-llave').addEventListener('click', async () => {
+    const t = $('#pub-token').value.trim(); if (!t) return;
+    const est = $('#pub-estado'); est.className = 'conf-estado ok'; est.textContent = 'Probando la llave…';
+    try {
+      const r = await fetch(`https://api.github.com/repos/${GH.usuario}/${GH.repo}`, { headers: { Authorization: 'Bearer ' + t, Accept: 'application/vnd.github+json' } });
+      if (!r.ok) throw await errorGH(r);
+      const j = await r.json();
+      if (j.permissions && !j.permissions.push) throw new Error('La llave puede leer pero no escribir: activa “Contents: Read and write”.');
+      try { localStorage.setItem(CLAVE_TOKEN, t); } catch (e) { /* sin almacenamiento */ }
+      $('#pub-token').value = ''; pintarLlave(); est.textContent = '✓ Llave guardada en este navegador.';
+    } catch (e) { est.className = 'conf-estado mal'; est.textContent = e.message; }
+  });
+  $('#pub-borrar-llave').addEventListener('click', () => { try { localStorage.removeItem(CLAVE_TOKEN); } catch (e) { /* nada */ } pintarLlave(); avisar('Llave borrada de este navegador'); });
+  $('#pub-subir').addEventListener('click', async () => {
+    const est = $('#pub-estado'), btn = $('#pub-subir');
+    if (!tokenGH()) { pintarLlave(); est.className = 'conf-estado mal'; est.textContent = 'Primero guarda tu llave de GitHub (solo la primera vez).'; return; }
+    const n = nombreArchivo($('#pub-nombre').value), aparta = $('#pub-aparta').checked;
+    btn.disabled = true; est.className = 'conf-estado ok'; est.textContent = 'Publicando…'; $('#pub-listo').hidden = true;
+    try {
+      const d = await conAdornos();
+      await subirArchivo(`${GH.carpeta}/${n}.html`, Invitacion.exportarHTML(d), `Publicar invitación: ${quien()}`);
+      if (aparta) { est.textContent = 'Publicando “Aparta la fecha”…'; await subirArchivo(`${GH.carpeta}/${n}-aparta-la-fecha.html`, Invitacion.exportarHTML(d, { aparta: true }), `Publicar aparta la fecha: ${quien()}`); }
+      const url = urlDe(n);
+      datos.publicado = { archivo: n, url, fecha: new Date().toISOString() }; cambio();
+      // Los enlaces de invitados y el PDF usan esta dirección
+      $('#inv-base').value = url; $('#inv-base').dispatchEvent(new Event('input'));
+      est.textContent = '';
+      const link = $('#pub-link'); link.href = url; link.textContent = url + (aparta ? '  ·  ' + urlDe(n, true) : '');
+      $('#pub-wa').href = 'https://wa.me/?text=' + encodeURIComponent(`${EV().emoji} ¡Aquí está tu invitación! ${url}`);
+      $('#pub-listo').hidden = false;
+    } catch (e) { est.className = 'conf-estado mal'; est.textContent = 'No se pudo publicar: ' + (e.message || 'sin conexión'); }
+    btn.disabled = false;
+  });
+  $('#pub-copiar').addEventListener('click', () => navigator.clipboard.writeText($('#pub-link').href).then(() => avisar('Enlace copiado ✓')));
+  $('#pub-enlaces').addEventListener('click', () => { modalPub.classList.remove('ver'); $('#b-invitados').click(); });
+
+  // ---------------------------------------------------------------------------
   // Invitación en PDF
   // ---------------------------------------------------------------------------
   const modalPdf = $('#modal-pdf');

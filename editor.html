@@ -38,6 +38,7 @@
   button,input,select,textarea{font:inherit;color:inherit}
   /* Barra superior */
   .barra{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+  @media (max-width:1500px){.aviso-guardado{display:none}.barra{gap:8px}.barra>.b{padding-left:11px;padding-right:11px}}
   .marca{font-weight:700;font-size:15px;margin-right:auto;display:flex;align-items:center;gap:8px}
   .marca a{color:inherit;text-decoration:none}
   .marca span{font-weight:400;color:var(--muted)}
@@ -81,7 +82,7 @@
   .cuerpo{padding:4px 18px 20px}
   .campo{margin-top:12px}
   .campo>label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px}
-  .campo input[type=text],.campo input[type=date],.campo input[type=time],.campo input[type=number],.campo input[type=url],.campo select,.campo textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--soft);outline:none}
+  .campo input[type=text],.campo input[type=date],.campo input[type=time],.campo input[type=number],.campo input[type=url],.campo input[type=password],.campo input:not([type]),.campo select,.campo textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--soft);outline:none}
   .campo input:focus,.campo select:focus,.campo textarea:focus{border-color:var(--accent);background:#fff}
   .campo textarea{min-height:68px;resize:vertical}
   .ayuda{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.4}
@@ -185,7 +186,7 @@
   <button class="b" id="b-guardar" title="Guardar los datos para editarlos después">💾 <span class="txt">Guardar datos</span></button>
   <button class="b" id="b-invitados" title="Crear enlaces personalizados para cada invitado">👥 <span class="txt">Enlaces de invitados</span></button>
   <button class="b" id="b-pdf" title="Invitación en PDF para imprimir o mandar por WhatsApp">📄 <span class="txt">PDF</span></button>
-  <button class="b pri" id="b-descargar" title="Descargar la invitación lista para publicar">⬇ <span class="txt">Descargar invitación</span></button>
+  <button class="b pri" id="b-publicar" title="Subir la invitación a tu sitio y obtener su enlace">🌐 <span class="txt">Publicar</span></button>
   <input type="file" id="abrir-archivo" accept=".json,application/json" hidden>
 </div>
 
@@ -231,6 +232,40 @@
       <button class="b" id="pdf-cerrar">Cerrar</button>
       <button class="b" id="pdf-todos">📦 Un PDF por invitado (ZIP)</button>
       <button class="b pri" id="pdf-uno">⬇ Descargar PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal-publicar">
+  <div class="caja">
+    <h2>🌐 Publicar invitación</h2>
+    <p>Sube la invitación a tu sitio. En 1 o 2 minutos queda en línea con su enlace, lista para mandar. Si la vuelves a publicar con el mismo nombre, <b>el enlace no cambia</b> y tus clientes ven los cambios.</p>
+    <div class="campo"><label>Nombre del archivo</label><input type="text" id="pub-nombre" placeholder="valeria-y-santiago" autocapitalize="none">
+      <p class="ayuda">Enlace: <b id="pub-url"></b></p></div>
+    <label class="check"><input type="checkbox" id="pub-aparta"> <span>Publicar también “Aparta la fecha”<br><small class="ayuda" id="pub-url-aparta" style="word-break:break-all"></small></span></label>
+    <details id="pub-llave" style="margin-top:14px">
+      <summary><b>🔑 Llave de GitHub</b> <span id="pub-llave-estado" class="ayuda"></span></summary>
+      <ol class="ayuda" style="margin:8px 0 8px 18px;line-height:1.6">
+        <li>Abre <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com → Fine-grained token</a> (con tu sesión de GitHub).</li>
+        <li>Nombre: <code>publicar invitaciones</code>. Expiración: 1 año.</li>
+        <li><b>Repository access</b> → <i>Only select repositories</i> → <b id="pub-repo"></b>.</li>
+        <li><b>Permissions</b> → <i>Repository permissions</i> → <b>Contents: Read and write</b>.</li>
+        <li><b>Generate token</b>, cópialo y pégalo aquí.</li>
+      </ol>
+      <div class="campo"><input type="password" id="pub-token" placeholder="github_pat_…" autocomplete="off"></div>
+      <div class="conf-herr"><button class="b chico" type="button" id="pub-guardar-llave">Guardar llave</button><button class="b chico" type="button" id="pub-borrar-llave">Borrar llave de este navegador</button></div>
+      <p class="ayuda">La llave se guarda solo en este navegador y solo sirve para tu repositorio de invitaciones.</p>
+    </details>
+    <p class="conf-estado" id="pub-estado" role="status"></p>
+    <div id="pub-listo" hidden style="margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#f6fbf7">
+      <p style="margin-bottom:8px">✓ Publicada. Estará lista en 1 o 2 minutos:</p>
+      <p><a id="pub-link" target="_blank" rel="noopener" style="word-break:break-all"></a></p>
+      <div class="conf-herr" style="margin-top:8px"><button class="b chico" type="button" id="pub-copiar">📋 Copiar enlace</button><a class="b chico" id="pub-wa" target="_blank" rel="noopener">💬 Mandar por WhatsApp</a><button class="b chico" type="button" id="pub-enlaces">👥 Enlaces de invitados</button></div>
+    </div>
+    <div class="caja-pie">
+      <button class="b" id="pub-cerrar">Cerrar</button>
+      <button class="b" id="b-descargar" title="Descargar la invitación como archivo .html (para subirla tú)">⬇ Descargar archivo</button>
+      <button class="b pri" id="pub-subir">🌐 Publicar</button>
     </div>
   </div>
 </div>
