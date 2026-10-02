@@ -25,7 +25,7 @@
 
   window.Invitacion.registrar({
     id: 'nube',
-    eventos: ['bautizo', 'comunion', 'babyshower', 'cumple'],
+    eventos: ['bautizo', 'babyshower'],
     nombre: 'Cielo Tierno',
     descripcion: 'Azul cielo pastel, nubes, luna y estrellas colgantes.',
     colores: ['#eaf4fb', '#a9cbe6', '#4f7fa8', '#f2cf7c'],
