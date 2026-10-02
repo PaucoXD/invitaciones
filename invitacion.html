@@ -40,7 +40,7 @@
 (function () {
   var q = new URLSearchParams(location.search);
   var preview = q.has('preview');
-  var opciones = { sinSobre: q.has('sinSobre'), sinAnim: preview };
+  var opciones = { sinSobre: q.has('sinSobre'), sinAnim: preview, aparta: q.has('aparta') };
 
   function mostrar(datos) {
     if (q.get('plantilla')) datos = Object.assign({}, datos, { plantilla: q.get('plantilla') });
@@ -52,7 +52,7 @@
     window.addEventListener('message', function (e) {
       if (!e.data || e.data.tipo !== 'invitacion') return;
       var y = window.scrollY;
-      opciones.sinSobre = !e.data.conSobre;
+      opciones.sinSobre = !e.data.conSobre; opciones.aparta = !!e.data.aparta;
       mostrar(e.data.prueba ? Object.assign({}, e.data.datos, { _prueba: e.data.prueba }) : e.data.datos);
       window.scrollTo(0, y);
     });

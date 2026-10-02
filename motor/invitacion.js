@@ -88,6 +88,12 @@
   const conNombre = (t, d) => String(t || '').replace(/\{n\}/g, titular(d));
   /** Quién celebra: "Valeria & Santiago" o "Sofía". */
   function titular(d) { return unNombre(d) ? (d.festejada || '') : `${d.novia} & ${d.novio}`; }
+  /** Texto de "Aparta la fecha": el que escribió el cliente o uno según el evento. */
+  function apartaTexto(d) {
+    if (d.aparta && hay(d.aparta.texto)) return d.aparta.texto;
+    const E = ev(d), mio = unNombre(d) && E.voz === 'nos' ? delEvento(d) : E.mio;
+    return `${mio.charAt(0).toUpperCase() + mio.slice(1)} ${/^mis /i.test(mio) ? 'serán' : 'será'} el ${fechaInfo(d).larga.toLowerCase()}${hay(d.ciudad) ? ' en ' + d.ciudad : ''}. Muy pronto te llegará la invitación formal.`;
+  }
   /** "la boda de Valeria & Santiago" / "los XV años de Sofía" / "el bautizo de Mateo" */
   const delEvento = (d) => conNombre(ev(d).del, d);
   /** Para Mis bodas y el panel: "Valeria & Santiago" / "XV años de Sofía" / "Bautizo de Mateo" */
@@ -180,6 +186,7 @@
       invitados: [], mesas: { activo: false, texto: '', lista: [], elementos: [] },
       confirmaciones: { url: '', boda: '', clave: '', whatsapp: false },
       acceso: { activo: false, texto: '' },
+      aparta: { texto: '' },
       hashtag: '', nota: '', despedida: E.despedida,
       musica: 'melodia', adornos: {}, ocultar: {}, encuadres: {}
     };
@@ -212,7 +219,7 @@
   const iconoEnviar = (d) => conHoja(d) && !d.confirmaciones.whatsapp ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>' : ICONOS.whatsapp;
 
   const S = {
-    esc, br, lineas, hay, fechaInfo, iniciales, esXV, unNombre, ev, voz, titular, delEvento, cabecera, ICONOS, adorno, seccion, encabezado,
+    esc, br, lineas, hay, fechaInfo, iniciales, esXV, unNombre, ev, voz, titular, delEvento, cabecera, apartaTexto, ICONOS, adorno, seccion, encabezado,
 
     sobre(d, o = {}) {
       return `
@@ -678,6 +685,9 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 
 /* Mesas */
 .sec-mesa.sin-mesa{display:none}
+.sec-aparta .lead{max-width:540px;margin-left:auto;margin-right:auto}.sec-aparta .btn{margin-top:20px}
+.aparta-pronto{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:26px;font-family:var(--f-etiqueta);font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--acento-texto,var(--acento))}
+.aparta-pronto svg{width:20px;height:20px;flex-shrink:0}
 .sec-acceso.sin-acceso{display:none}
 .acceso-tarjeta{max-width:360px;margin:6px auto 22px;padding:30px 24px 26px;background:var(--tarjeta,#fff);color:var(--tinta);border:1px solid var(--linea);border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.08);position:relative}
 .acceso-tarjeta::before,.acceso-tarjeta::after{content:"";position:absolute;top:52%;width:26px;height:26px;border-radius:50%;background:var(--fondo);border:1px solid var(--linea)}
@@ -1096,7 +1106,15 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
   // Construir y montar
   // ---------------------------------------------------------------------------
   function construir(datos, opciones = {}) {
-    const d = normalizar(datos);
+    let d = normalizar(datos);
+    // "Aparta la fecha": la misma plantilla, solo con la portada, el aviso, la cuenta regresiva y el cierre
+    const aparta = !!opciones.aparta;
+    if (aparta) {
+      const oc = {}; SECCIONES.forEach(k => { oc[k] = true; });
+      oc.cuenta = !!d.ocultar.cuenta; oc.cierre = false;
+      d = Object.assign(d, { ocultar: oc, introPortada: 'Aparta la fecha', hashtag: '', nota: '', despedida: 'Muy pronto, la invitación formal',
+        mesas: Object.assign({}, d.mesas, { activo: false }), acceso: { activo: false, texto: '' }, invitados: [], _aparta: true });
+    }
     const p = Plantillas[d.plantilla] || Plantillas[Object.keys(Plantillas)[0]];
     d.plantilla = p.id;
     d._rutaAdornos = opciones.rutaAdornos != null ? opciones.rutaAdornos : 'plantillas/adornos/';
@@ -1108,6 +1126,14 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
       msgRecibe: recibe.charAt(0).toUpperCase() + recibe.slice(1) + (plural ? ' recibirán' : ' recibirá') + ' tu mensaje.' };
     d.confirmaciones = { url: d.confirmaciones.url || '', boda: d.confirmaciones.boda || '', whatsapp: !!d.confirmaciones.whatsapp };
     let html = p.render(d, S);
+    if (aparta) {
+      const aviso = seccion('aparta', `<p class="eyebrow rv">Save the date</p><h2 class="titulo rv">${esc(fechaInfo(d).larga)}</h2>
+        <p class="lead rv">${br(apartaTexto(d))}</p>
+        ${d.ocultar.cuenta ? `<a class="btn solido rv" target="_blank" rel="noopener" href="${esc(enlaceCalendario(d))}">${ICONOS.calendario}Agendar en calendario</a>` : ''}
+        <p class="aparta-pronto rv">${ICONOS.sobre}Invitación formal próximamente</p>`, {});
+      const i = html.search(/<section id="cuenta"|<footer class="pie/);
+      html = i < 0 ? html + aviso : html.slice(0, i) + aviso + html.slice(i);
+    }
     // Encuadre de fotos: posición (x, y en %) y zoom elegidos en el editor
     const enc = d.encuadres || {};
     if (Object.keys(enc).length) {
@@ -1118,8 +1144,8 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         return `<span class="encuadre">${tag.replace('<img', `<img style="object-position:${x}% ${y}%;transform:scale(${z});transform-origin:${x}% ${y}%"`)}</span>`;
       });
     }
-    const titulo = conNombre(ev(d).titulo, d);
-    return { d, p, html, css: CSS_BASE + '\n' + (p.css || ''), fuentes: p.fuentes || '', titulo, descripcion: `${fechaInfo(d).larga}${d.ciudad ? ' — ' + d.ciudad : ''}` };
+    const titulo = aparta ? `${titular(d)} · Aparta la fecha` : conNombre(ev(d).titulo, d);
+    return { d, p, html, aparta, css: CSS_BASE + '\n' + (p.css || ''), fuentes: p.fuentes || '', titulo, descripcion: `${fechaInfo(d).larga}${d.ciudad ? ' — ' + d.ciudad : ''}` };
   }
 
   function montar(datos, opciones = {}) {
@@ -1134,7 +1160,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
       if (fl.href !== r.fuentes) fl.href = r.fuentes;
     }
     document.title = r.titulo;
-    document.body.className = `plantilla-${r.p.id}` + (opciones.sinSobre ? ' sin-sobre' : '') + (opciones.sinAnim ? ' sin-anim' : '');
+    document.body.className = `plantilla-${r.p.id}` + (r.aparta ? ' aparta' : '') + (opciones.sinSobre ? ' sin-sobre' : '') + (opciones.sinAnim ? ' sin-anim' : '');
     document.body.innerHTML = r.html;
     runtime(r.d);
     return r;
@@ -1151,14 +1177,14 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(r.titulo)}</title>
 <meta name="description" content="${esc(r.descripcion)}">
-<meta property="og:title" content="${esc(conNombre(ev(r.d).og, r.d))}">
+<meta property="og:title" content="${esc(r.aparta ? `${ev(r.d).emoji} ¡Aparta la fecha! · ${titular(r.d)}` : conNombre(ev(r.d).og, r.d))}">
 <meta property="og:description" content="${esc(r.descripcion)}">
 ${r.d.fotoPortada && !/^data:/.test(r.d.fotoPortada) ? `<meta property="og:image" content="${esc(r.d.fotoPortada)}">` : ''}
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 ${r.fuentes ? `<link rel="stylesheet" href="${esc(r.fuentes)}">` : ''}
 <style>${r.css}</style>
 </head>
-<body class="plantilla-${r.p.id}">
+<body class="plantilla-${r.p.id}${r.aparta ? ' aparta' : ''}">
 ${r.html}
 ${r.d.acceso && r.d.acceso.activo && window.QR_FUENTE ? `<script>${window.QR_FUENTE.replace(/<\//g, '<\\/')}<\/script>` : ''}
 <script>(${runtime.toString()})(${dJson});<\/script>

@@ -94,6 +94,13 @@ portada, su día en números, todos los buenos deseos con nombre y fecha, las ca
 quienes asistieron y las fotos. Lee los mensajes de Google Sheets (Confirmaciones automáticas). **Ver ejemplo**
 arma uno con mensajes ficticios para enseñarlo a tus clientes.
 
+## Aparta la fecha (paquete)
+
+Aviso corto que se manda meses antes: en el editor, sección **Aparta la fecha**. Usa la misma plantilla pero solo
+muestra portada, el aviso, la cuenta regresiva y el botón para agendar (`exportarHTML(datos, { aparta: true })`).
+Descarga la página (`…-aparta-la-fecha.html`), una imagen vertical 1080×1920 para estados (`Invitacion.pdf.aparta`)
+y copia el mensaje para WhatsApp. Vista previa: `invitacion.html?aparta=1&plantilla=paloma&evento=bautizo`.
+
 ## Invitación en PDF
 
 Para quienes no se llevan bien con la tecnología: botón **📄 PDF** en el editor.

@@ -124,6 +124,19 @@
 .lib-can li{display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px dotted var(--linea);font-size:13.5px;counter-increment:c}
 .lib-can li::before{content:counter(c);font-family:var(--f-titulo);font-size:18px;color:var(--acento);min-width:24px}
 .lib-can li span{flex:1}.lib-can li em{font-style:normal;font-size:11px;color:var(--suave)}
+.pdf-pag.pdf-story{width:540px;height:960px;padding:120px 54px 96px;margin:0}
+.pdf-story .pdf-cont{gap:0}
+.pdf-story .pdf-marco{inset:22px}
+.pdf-story .pdf-orn{width:210px}.pdf-story .pdf-orn.arriba{width:300px;top:14px}.pdf-story .pdf-orn.cuatro{width:90px}
+.pdf-story .pdf-orn.abajo-i,.pdf-story .pdf-orn.abajo-d{width:190px}
+.ap-eye{font-family:var(--f-etiqueta);font-size:15px;letter-spacing:.42em;text-transform:uppercase;color:var(--acento)}
+.ap-titulo{font-family:var(--f-titulo);font-weight:400;font-size:50px;line-height:1.05;color:var(--titulo,var(--tinta));margin:8px 0 26px}
+.pdf-story .pp-foto{width:210px;height:252px;margin-bottom:26px}
+.pdf-story .pp-nombres{font-size:84px}
+.pdf-story .pp-fecha{gap:18px;margin:22px 0 8px}.pdf-story .pp-fecha span{font-size:13px;width:118px;padding:9px 0}.pdf-story .pp-fecha b{font-size:72px}
+.pdf-story .pp-mes{font-size:13px}
+.pdf-story .pp-lugar{font-size:22px;margin-top:18px}
+.ap-pronto{margin-top:34px;padding:12px 26px;border:1px solid var(--acento);border-radius:40px;font-family:var(--f-etiqueta);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--acento2,var(--acento))}
 .lib-nombres{columns:2;column-gap:28px;text-align:left;font-size:13px;max-width:440px;margin:6px auto 0}
 .lib-nombres p{break-inside:avoid;padding:2px 0;border-bottom:1px dotted var(--linea)}
 `;
@@ -449,5 +462,29 @@
     return { blob: armarPdf(imgs).output('blob'), resumen: r.resumen, paginas: imgs.length };
   }
 
-  I.pdf = { construir, generar, generarTodos, libro };
+  /** "Aparta la fecha": imagen vertical 1080×1920 (estados de WhatsApp, Instagram) → Blob PNG. */
+  async function aparta(datos) {
+    await prepararLibs(false);
+    const fotos = await prepararFotos(datos);
+    const r = construir(datos, { fotos });
+    const d = r.d, f = I.fechaInfo(d), uno = S.unNombre(d);
+    const cont = prepararRaiz(r);
+    const t = document.createElement('div');
+    t.innerHTML = r.paginaCon(`
+      ${fotos.portada ? `<img class="pp-foto" src="${fotos.portada}" alt="">` : ''}
+      <p class="ap-eye">Aparta la fecha</p>
+      <p class="ap-titulo">${esc(d.introPortada)}</p>
+      <h1 class="pp-nombres">${uno ? esc(d.festejada) : `${esc(d.novia)}<i>&amp;</i>${esc(d.novio)}`}</h1>
+      <div class="pp-fecha"><span>${f.diaSemana}</span><b>${f.dia}</b><span>${f.anio}</span></div>
+      <p class="pp-mes">${f.mes}</p>
+      ${hay(d.ciudad) ? `<p class="pp-lugar">${esc(d.ciudad)}</p>` : ''}
+      <p class="ap-pronto">Invitación formal próximamente</p>`, 'pdf-portada pdf-story');
+    cont.appendChild(t.firstElementChild);
+    await esperarImagenes(cont);
+    const lienzo = await window.html2canvas(cont.firstElementChild, { scale: 2, useCORS: true, backgroundColor: null, logging: false });
+    cont.innerHTML = '';
+    return new Promise((ok, mal) => lienzo.toBlob(b => b ? ok(b) : mal(new Error('sin imagen')), 'image/png'));
+  }
+
+  I.pdf = { construir, generar, generarTodos, libro, aparta };
 })();
