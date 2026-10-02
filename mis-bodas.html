@@ -143,7 +143,7 @@
           <small>${esc(p.cliente)}${p.paquete ? ' · ' + esc(p.paquete) : ''}${PL[p.plantilla] ? ' · ' + PL[p.plantilla] : ''}</small>
           <small>Recibido ${new Date(p.recibido).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })} · Folio ${esc(p.pedido)} · ${esc(p.estado)}</small>
           ${version >= 6 || cfg.demo ? `<span class="pago ${(PAGO[p.pago] || PAGO.Pendiente)[0]}">${(PAGO[p.pago] || PAGO.Pendiente)[1]}</span>${p.comprobante ? ` <a class="pago-ver" href="${esc(p.comprobante)}" target="_blank" rel="noopener">Ver comprobante</a>` : ''}` : ''}</div>
-          <div class="acc">${cfg.demo ? '<span class="b pri" title="En el ejemplo no se abre">✎ Abrir en el editor</span>' : `<a class="b pri" href="editor.html?pedido=${encodeURIComponent(p.pedido)}">✎ Abrir en el editor</a>`}
+          <div class="acc">${cfg.demo ? '<span class="b pri" title="En el ejemplo no se abre">✎ Abrir en el editor</span>' : `<a class="b pri" href="editor.html?pedido=${encodeURIComponent(p.pedido)}">✎ Abrir en el editor</a><a class="b" href="invitacion.html?pedido=${encodeURIComponent(p.pedido)}" target="_blank" rel="noopener">👀 Ver invitación</a>`}
             ${wa ? `<a class="b" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
             ${version >= 6 || cfg.demo ? (p.pago === 'Pagado' ? `<button class="b" data-pago="${esc(p.pedido)}" data-v="Pendiente">Deshacer pago</button>`
               : `<button class="b" data-pago="${esc(p.pedido)}" data-v="Pagado">✓ Marcar pagado</button><button class="b" data-cobrar="${esc(p.pedido)}" data-paq="${esc(p.paquete)}" data-tel="${esc(wa)}">💳 Enlace de pago</button>`) : ''}</div>

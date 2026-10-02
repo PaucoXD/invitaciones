@@ -155,6 +155,11 @@
   .pedido-info p{white-space:pre-line}.pedido-info>a{align-self:flex-start}
   .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:30px;transition:transform .35s;z-index:60;font-weight:500}
   .toast.ver{transform:translate(-50%,0)}
+  .cargando-pedido{position:fixed;inset:0;z-index:70;background:rgba(43,36,31,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+  .cp-caja{background:#fff;border-radius:16px;padding:26px 30px;max-width:380px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+  .cp-caja b{display:block;font-size:16px;margin-bottom:6px}.cp-caja p{color:var(--muted,#756b61);font-size:14px;margin-bottom:10px}
+  .cp-giro{width:38px;height:38px;margin:0 auto 14px;border:3px solid #e6dccf;border-top-color:#8e3b4a;border-radius:50%;animation:cp-g 1s linear infinite}
+  @keyframes cp-g{to{transform:rotate(360deg)}}
   /* Móvil: formulario y vista se alternan */
   .solo-movil{display:none}
   @media (max-width:900px){

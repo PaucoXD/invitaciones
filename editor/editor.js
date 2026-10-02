@@ -835,13 +835,21 @@
     let s = {}; try { s = JSON.parse(localStorage.getItem('mis-bodas-admin')) || {}; } catch (e) {}
     const url = s.url || (window.NEGOCIO && NEGOCIO.hojaConfirmaciones) || '';
     if (!url || !s.clave) return avisar('Para abrir pedidos entra primero a “Mis bodas”');
-    avisar('Abriendo pedido…');
+    // Mientras llega el pedido se tapa el editor (si no, se ven los datos anteriores y parece que no pasó nada)
+    const capa = el('div', { class: 'cargando-pedido', role: 'status' }, el('div', { class: 'cp-caja' }, el('div', { class: 'cp-giro' }),
+      el('b', {}, `Abriendo el pedido ${qp.get('pedido')}…`), el('p', {}, 'Con fotos puede tardar unos segundos.')));
+    document.body.append(capa);
     try {
       const r = await (await fetch(`${url}${url.includes('?') ? '&' : '?'}accion=pedido&id=${encodeURIComponent(qp.get('pedido'))}&clave=${encodeURIComponent(s.clave)}`)).json();
       if (!r.ok) throw new Error(/boda o clave/i.test(r.error || '') ? 'tu código de Google es de una versión anterior; actualízalo (manual, sección 3.0)' : r.error);
       abrirPedido(r.pedido, qp.get('pedido'));
       history.replaceState(null, '', location.pathname);
-    } catch (e) { avisar('No se pudo abrir el pedido: ' + (e.message || 'sin conexión')); }
+      capa.remove();
+    } catch (e) {
+      capa.firstChild.replaceChildren(el('b', {}, 'No se pudo abrir el pedido'), el('p', {}, e.message || 'Sin conexión. Revisa tu internet.'),
+        el('div', { class: 'conf-herr', style: 'justify-content:center' }, el('button', { class: 'b chico', type: 'button', onclick: () => location.reload() }, 'Reintentar'),
+          el('button', { class: 'b chico', type: 'button', onclick: () => { capa.remove(); history.replaceState(null, '', location.pathname); } }, 'Cerrar')));
+    }
   })();
 
   async function aDataURL(url) {

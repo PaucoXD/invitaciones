@@ -60,7 +60,21 @@
   }
 
   var slug = (q.get('b') || '').replace(/[^a-z0-9_-]/gi, '');
-  if (slug) {
+  var folio = (q.get('pedido') || '').replace(/[^\w-]/g, '');
+  function aviso(t, ok) { document.body.innerHTML = '<div style="font-family:system-ui,sans-serif;max-width:420px;margin:80px auto;padding:24px;text-align:center;color:#2b241f">' + (ok ? '<div style="width:38px;height:38px;margin:0 auto 14px;border:3px solid #e6dccf;border-top-color:#8e3b4a;border-radius:50%;animation:g 1s linear infinite"></div><style>@keyframes g{to{transform:rotate(360deg)}}</style>' : '') + '<p>' + t + '</p></div>'; }
+  if (folio) {
+    // Vista de un pedido del formulario (desde Mis bodas): usa la sesión de administrador de este navegador
+    var ses = {}; try { ses = JSON.parse(localStorage.getItem('mis-bodas-admin')) || {}; } catch (e) {}
+    var url = ses.url || (window.NEGOCIO && NEGOCIO.hojaConfirmaciones) || '';
+    if (!url || !ses.clave) aviso('Para ver pedidos entra primero a <b>Mis bodas</b> en este navegador.');
+    else {
+      aviso('Cargando la invitación del pedido ' + folio + '…<br><small style="color:#756b61">Con fotos puede tardar unos segundos.</small>', true);
+      fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'accion=pedido&id=' + encodeURIComponent(folio) + '&clave=' + encodeURIComponent(ses.clave))
+        .then(function (r) { return r.json(); })
+        .then(function (r) { if (!r.ok) throw new Error(r.error || 'error'); mostrar(r.pedido.datos); })
+        .catch(function (e) { aviso('No se pudo cargar el pedido: ' + (e.message || 'sin conexión') + '<br><br><a href="" style="color:#8e3b4a">Reintentar</a>'); });
+    }
+  } else if (slug) {
     var s = document.createElement('script');
     s.src = 'bodas/' + slug + '.js';
     s.onload = function () { mostrar(window.INVITACION); };
