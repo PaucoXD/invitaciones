@@ -18,7 +18,7 @@ window.CODIGO_SHEETS = String.raw`// ===== Confirmaciones de invitaciones — pe
 // Después: Implementar → Nueva implementación → App web → Ejecutar como: Yo → Acceso: Cualquier persona.
 // ¿Actualizando? Implementar → Administrar implementaciones → ✏️ → Versión: "Nueva versión" → Implementar (la URL no cambia).
 
-var VERSION = 10;
+var VERSION = 11;
 
 var ENC_CONF = ['Fecha', 'Boda', 'Tipo', 'Invitado', 'Asiste', 'Personas', 'Mensaje', 'Lugares', 'Mesa'];
 var ENC_INV = ['Boda', 'Invitado', 'Lugares', 'Mesa', 'Teléfono'];
@@ -133,6 +133,24 @@ function filaPedido_(id) {
   var v = h.getDataRange().getValues();
   for (var i = 1; i < v.length; i++) if (String(v[i][1]) === String(id)) return i + 1;
   return 0;
+}
+/** El pedido guardado unos minutos en memoria (CacheService), para no leerlo de Drive en cada pedazo. */
+function textoPedido_(id) {
+  var c = CacheService.getScriptCache(), n = Number(c.get('pedn:' + id) || 0), i, claves = [];
+  if (n) {
+    for (i = 0; i < n; i++) claves.push('ped:' + id + ':' + i);
+    var m = c.getAll(claves), t = '';
+    for (i = 0; i < n && t !== null; i++) t = m[claves[i]] == null ? null : t + m[claves[i]];
+    if (t !== null) return t;
+  }
+  var txt = leerPedido_(id);
+  if (!txt) return null;
+  try {
+    var P = 90000, k = Math.ceil(txt.length / P), trozos = {};
+    for (i = 0; i < k; i++) trozos['ped:' + id + ':' + i] = txt.slice(i * P, (i + 1) * P);
+    c.putAll(trozos, 900); c.put('pedn:' + id, String(k), 900);
+  } catch (e) { /* si no cabe en memoria se lee de Drive cada vez */ }
+  return txt;
 }
 /** El cliente sube la foto o PDF de su transferencia: se guarda en Drive junto al pedido. */
 function guardarComprobante_(d) {
@@ -256,7 +274,7 @@ function doGet_(e) {
   }
   if (p.accion === 'pedido') {
     if (!adminCorrecto_(p.clave)) return json_({ ok: false, error: 'Clave de administrador incorrecta' });
-    var ped = leerPedido_(p.id);
+    var ped = p.desde != null ? textoPedido_(p.id) : leerPedido_(p.id);
     if (!ped) return json_({ ok: false, error: 'No se encontró ese pedido' });
     // Con fotos el pedido pesa varios MB y Google no puede mandarlo de una vez: se manda en pedazos.
     // La página pide "desde" y "tam" (y achica el pedazo si Google falla); "parte" es del código anterior.
