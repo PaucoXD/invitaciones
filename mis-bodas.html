@@ -144,6 +144,7 @@
           <small>Recibido ${new Date(p.recibido).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })} · Folio ${esc(p.pedido)} · ${esc(p.estado)}</small>
           ${version >= 6 || cfg.demo ? `<span class="pago ${(PAGO[p.pago] || PAGO.Pendiente)[0]}">${(PAGO[p.pago] || PAGO.Pendiente)[1]}</span>${p.comprobante ? ` <a class="pago-ver" href="${esc(p.comprobante)}" target="_blank" rel="noopener">Ver comprobante</a>` : ''}` : ''}</div>
           <div class="acc">${cfg.demo ? '<span class="b pri" title="En el ejemplo no se abre">✎ Abrir en el editor</span>' : `<a class="b pri" href="editor.html?pedido=${encodeURIComponent(p.pedido)}">✎ Abrir en el editor</a><a class="b" href="invitacion.html?pedido=${encodeURIComponent(p.pedido)}" target="_blank" rel="noopener">👀 Ver invitación</a>`}
+            ${p.archivo ? `<a class="b" href="https://drive.google.com/uc?export=download&id=${encodeURIComponent(p.archivo)}" target="_blank" rel="noopener" title="Descarga el archivo del pedido desde tu Drive; ábrelo en el editor con 📂 Abrir">⬇ Archivo</a>` : ''}
             ${wa ? `<a class="b" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
             ${version >= 6 || cfg.demo ? (p.pago === 'Pagado' ? `<button class="b" data-pago="${esc(p.pedido)}" data-v="Pendiente">Deshacer pago</button>`
               : `<button class="b" data-pago="${esc(p.pedido)}" data-v="Pagado">✓ Marcar pagado</button><button class="b" data-cobrar="${esc(p.pedido)}" data-paq="${esc(p.paquete)}" data-tel="${esc(wa)}">💳 Enlace de pago</button>`) : ''}</div>
@@ -214,7 +215,7 @@
           <div class="t ok"><b>${sum(prox, 'personas')}</b><span>personas confirmadas (próximas)</span></div>
           <div class="t pend"><b>${sum(prox, 'pendientes')}</b><span>invitaciones sin responder</span></div>
         </div>
-        ${!cfg.demo && version < 9 ? '<p class="demo">Tu código de Google es la versión ' + version + '; hay una nueva (versión 9: abrir pedidos con fotos sin errores, quién abrió cada invitación y pago del anticipo). Actualízalo: manual, sección 3.0.</p>' : ''}
+        ${!cfg.demo && version < 10 ? '<p class="demo">Tu código de Google es la versión ' + version + '; hay una nueva (versión 10: abrir pedidos con fotos sin errores, quién abrió cada invitación y pago del anticipo). Actualízalo: manual, sección 3.0.</p>' : ''}
         ${seccionPedidos()}
         <div class="filtros">
           ${[['proximas', 'Próximas'], ['pasadas', 'Pasadas'], ['todas', 'Todas']].map(([k, t]) => `<button class="chip ${filtro === k ? 'on' : ''}" data-f="${k}">${t}</button>`).join('')}
