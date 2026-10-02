@@ -70,7 +70,8 @@
     else {
       aviso('Cargando la invitación del pedido ' + folio + '…<br><small style="color:#756b61">Con fotos puede tardar unos segundos.</small>', true);
       fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'accion=pedido&id=' + encodeURIComponent(folio) + '&clave=' + encodeURIComponent(ses.clave))
-        .then(function (r) { return r.json(); })
+        .then(function (r) { return r.text(); })
+        .then(function (t) { try { return JSON.parse(t); } catch (e) { throw new Error('Google respondió con un error. Actualiza tu código de Google a la versión 7 (manual, sección 3.0).'); } })
         .then(function (r) { if (!r.ok) throw new Error(r.error || 'error'); mostrar(r.pedido.datos); })
         .catch(function (e) { aviso('No se pudo cargar el pedido: ' + (e.message || 'sin conexión') + '<br><br><a href="" style="color:#8e3b4a">Reintentar</a>'); });
     }
