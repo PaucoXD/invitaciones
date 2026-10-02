@@ -40,6 +40,7 @@ window.NEGOCIO = {
     { nombre: 'Confirmaciones automáticas con panel', precio: 450 },
     { nombre: 'PDF personalizado por familia', precio: 250 },
     { nombre: 'Pase de entrada con QR y registro en la puerta', precio: 400 },
+    { nombre: 'Libro de recuerdos en PDF (buenos deseos, canciones y asistentes)', precio: 350 },
     { nombre: 'Entrega exprés en 24 horas', precio: 300 },
     { nombre: 'Diseño con tus colores', precio: 300 }
   ],
