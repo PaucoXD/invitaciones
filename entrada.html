@@ -141,7 +141,7 @@
     try {
       const u = cfg.url + (cfg.url.includes('?') ? '&' : '?') + 'boda=' + encodeURIComponent(cfg.boda) + '&clave=' + encodeURIComponent(cfg.clave) + '&t=' + Date.now();
       const j = await (await fetch(u)).json();
-      if (!j.ok) return pantallaEntrada('El código o la clave no coinciden.');
+      if (!j.ok) return pantallaEntrada('No encontramos este evento con esa clave. Si tú hiciste la invitación: en el editor, sección “Confirmaciones automáticas”, toca “👥 Sincronizar lista de invitados” y vuelve a abrir este enlace.');
       if (!(j.version >= 4)) return pantallaEntrada('', true);
       try { localStorage.setItem(CLAVE, JSON.stringify({ url: cfg.url, boda: cfg.boda, clave: cfg.clave })); } catch (e) {}
       if (location.search) history.replaceState(null, '', location.pathname);

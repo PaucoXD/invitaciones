@@ -142,7 +142,7 @@
     try {
       const u = cfg.url + (cfg.url.includes('?') ? '&' : '?') + 'boda=' + encodeURIComponent(cfg.boda) + '&clave=' + encodeURIComponent(cfg.clave) + '&t=' + Date.now();
       const r = await fetch(u); const j = await r.json();
-      if (!j.ok) return pintarEntrada('El código o la clave no coinciden. Revísalos e inténtalo de nuevo.');
+      if (!j.ok) return pintarEntrada('El código o la clave no coinciden. Revísalos e inténtalo de nuevo. (Si eres quien hizo la invitación: primero toca “👥 Sincronizar lista de invitados” en el editor).');
       datos = j; ultima = new Date(); guardarSesion();
       if (location.search && !cfg.demo) history.replaceState(null, '', location.pathname); // quita la clave de la barra de direcciones
       pintar();

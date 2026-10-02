@@ -125,6 +125,38 @@
   const ETIQ_ICONOS = { iglesia: 'Iglesia', anillos: 'Anillos / civil', copa: 'Copa / cóctel', brindis: 'Brindis', cena: 'Cena', musica: 'Música / baile', pastel: 'Pastel', foto: 'Fotos', auto: 'Transporte', corazon: 'Corazón', luna: 'Luna / fin', regalo: 'Regalo', bolsa: 'Tienda', banco: 'Banco', sobre: 'Sobre', hacienda: 'Hacienda / salón' };
   const ZONAS = [['-06:00', 'Centro de México (CDMX, Guadalajara, Monterrey)'], ['-05:00', 'Quintana Roo (Cancún, Tulum)'], ['-07:00', 'Sonora, Sinaloa, Nayarit, BCS'], ['-08:00', 'Baja California (Tijuana)'], ['-05:00 ', 'Colombia, Perú, Ecuador'], ['-03:00', 'Argentina, Chile (verano)'], ['+01:00', 'España (invierno)'], ['+02:00', 'España (verano)']];
 
+  // ---------------------------------------------------------------------------
+  // Google Sheets: sincronizar y comprobar que el evento ya exista en la hoja
+  // ---------------------------------------------------------------------------
+  async function sincronizarHoja() {
+    const c = datos.confirmaciones || {};
+    const lista = (datos.invitados || []).filter(x => x.nombre).map(x => ({ nombre: x.nombre, pases: x.pases, mesa: datos.mesas && datos.mesas.activo ? x.mesa : '', tel: x.tel || '' }));
+    try {
+      const r = await (await fetch(c.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'invitados', boda: c.boda, clave: c.clave, info: { nombres: quien(), fecha: datos.fecha }, invitados: lista }) })).json();
+      if (r.ok) return { ok: true, invitados: r.invitados };
+      return { ok: false, error: /clave/i.test(r.error || '') ? 'Ese ID ya existe en tu hoja con otra clave. Abre los datos guardados de este evento (botón “Abrir”) o cambia el ID.' : 'Error: ' + (r.error || '') };
+    } catch (e) { return { ok: false, error: 'No se pudo conectar con Google Sheets. Revisa la dirección y tu internet.' }; }
+  }
+  /** Antes de mandar un acceso (panel o entrada): si el evento no existe todavía en la hoja, lo sincroniza solo. */
+  async function asegurarEvento() {
+    const c = datos.confirmaciones || {};
+    if (!c.url || !c.boda || !c.clave) return 'Falta la dirección de Google, el ID o la clave en “Confirmaciones automáticas”.';
+    try {
+      const r = await (await fetch(`${c.url}${c.url.includes('?') ? '&' : '?'}boda=${encodeURIComponent(c.boda)}&clave=${encodeURIComponent(c.clave)}&t=${Date.now()}`)).json();
+      if (r.ok) return '';
+    } catch (e) { return 'No se pudo conectar con Google Sheets. Revisa tu internet.'; }
+    const s = await sincronizarHoja();
+    if (s.ok) { avisar(`Lista sincronizada ✓ (${s.invitados} invitaciones)`); return ''; }
+    return s.error;
+  }
+  /** Abre una pestaña después de comprobar el evento (se abre antes para que el navegador no la bloquee). */
+  async function abrirTrasComprobar(url) {
+    const w = window.open('', '_blank');
+    const e = await asegurarEvento();
+    if (e) { if (w) w.close(); avisar(e); return; }
+    if (w) w.location.href = url; else window.open(url, '_blank');
+  }
+
   function campo(def, base) {
     if (def.solo && def.solo !== (datos.evento || 'boda')) return null;
     if (def.fila) return el('div', { class: 'fila' }, def.fila.map(x => campo(x, base)).filter(Boolean));
@@ -242,8 +274,9 @@
       return el('div', {},
         el('p', { class: 'ayuda' }, 'Para ver el pase en la vista previa, elige una familia arriba en “Ver como”. El pase solo aparece en los enlaces personalizados de cada invitado (y en su PDF).'),
         el('div', { class: 'conf-herr' },
-          el('a', { class: 'b chico', href: enlace(), target: '_blank', rel: 'noopener', style: 'text-decoration:none' }, '📷 Abrir registro de entrada'),
-          el('button', { class: 'b chico', type: 'button', onclick: () => {
+          el('button', { class: 'b chico', type: 'button', onclick: () => abrirTrasComprobar(enlace()) }, '📷 Abrir registro de entrada'),
+          el('button', { class: 'b chico', type: 'button', onclick: async () => {
+            const err = await asegurarEvento(); if (err) { avisar(err); return; }
             const msg = `Registro de entrada de ${quien()} 🚪\n\nAbre este enlace en el celular de quien esté en la puerta y toca “Escanear pase”:\n👉 ${enlace()}\n\nCódigo: ${c.boda}\nClave: ${c.clave}\n\nTambién puedes buscar a las familias por nombre si alguien no trae su pase.`;
             navigator.clipboard.writeText(msg).then(() => avisar('Acceso para la entrada copiado ✓ Mándalo a quien estará en la puerta'));
           } }, '🔗 Copiar acceso para la entrada')),
@@ -269,17 +302,14 @@
           } }, '🔌 Probar conexión'),
           el('button', { class: 'b chico', type: 'button', onclick: async () => {
             if (!listo()) return;
-            const lista = (datos.invitados || []).filter(x => x.nombre).map(x => ({ nombre: x.nombre, pases: x.pases, mesa: datos.mesas && datos.mesas.activo ? x.mesa : '', tel: x.tel || '' }));
-            marcar(`Enviando ${lista.length} invitaciones…`, true);
-            try {
-              const r = await (await fetch(c().url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'invitados', boda: c().boda, clave: c().clave, info: { nombres: quien(), fecha: datos.fecha }, invitados: lista }) })).json();
-              marcar(r.ok ? `✓ Lista sincronizada: ${r.invitados} invitaciones. El panel ya sabe quién falta por responder.`
-                : /clave/i.test(r.error || '') ? 'Ese ID de boda ya existe en tu hoja con otra clave. Abre los datos guardados de esta boda (botón “Abrir”) o cambia el ID de la boda.' : 'Error: ' + (r.error || ''), r.ok);
-            } catch (e) { marcar('No se pudo sincronizar. Prueba la conexión primero.', false); }
+            marcar(`Enviando ${(datos.invitados || []).filter(x => x.nombre).length} invitaciones…`, true);
+            const r = await sincronizarHoja();
+            marcar(r.ok ? `✓ Lista sincronizada: ${r.invitados} invitaciones. El panel ya sabe quién falta por responder.` : r.error, r.ok);
           } }, '👥 Sincronizar lista de invitados'),
-          el('button', { class: 'b chico', type: 'button', onclick: () => { if (listo()) window.open(enlacePanel(), '_blank'); } }, '📊 Abrir panel'),
-          el('button', { class: 'b chico', type: 'button', onclick: () => {
+          el('button', { class: 'b chico', type: 'button', onclick: () => { if (listo()) abrirTrasComprobar(enlacePanel()); } }, '📊 Abrir panel'),
+          el('button', { class: 'b chico', type: 'button', onclick: async () => {
             if (!listo()) return;
+            const err = await asegurarEvento(); if (err) { marcar(err, false); return; }
             if (location.protocol === 'file:') avisar('Para compartir el panel, usa el editor desde tu sitio publicado');
             const sitio = new URL('panel.html', location.href).href;
             const msg = `¡Hola ${xv() ? datos.festejada : datos.novia + ' y ' + datos.novio}! ${xv() ? '👑' : '💍'} Aquí pueden ver en tiempo real quién confirmó su asistencia:\n\n👉 ${enlacePanel()}\n\nSi algún día lo necesitan, entren a ${sitio}\nCódigo: ${c().boda}\nClave: ${c().clave}\n\nTip: ábranlo y agréguenlo a la pantalla de inicio de su celular para tenerlo como app.`;
