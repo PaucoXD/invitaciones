@@ -321,13 +321,17 @@
       const h = d.historia || {};
       const fotos = h.fotos || [];
       if ((!fotos.length && !hay(h.texto)) || d.ocultar.historia) return '';
-      // Estilo de la galería: cuadrícula, carrusel (deslizable), collage (mosaico) o polaroid
-      const estilo = ['carrusel', 'collage', 'polaroid'].includes(h.estilo) ? h.estilo : 'cuadricula';
-      const figs = fotos.map((f, i) => `<figure class="foto${estilo === 'carrusel' ? '' : ' rv'}${f.src ? '' : ' vacia'}" ${f.src ? `data-zoom="${esc(f.src)}"` : ''}>
+      // Estilo de la galería: cuadrícula, carrusel (deslizable), collage (mosaico), polaroid o película
+      const estilo = ['carrusel', 'collage', 'polaroid', 'pelicula'].includes(h.estilo) ? h.estilo : 'cuadricula';
+      const figs = fotos.map((f, i) => `<figure class="foto${estilo === 'carrusel' || estilo === 'pelicula' ? '' : ' rv'}${f.src ? '' : ' vacia'}" ${f.src ? `data-zoom="${esc(f.src)}"` : ''}>
           ${f.src ? `<img src="${esc(f.src)}" alt="${esc(f.pie || 'Foto ' + (i + 1))}" loading="lazy">` : `<span class="foto-hueco">${ICONOS.foto}</span>`}
           ${hay(f.pie) ? `<figcaption>${esc(f.pie)}</figcaption>` : ''}
         </figure>`).join('');
-      const galeria = !fotos.length ? '' : estilo === 'carrusel'
+      // Película: la tira se repite dos veces para que corra sin fin
+      const copia = figs.replace(/<figure /g, '<figure aria-hidden="true" ');
+      const galeria = !fotos.length ? '' : estilo === 'pelicula'
+        ? `<div class="pelicula rv" aria-label="Galería de fotos en tira de película"><div class="pel-pista" style="--pel-dur:${Math.max(20, fotos.length * 6)}s">${figs}${copia}</div></div>`
+        : estilo === 'carrusel'
         ? `<div class="carrusel-caja rv"><div class="galeria carrusel" tabindex="0" aria-label="Galería de fotos: desliza para ver más">${figs}</div>
             ${fotos.length > 1 ? `<button type="button" class="car-btn car-prev" aria-label="Foto anterior">‹</button><button type="button" class="car-btn car-next" aria-label="Foto siguiente">›</button>
             <div class="car-puntos">${fotos.map((_, i) => `<span${i ? '' : ' class="on"'}></span>`).join('')}</div>` : ''}</div>`
@@ -642,6 +646,18 @@ main{position:relative;z-index:1}
 .car-puntos{display:flex;justify-content:center;gap:8px;margin-top:14px}
 .car-puntos span{width:8px;height:8px;border-radius:50%;background:var(--linea);transition:all .3s}
 .car-puntos span.on{background:var(--acento);width:22px;border-radius:4px}
+/* Galería en tira de película */
+.pelicula{position:relative;margin:36px auto 0;max-width:900px;background:#161311;padding:26px 0;overflow:hidden;border-radius:3px;box-shadow:0 14px 34px rgba(0,0,0,.25)}
+.pelicula::before,.pelicula::after{content:"";position:absolute;left:0;right:0;height:9px;background:repeating-linear-gradient(90deg,transparent 0 8px,rgba(255,250,240,.82) 8px 20px,transparent 20px 30px);z-index:1;pointer-events:none}
+.pelicula::before{top:8px}.pelicula::after{bottom:8px}
+.pel-pista{display:flex;gap:10px;width:max-content;animation:pel-corre var(--pel-dur,40s) linear infinite}
+.pelicula:hover .pel-pista,.pelicula:active .pel-pista,.pelicula:focus-within .pel-pista{animation-play-state:paused}
+.pelicula .pel-pista .foto{flex:0 0 auto;width:160px;aspect-ratio:3/4;margin:0;padding:0!important;border:none!important;border-radius:2px!important;box-shadow:none!important;transform:none!important;background:#000}
+.pelicula .pel-pista .foto img{filter:sepia(.12) contrast(1.04)}
+.pelicula .pel-pista .foto figcaption{position:absolute!important;left:0;right:0;bottom:0;font-size:15px;padding:20px 6px 8px;color:#fff!important;background:linear-gradient(transparent,rgba(0,0,0,.55))!important;text-align:center}
+@keyframes pel-corre{to{transform:translateX(calc(-50% - 5px))}}
+.pelicula .pel-pista .foto,.galeria.carrusel .foto,.galeria.collage .foto,.galeria.polaroid .foto{rotate:none!important}
+@media (prefers-reduced-motion:reduce){.pel-pista{animation:none}.pelicula{overflow-x:auto}.pel-pista .foto[aria-hidden]{display:none}}
 /* Galería en collage (mosaico) */
 .galeria.collage{grid-template-columns:repeat(3,1fr);grid-auto-rows:150px;grid-auto-flow:dense;gap:8px}
 .galeria.collage .foto{aspect-ratio:auto;border-radius:8px;height:100%}
@@ -785,6 +801,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
   .galeria.g3:not(.collage):not(.polaroid){grid-template-columns:repeat(2,1fr)}.galeria.g3:not(.collage):not(.polaroid) .foto:first-child{grid-column:span 2;aspect-ratio:4/3}
   .galeria.collage{grid-auto-rows:110px;gap:6px}.galeria.polaroid{gap:20px 12px}.galeria.polaroid .foto{padding:7px 7px 32px}.galeria.polaroid .foto figcaption{font-size:16px}
   .galeria.carrusel .foto{flex-basis:84%}.car-btn{display:none}
+  .pelicula{margin-left:-6px;margin-right:-6px}.pelicula .pel-pista .foto{width:124px}
   .figuras{gap:30px}
 }
 @media (prefers-reduced-motion:reduce){
