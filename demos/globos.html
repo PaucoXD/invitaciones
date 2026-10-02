@@ -1,452 +1,16 @@
-/*
- * Motor de invitaciones
- * ---------------------
- * Convierte un objeto de datos (nombres, fecha, lugares…) en una invitación
- * usando la plantilla elegida. Lo usan:
- *   - invitacion.html  → para mostrar una boda
- *   - editor.html      → para la vista previa en vivo y para descargar el HTML final
- *
- * Una plantilla se registra con Invitacion.registrar({ id, nombre, fuentes, css, render, adornos, efecto }).
- */
-(function () {
-  'use strict';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baby shower de Emilia</title>
+<meta name="description" content="Sábado 13 de febrero de 2027 — Monterrey, Nuevo León">
+<meta property="og:title" content="¡Baby shower de Emilia!">
+<meta property="og:description" content="Sábado 13 de febrero de 2027 — Monterrey, Nuevo León">
 
-  const Plantillas = {};
-
-  // ---------------------------------------------------------------------------
-  // Utilidades
-  // ---------------------------------------------------------------------------
-  const esc = (s) => String(s == null ? '' : s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  const br = (s) => esc(s).replace(/\n/g, '<br>');
-  /** Huella corta de un texto (sirve para identificar cada foto subida). */
-  function huella(s) {
-    let h = 5381; s = String(s || '');
-    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
-    return 'f' + (h >>> 0).toString(36) + s.length.toString(36);
-  }
-  const desesc = (s) => String(s).replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-  const lineas = (s) => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
-  const hay = (v) => Array.isArray(v) ? v.length > 0 : !!(v && String(v).trim());
-
-  const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-  const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-
-  function fechaInfo(d) {
-    const [y, m, dd] = String(d.fecha || '2027-01-01').split('-').map(Number);
-    const local = new Date(y, (m || 1) - 1, dd || 1);
-    return {
-      anio: y, mes: MESES[(m || 1) - 1], mesNum: String(m).padStart(2, '0'), dia: dd,
-      diaSemana: DIAS[local.getDay()],
-      corta: `${String(dd).padStart(2, '0')} · ${String(m).padStart(2, '0')} · ${y}`,
-      larga: `${DIAS[local.getDay()]} ${dd} de ${MESES[(m || 1) - 1].toLowerCase()} de ${y}`,
-      iso: `${d.fecha || '2027-01-01'}T${d.hora || '17:00'}:00${d.zonaHoraria || '-06:00'}`
-    };
-  }
-  function fechaTexto(iso) {
-    if (!iso) return '';
-    const [y, m, dd] = iso.split('-').map(Number);
-    return `${dd} de ${MESES[m - 1].toLowerCase()} de ${y}`;
-  }
-  // ---------------------------------------------------------------------------
-  // Tipos de evento. Solo la boda lleva dos nombres; los demás, uno (d.festejada).
-  // voz: 'yo' (habla quien celebra: "¿Me acompañarás?") o 'nos' (hablan los novios o los papás).
-  // {n} = nombre de quien celebra. Para agregar un evento basta con agregarlo aquí.
-  // ---------------------------------------------------------------------------
-  const EVENTOS = {
-    boda: { nombre: 'Boda', mio: 'nuestra boda', emoji: '💍', voz: 'nos', plantilla: 'floral', intro: 'Nos casamos', del: 'la boda de {n}', cal: 'Boda {n}', titulo: '{n} · Nuestra boda', og: '{n} · ¡Nos casamos!',
-      padres: 'Padres de la novia', recibe: 'los novios', contactos: ['', ''], honor: 'Novios', fiesta: 'la boda', etqNombre: '',
-      familia: ['Con la bendición de Dios y de nuestros padres', 'tenemos el honor de invitarte a celebrar la unión de nuestras vidas'], historia: 'Nuestra historia', despedida: 'Gracias por ser parte de nuestra historia',
-      itinerario: [['17:00', 'Ceremonia religiosa', 'iglesia'], ['19:00', 'Cóctel de bienvenida', 'copa'], ['20:30', 'Cena', 'cena'], ['22:00', '¡A bailar!', 'musica']], lugares: ['Ceremonia', 'Recepción'] },
-    xv: { nombre: 'XV años', mio: 'mis XV años', emoji: '👑', voz: 'yo', plantilla: 'princesa', intro: 'Mis XV años', sello: 'XV', del: 'los XV años de {n}', cal: 'XV años de {n}', titulo: '{n} · Mis XV años', og: '{n} · ¡Mis XV años!',
-      padres: 'Mis padres', recibe: '{n}', contactos: ['Mamá', 'Papá'], honor: 'Mesa de honor', fiesta: 'la fiesta', etqNombre: 'Nombre de la quinceañera',
-      familia: ['Con la bendición de Dios y de mis padres', 'tengo el honor de invitarte a celebrar mis quince años'], historia: 'Mis momentos', despedida: 'Gracias por acompañarme en este día tan especial',
-      itinerario: [['18:00', 'Misa de acción de gracias', 'iglesia'], ['20:00', 'Recepción', 'copa'], ['20:45', 'Vals', 'corona'], ['21:30', 'Cena', 'cena'], ['22:30', '¡A bailar!', 'musica']], lugares: ['Misa', 'Recepción'] },
-    bautizo: { nombre: 'Bautizo', mio: 'mi bautizo', emoji: '🕊️', voz: 'yo', plantilla: 'paloma', intro: 'Mi bautizo', del: 'el bautizo de {n}', cal: 'Bautizo de {n}', titulo: '{n} · Mi bautizo', og: '{n} · ¡Mi bautizo!',
-      padres: 'Mis papás', recibe: '{n} y sus papás', contactos: ['Mamá', 'Papá'], honor: 'Mesa principal', fiesta: 'la celebración', etqNombre: 'Nombre del bebé',
-      familia: ['Con la bendición de Dios y el amor de mis papás', 'te invito a celebrar mi bautizo'], historia: 'Mis primeros momentos', despedida: 'Gracias por acompañarme en este día tan especial',
-      itinerario: [['12:00', 'Misa de bautizo', 'iglesia'], ['14:00', 'Recepción', 'copa'], ['15:00', 'Comida', 'cena'], ['17:00', 'Pastel', 'pastel']], lugares: ['Misa', 'Recepción'] },
-    comunion: { nombre: 'Primera comunión', mio: 'mi primera comunión', emoji: '✨', voz: 'yo', plantilla: 'caliz', intro: 'Mi primera comunión', del: 'la primera comunión de {n}', cal: 'Primera comunión de {n}', titulo: '{n} · Mi primera comunión', og: '{n} · ¡Mi primera comunión!',
-      padres: 'Mis papás', recibe: '{n}', contactos: ['Mamá', 'Papá'], honor: 'Mesa principal', fiesta: 'la celebración', etqNombre: 'Nombre de quien hace su primera comunión',
-      familia: ['Con la bendición de Dios y de mis papás', 'te invito a celebrar mi primera comunión'], historia: 'Mis momentos', despedida: 'Gracias por acompañarme en este día tan especial',
-      itinerario: [['11:00', 'Misa de primera comunión', 'iglesia'], ['13:30', 'Recepción', 'copa'], ['14:30', 'Comida', 'cena'], ['16:30', 'Pastel', 'pastel']], lugares: ['Misa', 'Recepción'] },
-    babyshower: { nombre: 'Baby shower', mio: 'nuestro baby shower', emoji: '🍼', voz: 'nos', plantilla: 'globos', intro: 'Baby shower', del: 'el baby shower de {n}', cal: 'Baby shower de {n}', titulo: 'Baby shower de {n}', og: '¡Baby shower de {n}!',
-      padres: 'Los papás', recibe: 'los papás', contactos: ['Mamá', 'Papá'], honor: 'Mesa de los papás', fiesta: 'el baby shower', etqNombre: 'Nombre del bebé (o de la mamá)',
-      familia: ['Con mucha ilusión', 'te invitamos a celebrar la próxima llegada de nuestro bebé'], historia: 'Esperándote', despedida: 'Gracias por celebrar con nosotros la llegada de nuestro bebé',
-      itinerario: [['16:00', 'Bienvenida', 'copa'], ['17:00', 'Juegos', 'corazon'], ['18:00', 'Abrir regalos', 'regalo'], ['18:30', 'Pastel', 'pastel']], lugares: ['Lugar', ''] },
-    cumple: { nombre: 'Cumpleaños', mio: 'mi cumpleaños', emoji: '🎂', voz: 'yo', plantilla: 'confeti', intro: '¡Celebremos!', del: 'el cumpleaños de {n}', cal: 'Cumpleaños de {n}', titulo: '{n} · Mi cumpleaños', og: '¡Cumpleaños de {n}!',
-      padres: 'Con cariño de', recibe: '{n}', contactos: ['Festejado', 'Organización'], honor: 'Mesa principal', fiesta: 'la fiesta', etqNombre: 'Nombre del festejado',
-      familia: ['¡Vamos a celebrar!', 'te invito a festejar conmigo un año más de vida'], historia: 'Mis momentos', despedida: 'Gracias por celebrar conmigo',
-      itinerario: [['20:00', 'Recepción', 'copa'], ['21:00', 'Cena', 'cena'], ['22:00', 'Pastel', 'pastel'], ['22:30', '¡A bailar!', 'musica']], lugares: ['Fiesta', ''] }
-  };
-  const ev = (d) => EVENTOS[d && d.evento] || EVENTOS.boda;
-  /** ¿Lleva un solo nombre (todo menos la boda)? */
-  const unNombre = (d) => (d && d.evento || 'boda') !== 'boda';
-  const esXV = (d) => d.evento === 'xv';
-  const habloYo = (d) => ev(d).voz === 'yo';
-  const conNombre = (t, d) => String(t || '').replace(/\{n\}/g, titular(d));
-  /** Quién celebra: "Valeria & Santiago" o "Sofía". */
-  function titular(d) { return unNombre(d) ? (d.festejada || '') : `${d.novia} & ${d.novio}`; }
-  /** "la boda de Valeria & Santiago" / "los XV años de Sofía" / "el bautizo de Mateo" */
-  const delEvento = (d) => conNombre(ev(d).del, d);
-  /** Para Mis bodas y el panel: "Valeria & Santiago" / "XV años de Sofía" / "Bautizo de Mateo" */
-  const cabecera = (d) => unNombre(d) ? `${ev(d).nombre} de ${d.festejada}` : titular(d);
-  /** Textos que cambian según quién habla */
-  const VOZ = { yo: { acompanas: '¿Me acompañarás?', dejanos: 'Déjame un mensaje', nuestros: 'Para mis invitados', acompanaron: 'me acompañaron', conNos: 'conmigo', dia: 'Mi día', escribieron: 'Lo que me escribieron mis invitados', gracias: 'acompañarme' },
-    nos: { acompanas: '¿Nos acompañarás?', dejanos: 'Déjanos un mensaje', nuestros: 'Para nuestros invitados', acompanaron: 'nos acompañaron', conNos: 'nosotros', dia: 'Nuestro día', escribieron: 'Lo que nos escribieron nuestros invitados', gracias: 'acompañarnos' } };
-  const voz = (d) => VOZ[ev(d).voz] || VOZ.nos;
-  function iniciales(d) {
-    if (d.iniciales && d.iniciales.trim()) return d.iniciales.trim();
-    if (ev(d).sello) return ev(d).sello;
-    if (unNombre(d)) return ((d.festejada || '').trim()[0] || '♥').toUpperCase();
-    return `${(d.novia || 'A').trim()[0] || ''} & ${(d.novio || 'B').trim()[0] || ''}`;
-  }
-  function enlaceCalendario(d) {
-    const f = fechaInfo(d);
-    const ini = new Date(f.iso);
-    if (isNaN(ini)) return '#';
-    const fin = new Date(ini.getTime() + 9 * 36e5);
-    const z = (x) => x.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-    const recepcion = (d.lugares || [])[1] || (d.lugares || [])[0] || {};
-    const q = new URLSearchParams({
-      action: 'TEMPLATE', text: conNombre(ev(d).cal, d), dates: `${z(ini)}/${z(fin)}`,
-      location: [recepcion.nombre, recepcion.direccion].filter(Boolean).join(', ').replace(/\n/g, ' '),
-      details: '¡Te esperamos!'
-    });
-    return 'https://calendar.google.com/calendar/render?' + q.toString();
-  }
-  function enlaceMapa(l) {
-    if (l.mapa && l.mapa.trim()) return l.mapa.trim();
-    return 'https://maps.google.com/?q=' + encodeURIComponent([l.nombre, (l.direccion || '').replace(/\n/g, ' ')].join(' '));
-  }
-
-  // ---------------------------------------------------------------------------
-  // Íconos (trazo fino, heredan color)
-  // ---------------------------------------------------------------------------
-  const I = (p, extra = '') => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ${extra}>${p}</svg>`;
-  const ICONOS = {
-    iglesia: I('<path d="M12 2v4M10 4h4M5 22V11l7-5 7 5v11M9 22v-6a3 3 0 016 0v6M3 22h18"/>'),
-    anillos: I('<circle cx="9" cy="14" r="6"/><circle cx="15" cy="14" r="6"/><path d="M10 4l2 3 2-3"/>'),
-    copa: I('<path d="M8 2h8l-1 7a3 3 0 01-6 0zM12 12v8M8 22h8"/>'),
-    brindis: I('<path d="M5 3h5l-.5 5a2 2 0 01-4 0zM14 3h5l.5 5a2 2 0 01-4 0zM7.5 10v9M16.5 10v9M5 21h5M14 21h5"/>'),
-    cena: I('<path d="M3 11h18M5 11a7 7 0 0114 0M12 4V2M4 15h16M7 15v5M17 15v5"/>'),
-    musica: I('<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'),
-    pastel: I('<path d="M4 21h16M5 21v-7h14v7M7 14v-4h10v4M12 10V7M12 4.5a1 1 0 010 2"/>'),
-    foto: I('<path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="4"/>'),
-    luna: I('<path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/>'),
-    auto: I('<path d="M3 16v-4l2-5h14l2 5v4zM3 16v3M21 16v3M7 12h10"/><circle cx="7" cy="16" r="1.5"/><circle cx="17" cy="16" r="1.5"/>'),
-    corazon: I('<path d="M12 21s-8-5.5-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 5.5-8 11-8 11z"/>'),
-    mapa: I('<path d="M12 22s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>'),
-    calendario: I('<rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
-    regalo: I('<path d="M3 9h18v4H3zM5 13v8h14v-8M12 9v12M12 9c-2-4-7-4-6-1 1 2 6 1 6 1zm0 0c2-4 7-4 6-1-1 2-6 1-6 1z"/>'),
-    bolsa: I('<path d="M4 7h16l-1 13H5zM9 7V5a3 3 0 016 0v2"/>'),
-    banco: I('<path d="M3 10l9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/>'),
-    sobre: I('<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 7l9 6 9-6"/>'),
-    hacienda: I('<path d="M2 21h20M4 21V10h16v11M2 10l10-6 10 6M8 21v-5a2 2 0 014 0v5M14 14h3v3h-3z"/>'),
-    flecha: I('<path d="M6 9l6 6 6-6"/>'),
-    whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>',
-    corona: I('<path d="M3 18h18M4 18L3 8l5 4 4-7 4 7 5-4-1 10"/><circle cx="12" cy="4" r="1"/><circle cx="3" cy="7.5" r=".8"/><circle cx="21" cy="7.5" r=".8"/>'),
-    zapatilla: I('<path d="M3 15c3 0 6-1 8-4l2-3 2 1-1 3c2 2 5 3 7 3v3H3z"/><path d="M15 18v3"/>'),
-    mariposa: I('<path d="M12 7v12M12 9c-2-4-8-6-9-3s2 6 9 5c-6 1-7 5-5 7s4-1 5-4M12 9c2-4 8-6 9-3s-2 6-9 5c6 1 7 5 5 7s-4-1-5-4M11 6l-1.5-2.5M13 6l1.5-2.5"/>'),
-    estrella: I('<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6-4.5-4.2 6.1-.7z"/>'),
-    traje: '<svg viewBox="0 0 70 110" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M27 6l8 8 8-8M27 6l-11 6-4 28 8 2 2 64h26l2-64 8-2-4-28-11-6"/><path d="M35 14l-5 16 5 6 5-6-5-16M31 20l4 3 4-3"/><circle cx="35" cy="48" r="1"/><circle cx="35" cy="58" r="1"/></svg>',
-    vestido: '<svg viewBox="0 0 70 110" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M28 6c0 8 2 14 7 18 5-4 7-10 7-18"/><path d="M28 6l-4 2 3 26-4 6-13 66h50L47 40l-4-6 3-26-4-2"/><path d="M24 40h22"/></svg>'
-  };
-  const ICONOS_EVENTO = ['iglesia', 'anillos', 'copa', 'brindis', 'cena', 'musica', 'pastel', 'foto', 'auto', 'corazon', 'luna', 'corona', 'zapatilla', 'mariposa', 'estrella'];
-  const ICONOS_REGALO = ['regalo', 'bolsa', 'banco', 'sobre', 'corazon'];
-
-  // ---------------------------------------------------------------------------
-  // Datos por defecto (se mezclan con los de cada boda)
-  // ---------------------------------------------------------------------------
-  const SECCIONES = ['frase', 'familia', 'cuenta', 'itinerario', 'ubicacion', 'vestimenta', 'historia', 'regalos', 'hospedaje', 'rsvp', 'deseos', 'canciones', 'contactos', 'cierre'];
-  function normalizar(d) {
-    d = JSON.parse(JSON.stringify(d || {}));
-    const E = EVENTOS[d.evento] || EVENTOS.boda, uno = E !== EVENTOS.boda, yo = E.voz === 'yo';
-    const def = {
-      evento: 'boda', plantilla: E.plantilla, novia: uno ? '' : 'Novia', novio: uno ? '' : 'Novio', festejada: uno ? 'Nombre' : '', iniciales: '',
-      fecha: '2027-03-20', hora: '17:00', zonaHoraria: '-06:00', ciudad: '',
-      introPortada: E.intro, fotoPortada: '',
-      frase: '', fraseAutor: '',
-      tituloFamilia: E.familia[0],
-      textoFamilia: E.familia[1],
-      padresNovia: '', padresNovio: '', padrinos: [],
-      itinerario: [], lugares: [],
-      vestimenta: { tipo: 'Formal', texto: '', colores: [], nota: '' },
-      historia: { titulo: E.historia, texto: '', fotos: [] },
-      regalos: { titulo: yo ? 'Tu presencia es mi mejor regalo' : 'Tu presencia es nuestro mejor regalo', texto: '', opciones: [], banco: '', titular: '', clabe: '' },
-      rsvp: { whatsapp: '', fechaLimite: '', pases: 2, texto: '' },
-      hospedaje: [], contactos: { novia: '', novio: '' },
-      invitados: [], mesas: { activo: false, texto: '', lista: [], elementos: [] },
-      confirmaciones: { url: '', boda: '', clave: '', whatsapp: false },
-      acceso: { activo: false, texto: '' },
-      hashtag: '', nota: '', despedida: E.despedida,
-      musica: 'melodia', adornos: {}, ocultar: {}, encuadres: {}
-    };
-    for (const k in def) {
-      if (d[k] == null) d[k] = def[k];
-      else if (typeof def[k] === 'object' && !Array.isArray(def[k])) d[k] = Object.assign({}, def[k], d[k]);
-    }
-    return d;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Secciones comunes. Cada plantilla las acomoda y decora a su gusto.
-  // opts: { clase, antes, despues, titulo }
-  // ---------------------------------------------------------------------------
-  function seccion(id, interior, opts = {}) {
-    return `<section id="${id}" class="sec sec-${id} ${opts.clase || ''}">${opts.antes || ''}<div class="cont">${interior}</div>${opts.despues || ''}</section>`;
-  }
-  const encabezado = (eyebrow, titulo, lead) =>
-    `${eyebrow ? `<p class="eyebrow rv">${esc(eyebrow)}</p>` : ''}<h2 class="titulo rv">${esc(titulo)}</h2>${lead ? `<p class="lead rv">${br(lead)}</p>` : ''}`;
-
-  /** Adorno reemplazable: usa la imagen subida (o plantillas/adornos/<plantilla>-<slot>.png) y si no existe, el dibujo SVG. */
-  function adorno(d, slot, fallback, clase = '') {
-    const src = (d.adornos && d.adornos[slot]) || (d._rutaAdornos != null ? `${d._rutaAdornos}${d.plantilla}-${slot}.png` : '');
-    const img = src ? `<img src="${esc(src)}" alt="" onerror="this.remove()">` : '';
-    return `<span class="orn orn-${slot} ${clase}" aria-hidden="true">${img}<span class="fb">${fallback || ''}</span></span>`;
-  }
-
-  /** ¿Las respuestas se guardan en Google Sheets? ¿También se abre WhatsApp? */
-  const conHoja = (d) => hay(d.confirmaciones && d.confirmaciones.url);
-  const iconoEnviar = (d) => conHoja(d) && !d.confirmaciones.whatsapp ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>' : ICONOS.whatsapp;
-
-  const S = {
-    esc, br, lineas, hay, fechaInfo, iniciales, esXV, unNombre, ev, voz, titular, delEvento, cabecera, ICONOS, adorno, seccion, encabezado,
-
-    sobre(d, o = {}) {
-      return `
-<div id="sobre" class="sobre-pantalla${o.portada ? ' en-portada' : ''}" ${o.portada ? '' : 'role="dialog"'} aria-label="Abrir invitación">
-  ${o.fondo || ''}
-  <p class="sobre-para">${esc(o.textoPara || 'Una invitación especial para')}<strong data-invitado-nombre>ti</strong></p>
-  <div class="sobre" tabindex="0" role="button" aria-label="Abrir sobre">
-    <div class="sobre-atras"></div>
-    <div class="sobre-carta">${o.carta || `<small>${esc(d.introPortada || 'Nos casamos')}</small><span>${esc(iniciales(d))}</span><small>${fechaInfo(d).corta}</small>`}</div>
-    <div class="sobre-frente"></div>
-    <div class="sobre-solapa"><div class="solapa-fuera"></div><div class="solapa-dentro">${o.forro || ''}</div></div>
-    <div class="sello">${o.selloExtra || ''}${[1, 2].map(n => `<span class="mitad mitad-${n}">${o.sello || esc(iniciales(d)).replace(/&amp;/, '<i>&amp;</i>')}</span>`).join('')}</div>
-  </div>
-  <p class="sobre-pista">${esc(o.pista || 'Toca el sello para abrir')}</p>
-</div>
-<button id="btn-musica" class="btn-musica" aria-label="Pausar o reproducir música">${ICONOS.musica}</button>`;
-    },
-
-    nombres(d, tag = 'h1', amp = '&amp;') {
-      if (unNombre(d)) return `<${tag} class="nombres nombre-xv nombre-uno"><span class="n1">${esc(d.festejada)}</span></${tag}>`;
-      return `<${tag} class="nombres"><span class="n1">${esc(d.novia)}</span><span class="amp">${amp}</span><span class="n2">${esc(d.novio)}</span></${tag}>`;
-    },
-
-    fechaBloque(d) {
-      const f = fechaInfo(d);
-      return `<div class="fecha-bloque"><span class="lado">${f.diaSemana}</span><span class="dia">${f.dia}<small>${f.mes}</small></span><span class="lado">${f.anio}</span></div>`;
-    },
-
-    frase(d, o = {}) {
-      if (!hay(d.frase) || d.ocultar.frase) return '';
-      return seccion('frase', `${o.arriba || ''}<blockquote class="rv">“${br(d.frase)}”</blockquote>${hay(d.fraseAutor) ? `<cite class="rv">${esc(d.fraseAutor)}</cite>` : ''}`, o);
-    },
-
-    familia(d, o = {}) {
-      if (d.ocultar.familia) return '';
-      const [t1, ...t2] = String(d.tituloFamilia).split(' y de ');
-      const titulo = t2.length ? `<p class="eyebrow rv">${esc(t1)}</p><h2 class="titulo rv">y de ${esc(t2.join(' y de '))}</h2>` : `<h2 class="titulo rv">${esc(d.tituloFamilia)}</h2>`;
-      if (unNombre(d)) d = Object.assign({}, d, { padresNovio: '' });
-      const padres = (hay(d.padresNovia) || hay(d.padresNovio)) ? `<div class="padres">
-        ${hay(d.padresNovia) ? `<div class="rv"><h3>${esc(ev(d).padres)}</h3><p>${lineas(d.padresNovia).map(esc).join('<br>')}</p></div>` : ''}
-        ${hay(d.padresNovio) ? `<div class="rv"><h3>Padres del novio</h3><p>${lineas(d.padresNovio).map(esc).join('<br>')}</p></div>` : ''}
-      </div>` : '';
-      const pad = (d.padrinos || []).filter(p => hay(p.nombres));
-      const padrinos = pad.length ? `<div class="padrinos">${pad.map(p => `<div class="rv"><h3>${esc(p.rol)}</h3><p>${br(p.nombres)}</p></div>`).join('')}</div>` : '';
-      return seccion('familia', `${o.arriba || ''}${titulo}${hay(d.textoFamilia) ? `<p class="lead rv">${br(d.textoFamilia)}</p>` : ''}${padres}${padrinos}`, o);
-    },
-
-    reloj(cortas) {
-      const u = (id, l) => `<div><span data-cd="${id}">00</span><small>${l}</small></div>`;
-      const n = cortas ? ['D', 'H', 'M', 'S'] : ['Días', 'Horas', 'Minutos', 'Segundos'];
-      return `<div class="reloj rv">${u('d', n[0])}<b>:</b>${u('h', n[1])}<b>:</b>${u('m', n[2])}<b>:</b>${u('s', n[3])}</div>`;
-    },
-    enlaceCalendario, enlaceMapa, conHoja,
-
-    cuenta(d, o = {}) {
-      if (d.ocultar.cuenta) return '';
-      return seccion('cuenta', `${encabezado('Faltan', o.titulo || 'para el gran día')}
-        ${S.reloj()}
-        <a class="btn rv" target="_blank" rel="noopener" href="${esc(enlaceCalendario(d))}">${ICONOS.calendario}Agendar en calendario</a>`, Object.assign({ clase: 'oscura' }, o));
-    },
-
-    itinerario(d, o = {}) {
-      const it = (d.itinerario || []).filter(x => hay(x.evento));
-      if (!it.length || d.ocultar.itinerario) return '';
-      return seccion('itinerario', `${encabezado('Itinerario', o.titulo || 'Programa del día')}
-        <div class="linea">${it.map(x => `<div class="evento rv">
-          <div class="hora">${esc(x.hora)}</div>
-          <div class="icono">${ICONOS[x.icono] || ICONOS.corazon}</div>
-          <div class="que">${esc(x.evento)}${hay(x.detalle) ? `<small>${esc(x.detalle)}</small>` : ''}</div>
-        </div>`).join('')}</div>`, o);
-    },
-
-    ubicacion(d, o = {}) {
-      const ls = (d.lugares || []).filter(x => hay(x.nombre));
-      if (!ls.length || d.ocultar.ubicacion) return '';
-      return seccion('ubicacion', `${encabezado('Dónde', o.titulo || 'Ubicación')}
-        <div class="lugares n${ls.length}">${ls.map((l, i) => `<div class="lugar rv">
-          ${o.decoLugar ? o.decoLugar(i) : `<div class="lugar-icono">${ICONOS[l.icono] || (i === 0 ? ICONOS.iglesia : ICONOS.hacienda)}</div>`}
-          <h3>${esc(l.tipo)}</h3>
-          ${hay(l.hora) ? `<p class="lugar-hora">${esc(l.hora)} hrs</p>` : ''}
-          <p class="lugar-nombre">${esc(l.nombre)}</p>
-          <p class="lugar-dir">${br(l.direccion)}</p>
-          <a class="btn" target="_blank" rel="noopener" href="${esc(enlaceMapa(l))}">${ICONOS.mapa}Ver mapa</a>
-        </div>`).join('')}</div>`, o);
-    },
-
-    vestimenta(d, o = {}) {
-      const v = d.vestimenta || {};
-      if (!hay(v.tipo) || d.ocultar.vestimenta) return '';
-      const col = (v.colores || []).filter(Boolean);
-      return seccion('vestimenta', `${encabezado('Código de vestimenta', v.tipo)}
-        <div class="figuras rv"><figure>${ICONOS.traje}<figcaption>Traje</figcaption></figure><figure>${ICONOS.vestido}<figcaption>Vestido largo</figcaption></figure></div>
-        ${hay(v.texto) ? `<p class="rv">${br(v.texto)}</p>` : ''}
-        ${col.length ? `<div class="paleta rv">${col.map(c => `<span style="background:${esc(c)}"></span>`).join('')}</div>` : ''}
-        ${hay(v.nota) ? `<p class="nota rv">${br(v.nota)}</p>` : ''}`, o);
-    },
-
-    historia(d, o = {}) {
-      const h = d.historia || {};
-      const fotos = h.fotos || [];
-      if ((!fotos.length && !hay(h.texto)) || d.ocultar.historia) return '';
-      return seccion('historia', `${encabezado('Momentos', h.titulo, h.texto)}
-        ${fotos.length ? `<div class="galeria g${Math.min(fotos.length, 6)}">${fotos.map((f, i) => `<figure class="foto rv${f.src ? '' : ' vacia'}" ${f.src ? `data-zoom="${esc(f.src)}"` : ''}>
-          ${f.src ? `<img src="${esc(f.src)}" alt="${esc(f.pie || 'Foto ' + (i + 1))}" loading="lazy">` : `<span class="foto-hueco">${ICONOS.foto}</span>`}
-          ${hay(f.pie) ? `<figcaption>${esc(f.pie)}</figcaption>` : ''}
-        </figure>`).join('')}</div>` : ''}`, o);
-    },
-
-    regalos(d, o = {}) {
-      const r = d.regalos || {};
-      const ops = (r.opciones || []).filter(x => hay(x.nombre));
-      if ((!ops.length && !hay(r.clabe)) || d.ocultar.regalos) return '';
-      const clabe = String(r.clabe || '').replace(/\s/g, '');
-      return seccion('regalos', `${encabezado('Mesa de regalos', r.titulo, r.texto)}
-        ${ops.length ? `<div class="regalos n${ops.length}">${ops.map(x => {
-          const tag = hay(x.enlace) ? `a href="${esc(x.enlace)}" target="_blank" rel="noopener"` : 'div';
-          return `<${tag} class="regalo rv">${ICONOS[x.icono] || ICONOS.regalo}<h4>${esc(x.nombre)}</h4>${hay(x.detalle) ? `<p>${esc(x.detalle)}</p>` : ''}</${tag.split(' ')[0]}>`;
-        }).join('')}</div>` : ''}
-        ${clabe ? `<p class="banco rv">${hay(r.banco) ? esc(r.banco) + ' · ' : ''}CLABE: <code>${esc(clabe.replace(/(\d{4})(?=\d)/g, '$1 '))}</code><button class="copiar" data-copiar="${esc(clabe)}">Copiar</button>${hay(r.titular) ? `<br>${esc(r.titular)}` : ''}</p>` : ''}`, o);
-    },
-
-    formRsvp(d) {
-      const r = d.rsvp || {};
-      return `<form id="form-rsvp" class="rv" novalidate>
-          <label for="f-nombre">Nombre completo</label>
-          <input type="text" id="f-nombre" placeholder="Tu nombre" autocomplete="name">
-          <label>${voz(d).acompanas}</label>
-          <div class="opciones">
-            <input type="radio" name="asiste" id="asiste-si" value="si" checked><label for="asiste-si">Sí, ahí estaré</label>
-            <input type="radio" name="asiste" id="asiste-no" value="no"><label for="asiste-no">No podré asistir</label>
-          </div>
-          <div id="caja-pases"><label for="f-pases">Número de asistentes</label><select id="f-pases"></select></div>
-          <label for="f-msg">Mensaje para ${esc(conNombre(ev(d).recibe, d))} (opcional)</label>
-          <textarea id="f-msg" placeholder="Escribe unas palabras…"></textarea>
-          <button class="btn solido" type="submit">${iconoEnviar(d)}${conHoja(d) && !d.confirmaciones.whatsapp ? 'Enviar confirmación' : 'Confirmar por WhatsApp'}</button>
-          ${hay(r.fechaLimite) ? `<p class="limite">Agradeceremos tu confirmación antes del ${esc(fechaTexto(r.fechaLimite))}</p>` : ''}
-        </form>`;
-    },
-
-    rsvp(d, o = {}) {
-      const r = d.rsvp || {};
-      if (d.ocultar.rsvp) return '';
-      return seccion('rsvp', `${encabezado('R.S.V.P.', o.titulo || 'Confirma tu asistencia', r.texto)}
-        <div class="pase rv"><strong data-invitado-nombre>Querido invitado</strong>Hemos reservado <b data-pases>${esc(r.pases || 2)}</b> <span data-pases-palabra>lugares</span> en tu honor<em class="pase-mesa" data-mesa-pase hidden></em></div>
-        ${S.formRsvp(d)}`, o);
-    },
-
-    hospedaje(d, o = {}) {
-      const hs = (d.hospedaje || []).filter(h => hay(h.nombre));
-      if (!hs.length || d.ocultar.hospedaje) return '';
-      return seccion('hospedaje', `${encabezado(voz(d).nuestros, o.titulo || 'Hospedaje')}
-        <div class="hoteles">${hs.map(h => `<div class="hotel rv"><h4>${esc(h.nombre)}</h4>${hay(h.nota) ? `<p class="hotel-nota">${br(h.nota)}</p>` : ''}${hay(h.direccion) ? `<p class="hotel-dir">${br(h.direccion)}</p>` : ''}<a class="btn" target="_blank" rel="noopener" href="${esc(enlaceMapa(h))}">${ICONOS.mapa}Ver ubicación</a></div>`).join('')}</div>`, o);
-    },
-
-    /** Formulario corto que se envía por WhatsApp (buenos deseos, canciones). */
-    formWhats(d, tipo, o) {
-      return `<form class="form-whats" data-whats="${tipo}" novalidate>
-        <input type="text" name="nombre" placeholder="Tu nombre" autocomplete="name" data-nombre-invitado>
-        ${tipo === 'cancion' ? '<input type="text" name="texto" placeholder="Canción y artista">' : '<textarea name="texto" placeholder="Escribe tus buenos deseos…"></textarea>'}
-        <button class="btn solido" type="submit">${iconoEnviar(d)}${esc(o.boton)}</button>
-      </form>`;
-    },
-    deseos(d, o = {}) {
-      if (d.ocultar.deseos || !(hay(d.rsvp.whatsapp) || conHoja(d))) return '';
-      return seccion('deseos', `${encabezado(voz(d).dejanos, o.titulo || 'Buenos deseos', o.texto || 'Tus palabras serán un recuerdo para siempre')}${S.formWhats(d, 'deseo', { boton: 'Enviar mis buenos deseos' })}`, o);
-    },
-    canciones(d, o = {}) {
-      if (d.ocultar.canciones || !(hay(d.rsvp.whatsapp) || conHoja(d))) return '';
-      return seccion('canciones', `${encabezado('¡Que no pare la fiesta!', o.titulo || 'Sugiere una canción', o.texto || '¿Qué canción no puede faltar en la pista?')}${S.formWhats(d, 'cancion', { boton: 'Enviar canción' })}`, o);
-    },
-    contactos(d, o = {}) {
-      const c = d.contactos || {};
-      if (d.ocultar.contactos || (!hay(c.novia) && !hay(c.novio))) return '';
-      const b = (num, quien) => hay(num) ? `<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${esc(String(num).replace(/\D/g, ''))}">${ICONOS.whatsapp}${esc(quien)}</a>` : '';
-      return seccion('contactos', `${encabezado('¿Tienes dudas?', o.titulo || 'Contactos')}<div class="contactos rv">${b(c.novia, unNombre(d) ? ev(d).contactos[0] : d.novia)}${b(c.novio, unNombre(d) ? ev(d).contactos[1] : d.novio)}</div>`, o);
-    },
-    /** Hospedaje, buenos deseos, canciones y contactos juntos. */
-    /** Plano del salón con las mesas (paquete opcional "Mesas"). */
-    plano(d) {
-      const m = d.mesas || {};
-      const ETQ = { pista: 'Pista', novios: ev(d).honor, entrada: 'Entrada', barra: 'Barra', dj: 'DJ', pastel: 'Pastel' };
-      return `<div class="plano">
-        ${(m.elementos || []).map(x => `<div class="pl-el pl-${esc(x.tipo)}" style="left:${+x.x || 0}%;top:${+x.y || 0}%;width:${+x.w || 20}%;height:${+x.h || 15}%"><span>${esc(x.texto || ETQ[x.tipo] || '')}</span></div>`).join('')}
-        ${(m.lista || []).map(x => `<div class="pl-mesa ${x.forma === 'rectangular' ? 'rect' : ''}" data-mesa="${esc(x.nombre)}" style="left:${+x.x || 0}%;top:${+x.y || 0}%"><span>${esc(x.nombre)}</span></div>`).join('')}
-      </div>`;
-    },
-    mesa(d, o = {}) {
-      const m = d.mesas || {};
-      if (!m.activo || !(m.lista || []).length) return '';
-      return seccion('mesa', `${encabezado('Su lugar', o.titulo || 'Tu mesa')}
-        <p class="mesa-txt rv"><span data-invitado-nombre>Querido invitado</span>, te esperamos en la</p>
-        <p class="mesa-num rv" data-mesa-nombre></p>
-        ${hay(m.texto) ? `<p class="lead rv">${br(m.texto)}</p>` : ''}
-        <div class="rv">${S.plano(d)}</div>`, Object.assign({}, o, { clase: (o.clase || '') + ' sin-mesa' }));
-    },
-
-    /** Pase de entrada con QR (paquete opcional). Solo se ve en la invitación personalizada de cada familia. */
-    acceso(d, o = {}) {
-      const a = d.acceso || {};
-      if (!a.activo || !(d.confirmaciones && d.confirmaciones.boda)) return '';
-      return seccion('acceso', `${encabezado('Tu acceso', o.titulo || 'Pase de entrada')}
-        <div class="acceso-tarjeta rv">
-          <p class="acceso-para">Pase para</p>
-          <strong class="acceso-nombre" data-invitado-nombre>Invitado</strong>
-          <p class="acceso-lug"><b data-pases>2</b> <span data-pases-palabra>lugares</span><span data-acceso-mesa></span></p>
-          <div class="acceso-qr" data-acceso-qr role="img" aria-label="Código QR de tu pase de entrada"></div>
-          <p class="acceso-nota">${esc(a.texto || 'Presenta este código en la entrada')}</p>
-        </div>
-        <button class="btn rv" type="button" data-acceso-guardar>${ICONOS.foto}Guardar mi pase</button>`, Object.assign({}, o, { clase: (o.clase || '') + ' sin-acceso' }));
-    },
-
-    extras(d, o = {}) {
-      return S.mesa(d, o.mesa) + S.acceso(d, o.acceso) + S.hospedaje(d, o.hospedaje) + S.deseos(d, o.deseos) + S.canciones(d, o.canciones) + S.contactos(d, o.contactos);
-    },
-
-    cierre(d, o = {}) {
-      if (d.ocultar.cierre) return '';
-      return `${(hay(d.hashtag) || hay(d.nota)) ? seccion('compartir', `${o.separador || ''}
-          ${hay(d.hashtag) ? `<p class="eyebrow rv">Comparte tus fotos</p><p class="hashtag rv">${esc(d.hashtag)}</p>` : ''}
-          ${hay(d.nota) ? `<p class="nota rv">${br(d.nota)}</p>` : ''}`, {}) : ''}
-        <footer class="pie ${o.clase || ''}">${o.antes || ''}
-          <p class="rv">${esc(d.despedida)}</p>
-          ${S.nombres(d, 'p')}
-          <p class="pie-fecha rv">${fechaInfo(d).corta}</p>
-        </footer>`;
-    }
-  };
-
-  // ---------------------------------------------------------------------------
-  // CSS base: estructura común. Cada plantilla define colores, fuentes y adornos.
-  // Variables: --fondo --fondo2 --tinta --suave --acento --acento2 --linea --oscuro --sobre-oscuro
-  //            --f-titulo --f-texto --f-etiqueta
-  // ---------------------------------------------------------------------------
-  const CSS_BASE = `
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Nunito:ital,wght@0,400;0,600;0,700;1,400&amp;display=swap">
+<style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--fondo);color:var(--tinta);font-family:var(--f-texto);font-size:19px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
@@ -746,14 +310,210 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
   *,*::before,*::after{animation:none!important;transition-duration:.01ms!important;transition-delay:0s!important}
   .rv{opacity:1;transform:none}
   .efecto{display:none}
-}`;
+}
 
-  // ---------------------------------------------------------------------------
-  // Comportamiento de la página (sobre, cuenta regresiva, RSVP…).
-  // IMPORTANTE: esta función debe ser autónoma (no usar nada de fuera), porque
-  // el editor copia su código tal cual dentro del HTML que se descarga.
-  // ---------------------------------------------------------------------------
-  function runtime(d) {
+body.plantilla-globos{--fondo:#fff6e9;--fondo2:#fff0dc;--tinta:#3b3557;--suave:#5f5878;--acento:#e8a98f;--acento-texto:#8f4a33;--acento2:#a8325a;--linea:#f0dccb;--oscuro:#4b3f8f;--sobre-oscuro:#fffaf3;--titulo:#4b3f8f;--tarjeta:#ffffff;--radio-btn:40px;
+  --f-titulo:'Fredoka',system-ui,sans-serif;--f-texto:'Nunito',system-ui,sans-serif;--f-etiqueta:'Fredoka',system-ui,sans-serif;
+  --fondo-sobre:radial-gradient(circle at 50% 30%,#fffaf3 0%,#ffe2d2 100%);--sobre-c1:#ffcfb8;--sobre-c2:#ffdccb;--sobre-c3:#ffe6d8;--sello:radial-gradient(circle at 35% 30%,#d9c8f2,#a58bc9 60%,#7d63a8);--sello-texto:#fff;--sello-borde:#8d72b8;
+  --menta:#d8f1e6;--durazno:#ffe3d6;--lila:#ece3fa;--crema:#fff6e9}
+body.plantilla-globos{font-size:18px}
+.plantilla-globos .sello{font-family:'Fredoka',sans-serif;font-weight:600}
+.plantilla-globos .titulo{font-weight:700;font-size:clamp(38px,9.5vw,58px);letter-spacing:-.01em}
+.plantilla-globos .eyebrow{display:inline-block;font-weight:600;letter-spacing:.12em;font-size:13px;color:#fff;background:var(--acento2);padding:6px 16px;border-radius:20px;margin-bottom:16px}
+.plantilla-globos .lead{font-style:normal}
+/* Secciones de colores: cada una dibuja su propia onda encima (no importa el orden ni las que se oculten) */
+.plantilla-globos .sec,.plantilla-globos .pie{overflow-x:clip;overflow-y:visible}
+.plantilla-globos .sec{padding:90px 22px 90px}
+.plantilla-globos .sec::before,.plantilla-globos .pie::before{content:"";position:absolute;left:0;right:0;top:-25px;height:26px;z-index:1;background-size:100% 100%;pointer-events:none}
+.plantilla-globos .c-menta{background:var(--menta)}.plantilla-globos .c-menta::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20120%2016'%20preserveAspectRatio%3D'none'%3E%3Cpath%20d%3D'M0%2016V8Q15%200%2030%208T60%208T90%208T120%208V16Z'%20fill%3D'%23d8f1e6'%2F%3E%3C%2Fsvg%3E")}
+.plantilla-globos .c-durazno{background:var(--durazno)}.plantilla-globos .c-durazno::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20120%2016'%20preserveAspectRatio%3D'none'%3E%3Cpath%20d%3D'M0%2016V8Q15%200%2030%208T60%208T90%208T120%208V16Z'%20fill%3D'%23ffe3d6'%2F%3E%3C%2Fsvg%3E")}
+.plantilla-globos .c-lila{background:var(--lila)}.plantilla-globos .c-lila::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20120%2016'%20preserveAspectRatio%3D'none'%3E%3Cpath%20d%3D'M0%2016V8Q15%200%2030%208T60%208T90%208T120%208V16Z'%20fill%3D'%23ece3fa'%2F%3E%3C%2Fsvg%3E")}
+.plantilla-globos .c-crema{background:var(--crema)}.plantilla-globos .c-crema::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20120%2016'%20preserveAspectRatio%3D'none'%3E%3Cpath%20d%3D'M0%2016V8Q15%200%2030%208T60%208T90%208T120%208V16Z'%20fill%3D'%23fff6e9'%2F%3E%3C%2Fsvg%3E")}
+.plantilla-globos .pie::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20120%2016'%20preserveAspectRatio%3D'none'%3E%3Cpath%20d%3D'M0%2016V8Q15%200%2030%208T60%208T90%208T120%208V16Z'%20fill%3D'%234b3f8f'%2F%3E%3C%2Fsvg%3E")}
+.plantilla-globos .oscura{color:var(--tinta)}.plantilla-globos .oscura .titulo{color:var(--titulo)}
+/* Portada */
+.plantilla-globos .portada{background:linear-gradient(180deg,#cfe9ff 0%,#e9f5ff 45%,var(--fondo) 100%)}
+.plantilla-globos .nb{position:absolute;width:150px;opacity:.95;animation:nubeG 18s linear infinite;z-index:0}
+.plantilla-globos .nb.n1{top:12%;left:-10%}.plantilla-globos .nb.n2{top:30%;right:-12%;width:120px;animation-duration:24s;animation-direction:reverse}.plantilla-globos .nb.n3{bottom:16%;left:4%;width:100px;animation-duration:30s}
+@keyframes nubeG{0%{translate:0 0}50%{translate:40px 0}100%{translate:0 0}}
+.plantilla-globos .cielo-cont{position:relative;z-index:2;width:min(460px,100%)}
+.plantilla-globos .globo-portada{width:min(190px,48vw);margin:0 auto -6px;animation:flotaG 5s ease-in-out infinite}
+@keyframes flotaG{0%,100%{translate:0 0;rotate:-2deg}50%{translate:0 -14px;rotate:2deg}}
+.plantilla-globos .burbuja{width:min(230px,62vw);aspect-ratio:1;margin:0 auto 18px;border-radius:50%;overflow:hidden;border:8px solid #fff;box-shadow:0 0 0 4px #ffcfb8,8px 10px 0 4px #bfe6d6}
+.plantilla-globos .burbuja img{width:100%;height:100%;object-fit:cover}
+.plantilla-globos .intro span{display:inline-block;font-family:var(--f-etiqueta);font-weight:600;font-size:16px;letter-spacing:.06em;color:var(--titulo);background:#fff;padding:8px 20px;border-radius:30px;box-shadow:3px 4px 0 #d9c8f2}
+.plantilla-globos .nombres{font-weight:700;font-size:clamp(68px,20vw,120px);line-height:.95;margin:16px 0 10px;color:var(--titulo);text-shadow:4px 5px 0 #ffcfb8}
+.plantilla-globos .fecha-pills{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:18px;font-family:var(--f-etiqueta);font-weight:600}
+.plantilla-globos .fecha-pills span{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;color:var(--tinta);text-transform:uppercase;font-size:12px;letter-spacing:.08em}
+.plantilla-globos .fecha-pills .p1{width:76px;height:76px;background:#bfe6d6}.plantilla-globos .fecha-pills .p3{width:76px;height:76px;background:#d9c8f2;font-size:15px}
+.plantilla-globos .fecha-pills .p2{width:104px;height:104px;background:#ffcfb8;box-shadow:4px 5px 0 #e8a98f}
+.plantilla-globos .fecha-pills .p2 b{font-size:44px;line-height:1;font-weight:700;color:var(--titulo)}
+.plantilla-globos .ciudad{margin-top:18px;font-weight:600;color:var(--suave)}
+/* Tarjetas tipo sticker */
+.plantilla-globos .lugar,.plantilla-globos .regalo,.plantilla-globos .hotel,.plantilla-globos .pase,.plantilla-globos .acceso-tarjeta{background:#fff;border:3px solid var(--tinta);border-radius:26px;box-shadow:6px 7px 0 var(--tinta)}
+.plantilla-globos .lugar h3{font-family:var(--f-titulo);font-weight:700;font-size:30px;color:var(--titulo)}
+.plantilla-globos .lugar-icono{color:var(--acento2)}
+.plantilla-globos .btn{font-family:var(--f-etiqueta);font-weight:600;font-size:14px;letter-spacing:.06em;border-width:2px}
+.plantilla-globos .btn.solido{background:var(--acento2);border-color:var(--tinta);color:#fff;box-shadow:4px 5px 0 var(--tinta)}
+.plantilla-globos .btn.solido:hover{transform:translate(2px,2px);box-shadow:2px 3px 0 var(--tinta)}
+/* Itinerario en tarjetas */
+.plantilla-globos .linea{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;max-width:640px}
+.plantilla-globos .linea::before{display:none}
+.plantilla-globos .evento,.plantilla-globos .evento:nth-child(even){display:flex;flex-direction:column;align-items:center;gap:6px;margin:0;background:#fff;border-radius:22px;padding:18px 10px;border:2px solid var(--linea)}
+.plantilla-globos .evento .hora,.plantilla-globos .evento:nth-child(even) .hora{order:0;text-align:center;font-family:var(--f-titulo);font-weight:700;font-size:26px}
+.plantilla-globos .evento .icono,.plantilla-globos .evento:nth-child(even) .icono{order:-1;background:#ffcfb8;border:none;color:var(--titulo)}
+.plantilla-globos .evento:nth-child(3n+2) .icono{background:#bfe6d6}.plantilla-globos .evento:nth-child(3n) .icono{background:#d9c8f2}
+.plantilla-globos .evento .que,.plantilla-globos .evento:nth-child(even) .que{order:1;text-align:center;font-weight:700;font-size:17px}
+/* Cuenta regresiva en burbujas */
+.plantilla-globos .reloj{gap:10px}
+.plantilla-globos .reloj>div{width:clamp(66px,19vw,96px);aspect-ratio:1;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:4px 5px 0 #a58bc9}
+.plantilla-globos .reloj span{font-family:var(--f-titulo);font-weight:700;font-size:clamp(28px,8vw,40px);color:var(--titulo)}
+.plantilla-globos .reloj small{margin-top:2px;font-size:10px;letter-spacing:.08em;color:var(--suave)}
+.plantilla-globos .reloj b{display:none}
+.plantilla-globos .oscura .btn{border-color:var(--tinta);color:var(--tinta);background:#fff}
+.plantilla-globos .oscura .eyebrow{color:#fff}
+/* Fotos tipo polaroid */
+.plantilla-globos .foto{background:#fff;padding:10px 10px 36px;border-radius:6px;box-shadow:0 8px 20px rgba(59,53,87,.15)}
+.plantilla-globos .foto:nth-child(odd){rotate:-3deg}.plantilla-globos .foto:nth-child(even){rotate:3deg}
+.plantilla-globos .foto figcaption{background:none;color:var(--tinta);font-family:var(--f-titulo);bottom:6px}
+.plantilla-globos .globitos-esq{position:absolute;width:150px;top:30px;right:-20px;opacity:.9}
+.plantilla-globos .globitos-esq.d{right:auto;left:-20px}
+.plantilla-globos .globitos-pie{width:170px;margin:0 auto 10px}
+.plantilla-globos .pie{background:linear-gradient(180deg,#4b3f8f,#3a2f73)}
+.plantilla-globos .pie .nombres{color:#fff;text-shadow:4px 5px 0 #a58bc9;font-size:clamp(56px,15vw,90px)}
+.plantilla-globos #form-rsvp label{color:var(--tinta)}
+.plantilla-globos #form-rsvp input[type=text],.plantilla-globos #form-rsvp select,.plantilla-globos #form-rsvp textarea,.plantilla-globos .form-whats input,.plantilla-globos .form-whats textarea{border:2px solid var(--linea);border-radius:16px;font-family:var(--f-texto)}
+.plantilla-globos .opciones label{border-radius:16px!important}
+@media (max-width:640px){
+  .plantilla-globos .linea{grid-template-columns:1fr 1fr}
+  .plantilla-globos .globitos-esq{width:100px}
+}</style>
+</head>
+<body class="plantilla-globos">
+
+
+<div id="sobre" class="sobre-pantalla" role="dialog" aria-label="Abrir invitación">
+  
+  <p class="sobre-para">Una invitación especial para<strong data-invitado-nombre>ti</strong></p>
+  <div class="sobre" tabindex="0" role="button" aria-label="Abrir sobre">
+    <div class="sobre-atras"></div>
+    <div class="sobre-carta"><small>Baby shower</small><span>E</span><small>13 · 02 · 2027</small></div>
+    <div class="sobre-frente"></div>
+    <div class="sobre-solapa"><div class="solapa-fuera"></div><div class="solapa-dentro"><svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 60">
+    <defs><pattern id="gl-forro-1" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="2" fill="#ffcfb8"/><circle cx="9" cy="9" r="2" fill="#bfe6d6"/></pattern></defs>
+    <rect width="100" height="60" fill="#fff6e9"/><rect width="100" height="60" fill="url(#gl-forro-1)"/></svg></div></div>
+    <div class="sello"><span class="mitad mitad-1">E</span><span class="mitad mitad-2">E</span></div>
+  </div>
+  <p class="sobre-pista">Toca el sello para abrir</p>
+</div>
+<button id="btn-musica" class="btn-musica" aria-label="Pausar o reproducir música"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></button>
+<main>
+  <section class="portada">
+    <span class="orn orn-nube nb n1" aria-hidden="true"><img src="plantillas/adornos/globos-nube.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 160 70"><path d="M24 62c-14 0-22-8-22-18 0-11 9-18 20-17 3-14 14-22 28-20 7-10 26-12 36-2 6-4 18-4 24 4 12-1 24 8 24 22 0 18-12 31-28 31z" fill="#fff"/></svg></span></span><span class="orn orn-nube nb n2" aria-hidden="true"><img src="plantillas/adornos/globos-nube.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 160 70"><path d="M24 62c-14 0-22-8-22-18 0-11 9-18 20-17 3-14 14-22 28-20 7-10 26-12 36-2 6-4 18-4 24 4 12-1 24 8 24 22 0 18-12 31-28 31z" fill="#fff"/></svg></span></span><span class="orn orn-nube nb n3" aria-hidden="true"><img src="plantillas/adornos/globos-nube.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 160 70"><path d="M24 62c-14 0-22-8-22-18 0-11 9-18 20-17 3-14 14-22 28-20 7-10 26-12 36-2 6-4 18-4 24 4 12-1 24 8 24 22 0 18-12 31-28 31z" fill="#fff"/></svg></span></span>
+    <div class="cielo-cont rv">
+      <span class="orn orn-globo globo-portada" aria-hidden="true"><img src="plantillas/adornos/globos-globo.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 260 330">
+    <defs><clipPath id="gl-c-2"><path d="M130 14C70 14 30 58 30 112c0 52 46 94 74 122h52c28-28 74-70 74-122C230 58 190 14 130 14z"/></clipPath></defs>
+    <g clip-path="url(#gl-c-2)">
+      <rect x="0" y="0" width="260" height="260" fill="#ffcfb8"/>
+      <path d="M130 0C96 50 92 170 112 260H148C168 170 164 50 130 0z" fill="#fff3d6"/>
+      <path d="M60 0C40 70 60 190 104 260H76C38 200 22 80 60 0z" fill="#bfe6d6"/>
+      <path d="M200 0C220 70 200 190 156 260H184C222 200 238 80 200 0z" fill="#d9c8f2"/>
+      <path d="M0 0C0 80 20 190 60 260H0z" fill="#ffe69a"/><path d="M260 0C260 80 240 190 200 260H260z" fill="#ffe69a"/>
+      <path d="M20 128Q130 150 240 128" stroke="#fff" stroke-width="5" fill="none" opacity=".6"/>
+    </g>
+    <path d="M130 14C70 14 30 58 30 112c0 52 46 94 74 122h52c28-28 74-70 74-122C230 58 190 14 130 14z" fill="none" stroke="#e8a98f" stroke-width="3"/>
+    <path d="M106 234L112 262M154 234L148 262" stroke="#b9a08a" stroke-width="2.5"/>
+    <rect x="100" y="260" width="60" height="44" rx="8" fill="#e9b989" stroke="#c48d5e" stroke-width="2"/>
+    <path d="M100 274H160" stroke="#c48d5e" stroke-width="2"/>
+    <g transform="translate(130 252)">
+      <circle cx="-14" cy="-6" r="7" fill="#c69468"/><circle cx="14" cy="-6" r="7" fill="#c69468"/><circle cx="-14" cy="-6" r="3.5" fill="#f1cfa8"/><circle cx="14" cy="-6" r="3.5" fill="#f1cfa8"/>
+      <circle r="17" fill="#c69468"/><ellipse cy="6" rx="8" ry="6" fill="#f1cfa8"/><circle cx="-6" cy="-3" r="2.2" fill="#3b3557"/><circle cx="6" cy="-3" r="2.2" fill="#3b3557"/><ellipse cy="4" rx="2.6" ry="2" fill="#3b3557"/>
+      <circle cx="-10" cy="4" r="3" fill="#f6a7b0" opacity=".7"/><circle cx="10" cy="4" r="3" fill="#f6a7b0" opacity=".7"/>
+    </g>
+  </svg></span></span>
+      <p class="intro"><span>Baby shower</span></p>
+      <h1 class="nombres nombre-xv nombre-uno"><span class="n1">Emilia</span></h1>
+      <div class="fecha-pills"><span class="p1">Sábado</span><span class="p2"><b>13</b>Febrero</span><span class="p3">2027</span></div>
+      <p class="ciudad">📍 Monterrey, Nuevo León</p>
+    </div>
+    <a href="#frase" class="bajar" aria-label="Bajar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M6 9l6 6 6-6"/></svg></a>
+  </section>
+  <section id="frase" class="sec sec-frase c-menta"><div class="cont"><blockquote class="rv">“Un pedacito de cielo está por llegar.”</blockquote></div></section>
+  <section id="familia" class="sec sec-familia c-durazno"><span class="orn orn-globitos globitos-esq" aria-hidden="true"><img src="plantillas/adornos/globos-globitos.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 170"><g transform="translate(50 50) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffcfb8"/><path d="M-3 24L3 24L0 29z" fill="#ffcfb8"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(100 36) scale(1.1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#bfe6d6"/><path d="M-3 24L3 24L0 29z" fill="#bfe6d6"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(150 56) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#d9c8f2"/><path d="M-3 24L3 24L0 29z" fill="#d9c8f2"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(76 92) scale(0.8)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffe69a"/><path d="M-3 24L3 24L0 29z" fill="#ffe69a"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(128 98) scale(0.75)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#f6b8c4"/><path d="M-3 24L3 24L0 29z" fill="#f6b8c4"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g></svg></span></span><div class="cont"><h2 class="titulo rv">Con mucha ilusión</h2><p class="lead rv">te invitamos a celebrar la próxima llegada de nuestro bebé</p><div class="padres">
+        <div class="rv"><h3>Los papás</h3><p>Carla Rivera<br>Alejandro Núñez</p></div>
+        
+      </div></div></section>
+  <section id="cuenta" class="sec sec-cuenta c-lila"><div class="cont"><p class="eyebrow rv">Faltan</p><h2 class="titulo rv">para el gran día</h2>
+        <div class="reloj rv"><div><span data-cd="d">00</span><small>Días</small></div><b>:</b><div><span data-cd="h">00</span><small>Horas</small></div><b>:</b><div><span data-cd="m">00</span><small>Minutos</small></div><b>:</b><div><span data-cd="s">00</span><small>Segundos</small></div></div>
+        <a class="btn rv" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Baby+shower+de+Emilia&amp;dates=20270213T220000Z%2F20270214T070000Z&amp;location=Casa+de+la+familia+N%C3%BA%C3%B1ez%2C+R%C3%ADo+Danubio+230%2C+Del+Valle+San+Pedro+Garza+Garc%C3%ADa%2C+N.L.&amp;details=%C2%A1Te+esperamos%21"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Agendar en calendario</a></div></section>
+  <section id="itinerario" class="sec sec-itinerario c-crema"><div class="cont"><p class="eyebrow rv">Itinerario</p><h2 class="titulo rv">Programa del día</h2>
+        <div class="linea"><div class="evento rv">
+          <div class="hora">16:00</div>
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M8 2h8l-1 7a3 3 0 01-6 0zM12 12v8M8 22h8"/></svg></div>
+          <div class="que">Bienvenida</div>
+        </div><div class="evento rv">
+          <div class="hora">17:00</div>
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 21s-8-5.5-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 5.5-8 11-8 11z"/></svg></div>
+          <div class="que">Juegos</div>
+        </div><div class="evento rv">
+          <div class="hora">18:00</div>
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 9h18v4H3zM5 13v8h14v-8M12 9v12M12 9c-2-4-7-4-6-1 1 2 6 1 6 1zm0 0c2-4 7-4 6-1-1 2-6 1-6 1z"/></svg></div>
+          <div class="que">Abrir regalos</div>
+        </div><div class="evento rv">
+          <div class="hora">18:30</div>
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 21h16M5 21v-7h14v7M7 14v-4h10v4M12 10V7M12 4.5a1 1 0 010 2"/></svg></div>
+          <div class="que">Pastel</div>
+        </div></div></div></section>
+  <section id="ubicacion" class="sec sec-ubicacion c-menta"><div class="cont"><p class="eyebrow rv">Dónde</p><h2 class="titulo rv">Ubicación</h2>
+        <div class="lugares n1"><div class="lugar rv">
+          <div class="lugar-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M2 21h20M4 21V10h16v11M2 10l10-6 10 6M8 21v-5a2 2 0 014 0v5M14 14h3v3h-3z"/></svg></div>
+          <h3>Lugar</h3>
+          <p class="lugar-hora">16:00 hrs</p>
+          <p class="lugar-nombre">Casa de la familia Núñez</p>
+          <p class="lugar-dir">Río Danubio 230, Del Valle<br>San Pedro Garza García, N.L.</p>
+          <a class="btn" target="_blank" rel="noopener" href="https://maps.google.com/?q=Casa%20de%20la%20familia%20N%C3%BA%C3%B1ez%20R%C3%ADo%20Danubio%20230%2C%20Del%20Valle%20San%20Pedro%20Garza%20Garc%C3%ADa%2C%20N.L."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 22s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Ver mapa</a>
+        </div></div></div></section>
+  
+  
+  <section id="regalos" class="sec sec-regalos c-lila"><div class="cont"><p class="eyebrow rv">Mesa de regalos</p><h2 class="titulo rv">Tu presencia es nuestro mejor regalo</h2><p class="lead rv">pero si deseas obsequiarnos algo, aquí algunas opciones</p>
+        <div class="regalos n2"><div class="regalo rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 7h16l-1 13H5zM9 7V5a3 3 0 016 0v2"/></svg><h4>Amazon</h4><p>Lista “Bebé Emilia”</p></div><div class="regalo rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 9h18v4H3zM5 13v8h14v-8M12 9v12M12 9c-2-4-7-4-6-1 1 2 6 1 6 1zm0 0c2-4 7-4 6-1-1 2-6 1-6 1z"/></svg><h4>Pañales</h4><p>Etapa 1 y 2</p></div></div>
+        </div></section>
+  <section id="rsvp" class="sec sec-rsvp c-crema"><span class="orn orn-globitos globitos-esq d" aria-hidden="true"><img src="plantillas/adornos/globos-globitos.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 170"><g transform="translate(50 50) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffcfb8"/><path d="M-3 24L3 24L0 29z" fill="#ffcfb8"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(100 36) scale(1.1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#bfe6d6"/><path d="M-3 24L3 24L0 29z" fill="#bfe6d6"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(150 56) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#d9c8f2"/><path d="M-3 24L3 24L0 29z" fill="#d9c8f2"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(76 92) scale(0.8)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffe69a"/><path d="M-3 24L3 24L0 29z" fill="#ffe69a"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(128 98) scale(0.75)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#f6b8c4"/><path d="M-3 24L3 24L0 29z" fill="#f6b8c4"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g></svg></span></span><div class="cont"><p class="eyebrow rv">R.S.V.P.</p><h2 class="titulo rv">Confirma tu asistencia</h2>
+        <div class="pase rv"><strong data-invitado-nombre>Querido invitado</strong>Hemos reservado <b data-pases>1</b> <span data-pases-palabra>lugares</span> en tu honor<em class="pase-mesa" data-mesa-pase hidden></em></div>
+        <form id="form-rsvp" class="rv" novalidate>
+          <label for="f-nombre">Nombre completo</label>
+          <input type="text" id="f-nombre" placeholder="Tu nombre" autocomplete="name">
+          <label>¿Nos acompañarás?</label>
+          <div class="opciones">
+            <input type="radio" name="asiste" id="asiste-si" value="si" checked><label for="asiste-si">Sí, ahí estaré</label>
+            <input type="radio" name="asiste" id="asiste-no" value="no"><label for="asiste-no">No podré asistir</label>
+          </div>
+          <div id="caja-pases"><label for="f-pases">Número de asistentes</label><select id="f-pases"></select></div>
+          <label for="f-msg">Mensaje para los papás (opcional)</label>
+          <textarea id="f-msg" placeholder="Escribe unas palabras…"></textarea>
+          <button class="btn solido" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Confirmar por WhatsApp</button>
+          <p class="limite">Agradeceremos tu confirmación antes del 6 de febrero de 2027</p>
+        </form></div></section>
+  <section id="deseos" class="sec sec-deseos c-lila"><div class="cont"><p class="eyebrow rv">Déjanos un mensaje</p><h2 class="titulo rv">Buenos deseos</h2><p class="lead rv">Tus palabras serán un recuerdo para siempre</p><form class="form-whats" data-whats="deseo" novalidate>
+        <input type="text" name="nombre" placeholder="Tu nombre" autocomplete="name" data-nombre-invitado>
+        <textarea name="texto" placeholder="Escribe tus buenos deseos…"></textarea>
+        <button class="btn solido" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Enviar mis buenos deseos</button>
+      </form></div></section><section id="canciones" class="sec sec-canciones c-crema"><div class="cont"><p class="eyebrow rv">¡Que no pare la fiesta!</p><h2 class="titulo rv">Sugiere una canción</h2><p class="lead rv">¿Qué canción no puede faltar en la pista?</p><form class="form-whats" data-whats="cancion" novalidate>
+        <input type="text" name="nombre" placeholder="Tu nombre" autocomplete="name" data-nombre-invitado>
+        <input type="text" name="texto" placeholder="Canción y artista">
+        <button class="btn solido" type="submit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Enviar canción</button>
+      </form></div></section><section id="contactos" class="sec sec-contactos c-menta"><div class="cont"><p class="eyebrow rv">¿Tienes dudas?</p><h2 class="titulo rv">Contactos</h2><div class="contactos rv"><a class="btn" target="_blank" rel="noopener" href="https://wa.me/5218112345678"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>Mamá</a></div></div></section>
+  <section id="compartir" class="sec sec-compartir "><div class="cont">
+          <p class="eyebrow rv">Comparte tus fotos</p><p class="hashtag rv">#BabyEmilia</p>
+          </div></section>
+        <footer class="pie "><span class="orn orn-globitos globitos-pie" aria-hidden="true"><img src="plantillas/adornos/globos-globitos.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 170"><g transform="translate(50 50) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffcfb8"/><path d="M-3 24L3 24L0 29z" fill="#ffcfb8"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(100 36) scale(1.1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#bfe6d6"/><path d="M-3 24L3 24L0 29z" fill="#bfe6d6"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(150 56) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#d9c8f2"/><path d="M-3 24L3 24L0 29z" fill="#d9c8f2"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(76 92) scale(0.8)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffe69a"/><path d="M-3 24L3 24L0 29z" fill="#ffe69a"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(128 98) scale(0.75)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#f6b8c4"/><path d="M-3 24L3 24L0 29z" fill="#f6b8c4"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g></svg></span></span>
+          <p class="rv">Gracias por celebrar con nosotros la llegada de nuestro bebé</p>
+          <p class="nombres nombre-xv nombre-uno"><span class="n1">Emilia</span></p>
+          <p class="pie-fecha rv">13 · 02 · 2027</p>
+        </footer>
+</main>
+
+<script>(function runtime(d) {
     var W = window;
     (W.__inv || []).forEach(function (f) { try { f(); } catch (e) {} });
     var limpiar = W.__inv = [];
@@ -1090,88 +850,6 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         form.parentNode.insertBefore(aviso2, form);
       }
     }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Construir y montar
-  // ---------------------------------------------------------------------------
-  function construir(datos, opciones = {}) {
-    const d = normalizar(datos);
-    const p = Plantillas[d.plantilla] || Plantillas[Object.keys(Plantillas)[0]];
-    d.plantilla = p.id;
-    d._rutaAdornos = opciones.rutaAdornos != null ? opciones.rutaAdornos : 'plantillas/adornos/';
-    d._efecto = p.efecto || null;
-    d._efectoColores = p.efectoColores || null;
-    // Textos del tipo de evento que usa la página ya publicada (runtime no puede leer EVENTOS)
-    const E = ev(d), recibe = conNombre(E.recibe, d), plural = /^los |^las | y /i.test(recibe);
-    d._ev = { uno: unNombre(d), quien: titular(d), del: delEvento(d), cabecera: cabecera(d), emoji: E.emoji, fiesta: E.fiesta, les: E.voz === 'nos' ? 'les' : 'le',
-      msgRecibe: recibe.charAt(0).toUpperCase() + recibe.slice(1) + (plural ? ' recibirán' : ' recibirá') + ' tu mensaje.' };
-    d.confirmaciones = { url: d.confirmaciones.url || '', boda: d.confirmaciones.boda || '', whatsapp: !!d.confirmaciones.whatsapp };
-    let html = p.render(d, S);
-    // Encuadre de fotos: posición (x, y en %) y zoom elegidos en el editor
-    const enc = d.encuadres || {};
-    if (Object.keys(enc).length) {
-      html = html.replace(/<img\b[^>]*?\bsrc="([^"]+)"[^>]*>/g, (tag, src) => {
-        const e = enc[huella(desesc(src))];
-        if (!e) return tag;
-        const x = +e.x || 50, y = +e.y || 50, z = Math.min(Math.max(+e.z || 1, 1), 4);
-        return `<span class="encuadre">${tag.replace('<img', `<img style="object-position:${x}% ${y}%;transform:scale(${z});transform-origin:${x}% ${y}%"`)}</span>`;
-      });
-    }
-    const titulo = conNombre(ev(d).titulo, d);
-    return { d, p, html, css: CSS_BASE + '\n' + (p.css || ''), fuentes: p.fuentes || '', titulo, descripcion: `${fechaInfo(d).larga}${d.ciudad ? ' — ' + d.ciudad : ''}` };
-  }
-
-  function montar(datos, opciones = {}) {
-    const r = construir(datos, opciones);
-    const head = document.head;
-    let st = document.getElementById('inv-css');
-    if (!st) { st = document.createElement('style'); st.id = 'inv-css'; head.appendChild(st); }
-    st.textContent = r.css;
-    let fl = document.getElementById('inv-fuentes');
-    if (r.fuentes) {
-      if (!fl) { fl = document.createElement('link'); fl.id = 'inv-fuentes'; fl.rel = 'stylesheet'; head.appendChild(fl); }
-      if (fl.href !== r.fuentes) fl.href = r.fuentes;
-    }
-    document.title = r.titulo;
-    document.body.className = `plantilla-${r.p.id}` + (opciones.sinSobre ? ' sin-sobre' : '') + (opciones.sinAnim ? ' sin-anim' : '');
-    document.body.innerHTML = r.html;
-    runtime(r.d);
-    return r;
-  }
-
-  /** HTML final de un solo archivo, listo para subir a cualquier hosting. */
-  function exportarHTML(datos, opciones = {}) {
-    const r = construir(datos, Object.assign({ rutaAdornos: null }, opciones));
-    const dJson = JSON.stringify(r.d).replace(/</g, '\\u003c');
-    return `<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${esc(r.titulo)}</title>
-<meta name="description" content="${esc(r.descripcion)}">
-<meta property="og:title" content="${esc(conNombre(ev(r.d).og, r.d))}">
-<meta property="og:description" content="${esc(r.descripcion)}">
-${r.d.fotoPortada && !/^data:/.test(r.d.fotoPortada) ? `<meta property="og:image" content="${esc(r.d.fotoPortada)}">` : ''}
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-${r.fuentes ? `<link rel="stylesheet" href="${esc(r.fuentes)}">` : ''}
-<style>${r.css}</style>
-</head>
-<body class="plantilla-${r.p.id}">
-${r.html}
-${r.d.acceso && r.d.acceso.activo && window.QR_FUENTE ? `<script>${window.QR_FUENTE.replace(/<\//g, '<\\/')}<\/script>` : ''}
-<script>(${runtime.toString()})(${dJson});<\/script>
+  })({"zonaHoraria":"-06:00","iniciales":"","fotoPortada":"","fraseAutor":"","padresNovio":"","hospedaje":[],"musica":"melodia","adornos":{},"ocultar":{},"mesas":{"activo":false,"texto":"","lista":[],"elementos":[]},"invitados":[{"nombre":"Familia López","pases":4,"mesa":""},{"nombre":"Tía Carmen","pases":1,"mesa":""},{"nombre":"Familia Ortiz","pases":3,"mesa":""}],"evento":"babyshower","plantilla":"globos","festejada":"Emilia","fecha":"2027-02-13","hora":"16:00","ciudad":"Monterrey, Nuevo León","introPortada":"Baby shower","frase":"Un pedacito de cielo está por llegar.","tituloFamilia":"Con mucha ilusión","textoFamilia":"te invitamos a celebrar la próxima llegada de nuestro bebé","padresNovia":"Carla Rivera\nAlejandro Núñez","padrinos":[],"itinerario":[{"hora":"16:00","evento":"Bienvenida","detalle":"","icono":"copa"},{"hora":"17:00","evento":"Juegos","detalle":"","icono":"corazon"},{"hora":"18:00","evento":"Abrir regalos","detalle":"","icono":"regalo"},{"hora":"18:30","evento":"Pastel","detalle":"","icono":"pastel"}],"lugares":[{"tipo":"Lugar","hora":"16:00","nombre":"Casa de la familia Núñez","direccion":"Río Danubio 230, Del Valle\nSan Pedro Garza García, N.L.","mapa":"","icono":"hacienda"}],"vestimenta":{"tipo":"","texto":"","colores":[],"nota":""},"historia":{"titulo":"Esperándote","texto":"","fotos":[]},"regalos":{"titulo":"Tu presencia es nuestro mejor regalo","texto":"pero si deseas obsequiarnos algo, aquí algunas opciones","opciones":[{"nombre":"Amazon","detalle":"Lista “Bebé Emilia”","enlace":"","icono":"bolsa"},{"nombre":"Pañales","detalle":"Etapa 1 y 2","enlace":"","icono":"regalo"}],"banco":"","titular":"","clabe":""},"rsvp":{"whatsapp":"5218112345678","fechaLimite":"2027-02-06","pases":1,"texto":""},"contactos":{"novia":"5218112345678","novio":""},"hashtag":"#BabyEmilia","nota":"","despedida":"Gracias por celebrar con nosotros la llegada de nuestro bebé","novia":"","novio":"","confirmaciones":{"url":"","boda":"","whatsapp":false},"acceso":{"activo":false,"texto":""},"encuadres":{},"_rutaAdornos":"plantillas/adornos/","_efecto":"confeti","_efectoColores":["#ffcfb8","#bfe6d6","#d9c8f2","#ffe69a","#f6b8c4"],"_ev":{"uno":true,"quien":"Emilia","del":"el baby shower de Emilia","cabecera":"Baby shower de Emilia","emoji":"🍼","fiesta":"el baby shower","les":"les","msgRecibe":"Los papás recibirán tu mensaje."}});</script>
 </body>
-</html>`;
-  }
-
-  window.Invitacion = {
-    registrar(p) { Plantillas[p.id] = p; },
-    plantillas: Plantillas,
-    construir, montar, exportarHTML, normalizar,
-    ICONOS, ICONOS_EVENTO, ICONOS_REGALO, SECCIONES, EVENTOS, fechaInfo, huella, titular, cabecera, delEvento, esXV, unNombre, S,
-    /** ¿Esta plantilla sirve para este tipo de evento? */
-    sirvePara: (p, e) => (p.eventos || [p.evento || 'boda']).includes(e || 'boda')
-  };
-})();
+</html>

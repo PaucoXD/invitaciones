@@ -30,7 +30,7 @@
 
   window.Invitacion.registrar({
     id: 'gala',
-    eventos: ['xv', 'cumple'],
+    eventos: ['xv'],
     nombre: 'Noche de Gala',
     descripcion: 'XV años: azul noche y plata, luna y estrellas que caen.',
     colores: ['#0e1a35', '#1f3463', '#c3ccda', '#eef2f8'],

@@ -9,7 +9,7 @@
   };
   window.EJEMPLOS = {
     bautizo: Object.assign({}, base, {
-      evento: 'bautizo', plantilla: 'nube', festejada: 'Mateo', fecha: '2027-04-17', hora: '12:00', ciudad: 'Querétaro, Querétaro',
+      evento: 'bautizo', plantilla: 'paloma', festejada: 'Mateo', fecha: '2027-04-17', hora: '12:00', ciudad: 'Querétaro, Querétaro',
       introPortada: 'Mi bautizo', frase: 'Antes de formarte en el vientre, ya te conocía.', fraseAutor: 'Jeremías 1:5',
       tituloFamilia: 'Con la bendición de Dios y el amor de mis papás', textoFamilia: 'te invito a celebrar mi bautizo',
       padresNovia: 'Daniel Torres Medina\nPaola Salinas de Torres',
@@ -23,7 +23,7 @@
       contactos: { novia: '5214421234567', novio: '' }, hashtag: '#BautizoDeMateo', nota: '', despedida: 'Gracias por acompañarme en este día tan especial'
     }),
     comunion: Object.assign({}, base, {
-      evento: 'comunion', plantilla: 'nube', festejada: 'Regina', fecha: '2027-05-22', hora: '11:00', ciudad: 'Puebla, Puebla',
+      evento: 'comunion', plantilla: 'caliz', festejada: 'Regina', fecha: '2027-05-22', hora: '11:00', ciudad: 'Puebla, Puebla',
       introPortada: 'Mi primera comunión', frase: 'Dejen que los niños vengan a mí.', fraseAutor: 'Mateo 19:14',
       tituloFamilia: 'Con la bendición de Dios y de mis papás', textoFamilia: 'te invito a celebrar mi primera comunión',
       padresNovia: 'Luis Herrera Campos\nAna Gómez de Herrera',
@@ -37,7 +37,7 @@
       contactos: { novia: '5212221234567', novio: '' }, hashtag: '', nota: '', despedida: 'Gracias por acompañarme en este día tan especial'
     }),
     babyshower: Object.assign({}, base, {
-      evento: 'babyshower', plantilla: 'nube', festejada: 'Emilia', fecha: '2027-02-13', hora: '16:00', ciudad: 'Monterrey, Nuevo León',
+      evento: 'babyshower', plantilla: 'globos', festejada: 'Emilia', fecha: '2027-02-13', hora: '16:00', ciudad: 'Monterrey, Nuevo León',
       introPortada: 'Baby shower', frase: 'Un pedacito de cielo está por llegar.',
       tituloFamilia: 'Con mucha ilusión', textoFamilia: 'te invitamos a celebrar la próxima llegada de nuestro bebé',
       padresNovia: 'Carla Rivera\nAlejandro Núñez', padrinos: [],
@@ -50,7 +50,7 @@
       contactos: { novia: '5218112345678', novio: '' }, hashtag: '#BabyEmilia', nota: '', despedida: 'Gracias por celebrar con nosotros la llegada de nuestro bebé'
     }),
     cumple: Object.assign({}, base, {
-      evento: 'cumple', plantilla: 'dorada', festejada: 'Andrea', fecha: '2027-08-28', hora: '20:00', ciudad: 'Ciudad de México',
+      evento: 'cumple', plantilla: 'confeti', festejada: 'Andrea', fecha: '2027-08-28', hora: '20:00', ciudad: 'Ciudad de México',
       introPortada: 'Mis 30', frase: 'Los mejores años están por venir.',
       tituloFamilia: '¡Vamos a celebrar!', textoFamilia: 'te invito a festejar conmigo un año más de vida',
       padresNovia: '', padrinos: [],

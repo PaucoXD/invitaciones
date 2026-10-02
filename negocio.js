@@ -60,6 +60,6 @@ window.NEGOCIO = {
     ['¿Y los invitados que no usan internet?', 'Incluimos una versión en PDF para imprimir o mandar por WhatsApp, con su nombre y un código QR.'],
     ['¿Cómo pago?', 'Con un anticipo del {anticipo} por transferencia o depósito para apartar, y el resto al entregarte tu invitación.'],
     ['¿También hacen XV años?', 'Sí. Tenemos diseños especiales para XV años (Princesa Rosa, Mariposas Lila y Noche de Gala) con las mismas funciones: sobre animado, nombre de cada familia, confirmaciones, mesas y PDF.'],
-    ['¿Hacen bautizos, primera comunión, baby shower o cumpleaños?', 'Sí. Tenemos diseños para cada evento (por ejemplo Cielo Tierno, con nubes y estrellas, para bautizos y baby shower) con las mismas funciones: sobre, nombre de cada familia, confirmaciones y PDF.']
+    ['¿Hacen bautizos, primera comunión, baby shower o cumpleaños?', 'Sí. Tenemos diseños para cada evento con su propio estilo: Paloma y Cáliz para bautizo y primera comunión, Globos y Cielo Tierno para baby shower, Confeti para cumpleaños con las mismas funciones: sobre, nombre de cada familia, confirmaciones y PDF.']
   ]
 };
