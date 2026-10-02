@@ -108,6 +108,16 @@ y copia el mensaje para WhatsApp. Vista previa: `invitacion.html?aparta=1&planti
 las anima con partículas según el efecto de la plantilla y una cuenta de días, y graba con MediaRecorder con la
 música de la invitación (MP4 si el navegador puede, si no WebM). En el editor: sección **Video para estados**.
 
+## Quién abrió la invitación y pago del anticipo (código de Google v6)
+
+- **Vistas**: la invitación personalizada (`?invitado=`) avisa a la hoja (`accion: 'vista'`, una vez por visita; no en
+  vistas previas ni en "Aparta la fecha"). Hoja *Vistas*: Boda, Invitado, Primera vez, Última vez, Veces. El panel de los
+  novios muestra 👀 / ✉️ por invitado y el filtro "No la han abierto"; Mis bodas muestra "abrieron X/Y".
+- **Pago**: `NEGOCIO.pago` (Mercado Pago y/o transferencia; `linkPago` opcional por paquete). Al enviar el formulario
+  (o con `pedido.html?pagar=FOLIO&paquete=…`) el cliente ve el anticipo y sube su comprobante (`accion: 'comprobante'`,
+  se guarda en Drive). En Mis bodas: estado del pago, "Ver comprobante", "Marcar pagado" (`accion: 'pago'`, clave de
+  administrador) y "Enlace de pago".
+
 ## Invitación en PDF
 
 Para quienes no se llevan bien con la tecnología: botón **📄 PDF** en el editor.

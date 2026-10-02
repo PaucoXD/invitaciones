@@ -123,6 +123,7 @@
   <a class="sub" href="#libro">Libro de recuerdos</a>
   <a class="sub" href="#aparta">Aparta la fecha</a>
   <a class="sub" href="#video">Video para estados</a>
+  <a class="sub" href="#vistas">Quién abrió su invitación</a>
   <a href="#publicar">4. Publicar y enviar</a>
   <a class="sub" href="#subir">Subir la invitación</a>
   <a class="sub" href="#enlaces">Enlaces por familia</a>
@@ -176,6 +177,7 @@
         <tr><td><code>whatsapp</code></td><td>Tu número con 521 + 10 dígitos, sin espacios</td><td><code>'5215512345678'</code></td></tr>
         <tr><td><code>instagram</code>, <code>tiktok</code></td><td>Tu usuario sin @ (opcional)</td><td><code>'pauloinvitaciones'</code></td></tr>
         <tr><td><code>entrega</code>, <code>anticipo</code></td><td>Tiempo de entrega y anticipo</td><td><code>'48 horas'</code>, <code>'50%'</code></td></tr>
+        <tr><td><code>pago</code></td><td>Cómo te pagan el anticipo: tu link de pago de Mercado Pago (se crea en Mercado Pago → Cobrar → Link de pago) y/o tu banco, CLABE y titular. Si un paquete tiene su propio link, ponlo en ese paquete como <code>linkPago</code>.</td><td><code>mercadoPago: 'https://mpago.la/…'</code>, <code>clabe: '012180…'</code></td></tr>
         <tr><td><code>hojaConfirmaciones</code></td><td>La dirección de tu Google Sheets (paso 2.2)</td><td><code>'https://script.google.com/macros/s/…/exec'</code></td></tr>
         <tr><td><code>testimonios</code></td><td>Opiniones reales de tus clientes (con su permiso). La sección "Opiniones" de tu página solo aparece cuando agregas al menos una.</td><td><code>{ nombre: 'Ana y Luis', evento: 'Boda · marzo 2027', texto: '¡Nos encantó!', foto: '' },</code></td></tr>
         <tr><td><code>precio</code></td><td>Precio de cada paquete, solo el número</td><td><code>1290</code></td></tr>
@@ -225,8 +227,15 @@
     <li>Toca <span class="btn">✎ Abrir en el editor</span>: la invitación se abre ya llena, con un recuadro amarillo con el WhatsApp, paquete y comentarios del cliente.</li>
     <li>Revisa, ajusta y sigue como siempre (Guardar datos, Descargar, Enlaces…).</li>
   </ol>
+  <h4>Pago del anticipo</h4>
+  <p>Si llenaste <code>pago</code> en <code>negocio.js</code>, al terminar el formulario el cliente ve cuánto es el anticipo (según su paquete y tu <code>anticipo</code>), el botón de Mercado Pago y/o tus datos de transferencia, y puede <b>subir su comprobante</b>. El comprobante se guarda en tu Drive (carpeta <i>Pedidos de invitaciones</i>).</p>
+  <ul>
+    <li>En <b>Mis bodas</b>, cada pedido dice <b>💳 Anticipo pendiente</b>, <b>📎 Comprobante recibido</b> (con <i>Ver comprobante</i>) o <b>✓ Anticipo pagado</b>.</li>
+    <li>Cuando veas el dinero en tu banco, toca <span class="btn">✓ Marcar pagado</span>.</li>
+    <li><span class="btn">💳 Enlace de pago</span> abre WhatsApp con un enlace para que el cliente pague o suba su comprobante después.</li>
+  </ul>
   <div class="caja tip"><b>Enlaces que puedes mandar</b><code>pedido.html?evento=xv</code> (empieza en XV años) · <code>pedido.html?plantilla=gala</code> (con el diseño ya elegido) · <code>pedido.html?paquete=Premium</code> (con el paquete elegido).</div>
-  <div class="caja ojo"><b>Actualiza tu código de Google (versión 5)</b>Para recibir pedidos y usar el pase de entrada con QR, copia otra vez el código desde el editor (sección Confirmaciones automáticas), pégalo en Apps Script y ve a <b>Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión → Implementar</b>. Google te pedirá <b>permiso para usar tu Drive</b> (ahí guarda las fotos): acéptalo. La dirección no cambia.</div>
+  <div class="caja ojo"><b>Actualiza tu código de Google (versión 6)</b>Para recibir pedidos, usar el pase de entrada con QR, ver quién abrió cada invitación y recibir comprobantes de pago, copia otra vez el código desde el editor (sección Confirmaciones automáticas), pégalo en Apps Script y ve a <b>Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión → Implementar</b>. Google te pedirá <b>permiso para usar tu Drive</b> (ahí guarda las fotos): acéptalo. La dirección no cambia.</div>
   <div class="caja tip"><b>¿Sin Google Sheets?</b>El formulario también funciona: al final el cliente toca <b>Compartir archivo por WhatsApp</b> (o lo descarga) y te lo manda. Tú lo abres en el editor con <span class="btn">📂 Abrir</span>.</div>
 
   <h3 id="editor">3.1 El editor, botón por botón</h3>
@@ -367,6 +376,14 @@
     <li>Se descarga solo y aparece abajo para verlo. Mándalo a tu cliente para que lo suba a sus estados de WhatsApp, Instagram o TikTok.</li>
   </ol>
   <div class="caja ojo"><b>Formato</b>En Chrome actualizado o Safari (iPhone/Mac) sale en MP4, que WhatsApp acepta. Si tu navegador lo guarda como WebM o WhatsApp no lo acepta, genéralo desde Chrome actualizado o Safari.</div>
+
+  <h3 id="vistas">3.12 Quién abrió su invitación</h3>
+  <p>Con <b>Confirmaciones automáticas</b> (código de Google versión 6), cada vez que una familia abre su enlace personalizado queda registrado. No se cuenta la vista previa del editor ni la invitación genérica (sin nombre).</p>
+  <ul>
+    <li><b>Panel de los novios</b>: junto a cada invitado dice <b>👀 La abrió</b> (cuántas veces y cuándo) o <b>✉️ No la ha abierto</b>. El filtro <span class="btn">No la han abierto</span> muestra solo a esas familias, y su botón <span class="btn">💬 Recordar</span> les vuelve a mandar su enlace.</li>
+    <li><b>Mis bodas</b>: cada evento muestra <b>👀 40/62 abrieron</b>.</li>
+  </ul>
+  <div class="caja ojo"><b>Ojo</b>Si alguien abre el enlace de otra familia (porque se lo reenviaron), cuenta para esa familia. Y si una familia respondió, se toma como que la abrió.</div>
 </section>
 
 <!-- 4 -->

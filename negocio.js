@@ -16,6 +16,17 @@ window.NEGOCIO = {
   entrega: '48 horas',                        // tiempo de entrega promedio
   anticipo: '50%',                            // anticipo para apartar
 
+  // Pago del anticipo: aparece al cliente cuando envía el formulario (y en el "Enlace de pago" de Mis bodas).
+  // Deja vacío lo que no uses. El enlace de Mercado Pago se crea en tu cuenta: Cobrar → Link de pago.
+  // Si quieres un link distinto por paquete, agrega linkPago: 'https://mpago.la/…' a cada paquete de abajo.
+  pago: {
+    mercadoPago: '',                          // link de pago general (opcional)
+    banco: '',                                // ej. BBVA
+    clabe: '',                                // 18 dígitos
+    titular: '',                              // nombre de quien recibe
+    nota: 'Escribe tu folio en el concepto de la transferencia.'
+  },
+
   // Dirección de tu app de Google para confirmaciones (termina en /exec). Se pone UNA vez y sirve para todas las bodas:
   // así los novios entran a su panel solo con su código y clave.
   hojaConfirmaciones: 'https://script.google.com/macros/s/AKfycbzBNchkRqstwXF31RO4tGv38apvbSu14B8-AepNKcMX9DRieMhzax7MEiRrR8DS_DQFXA/exec',

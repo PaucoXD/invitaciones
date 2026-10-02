@@ -101,6 +101,15 @@
   .previa{border-radius:28px;border:8px solid #1e1b18;overflow:hidden;width:min(320px,100%);aspect-ratio:9/17;margin:0 auto;background:#eee}
   .previa iframe{width:100%;height:100%;border:0}
   .listo{text-align:center;padding:30px 10px}
+  .pago{text-align:left;margin-top:22px}
+  .pago h2{margin-bottom:4px}
+  .pago .monto{font-size:28px;font-weight:700;color:var(--accent);margin:4px 0 2px}
+  .pago dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:10px 0;font-size:15px}
+  .pago dt{color:var(--muted)}.pago dd{font-weight:600;word-break:break-all}
+  .pago .opcion{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+  .pago .btn{width:100%;margin-top:8px}
+  .pago .estado{margin-top:10px;font-size:14px}.pago .estado.ok{color:var(--ok)}.pago .estado.mal{color:var(--no)}
+  .btn.mp{background:#009ee3;border-color:#009ee3;color:#fff}
   .listo .ico{width:72px;height:72px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:36px}
   .listo .folio{display:inline-block;margin:10px 0;padding:8px 16px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-weight:600;letter-spacing:.05em}
   .acciones{display:flex;flex-direction:column;gap:10px;max-width:360px;margin:18px auto 0}
@@ -413,6 +422,62 @@
       datos };
   }
 
+  // ---------------------------------------------------------------------------
+  // Pago del anticipo (Mercado Pago o transferencia + comprobante)
+  // ---------------------------------------------------------------------------
+  const PAGO = N.pago || {};
+  const dinero = (n) => '$' + Math.round(n).toLocaleString('es-MX') + ' ' + (N.moneda || 'MXN');
+  function anticipoDe(paquete) {
+    const p = (N.paquetes || []).find(x => x.nombre === paquete), a = String(N.anticipo || '');
+    if (!p || !p.precio) return null;
+    const pct = /^(\d+(?:\.\d+)?)\s*%$/.exec(a.trim()), fijo = /^\$?\s*([\d,]+)/.exec(a.trim());
+    return { paquete: p, monto: pct ? p.precio * +pct[1] / 100 : fijo ? +fijo[1].replace(/,/g, '') : p.precio, texto: pct ? `${a} de ${p.nombre} (${dinero(p.precio)})` : `paquete ${p.nombre}` };
+  }
+  const hayPago = (paquete) => { const p = (N.paquetes || []).find(x => x.nombre === paquete) || {}; return !!(p.linkPago || PAGO.mercadoPago || PAGO.clabe); };
+  function vistaPago(folio, paquete) {
+    if (!hayPago(paquete)) return '';
+    const an = anticipoDe(paquete), link = ((N.paquetes || []).find(x => x.nombre === paquete) || {}).linkPago || PAGO.mercadoPago;
+    const clabe = String(PAGO.clabe || '').replace(/\s/g, '');
+    return `<div class="caja pago" id="pago"><h2>💳 Aparta tu fecha</h2>
+      <p class="ayuda">Tu invitación se empieza a hacer cuando recibimos el anticipo.</p>
+      ${an ? `<p class="monto">${dinero(an.monto)}</p><p class="ayuda">Anticipo: ${esc(an.texto)}</p>` : ''}
+      ${link ? `<div class="opcion"><b>Con tarjeta o en OXXO</b><a class="btn mp" href="${esc(link)}" target="_blank" rel="noopener">Pagar con Mercado Pago</a></div>` : ''}
+      ${clabe ? `<div class="opcion"><b>Por transferencia</b><dl>${PAGO.banco ? `<dt>Banco</dt><dd>${esc(PAGO.banco)}</dd>` : ''}<dt>CLABE</dt><dd>${esc(clabe.replace(/(\d{4})(?=\d)/g, '$1 '))}</dd>${PAGO.titular ? `<dt>A nombre de</dt><dd>${esc(PAGO.titular)}</dd>` : ''}${folio ? `<dt>Concepto</dt><dd>${esc(folio)}</dd>` : ''}</dl>
+        <button class="btn" type="button" id="copiar-clabe">Copiar CLABE</button>
+        ${PAGO.nota ? `<p class="ayuda" style="margin-top:8px">${esc(PAGO.nota)}</p>` : ''}</div>` : ''}
+      <div class="opcion"><b>¿Ya pagaste?</b><p class="ayuda">Sube la foto o captura de tu comprobante (o del pago en OXXO).</p>
+        <input type="file" id="comprobante" accept="image/*,application/pdf" hidden>
+        <button class="btn" type="button" id="subir-comp">📎 Subir comprobante</button>
+        <p class="estado" id="comp-estado" role="status"></p></div></div>`;
+  }
+  function montarPago(folio, quien) {
+    const c = $('#copiar-clabe');
+    if (c) c.onclick = () => navigator.clipboard.writeText(String(PAGO.clabe || '').replace(/\s/g, '')).then(() => { c.textContent = 'CLABE copiada ✓'; });
+    const inp = $('#comprobante'), b = $('#subir-comp'), est = $('#comp-estado');
+    if (!inp) return;
+    const marcar = (t, ok) => { est.textContent = t; est.className = 'estado ' + (ok ? 'ok' : 'mal'); };
+    const porWa = () => { const wa = String(N.whatsapp || '').replace(/\D/g, ''); if (wa) window.open(`https://wa.me/${wa}?text=${encodeURIComponent(`¡Hola! Soy ${quien || 'tu cliente'}. Te mando mi comprobante del anticipo${folio ? ' (folio ' + folio + ')' : ''}.`)}`, '_blank'); };
+    b.onclick = () => inp.click();
+    inp.onchange = async () => {
+      const f = inp.files[0]; inp.value = ''; if (!f) return;
+      if (!url || !folio) { marcar('Mándanos la foto de tu comprobante por WhatsApp.', true); porWa(); return; }
+      b.disabled = true; marcar('Subiendo comprobante…', true);
+      try {
+        let archivo;
+        if (/^image\//.test(f.type) && !/heic/i.test(f.type)) archivo = await reducir(f);
+        else {
+          if (f.size > 10e6) throw new Error('El archivo pesa más de 10 MB');
+          archivo = await new Promise((ok, mal) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = mal; r.readAsDataURL(f); });
+        }
+        const r = await (await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'comprobante', pedido: folio, archivo }) })).json();
+        if (!r.ok) throw new Error(r.error || 'error');
+        marcar('✓ Recibimos tu comprobante. Te confirmamos por WhatsApp en cuanto lo veamos.', true);
+        b.textContent = 'Subir otro comprobante';
+      } catch (e) { marcar('No se pudo subir (' + (e.message || 'sin conexión') + '). Mándalo por WhatsApp, por favor.', false); porWa(); }
+      b.disabled = false;
+    };
+  }
+
   /** Reduce la foto para que el envío sea rápido. */
   function reducir(file) {
     return new Promise((ok, mal) => {
@@ -474,7 +539,8 @@
     app.innerHTML = enviado.folio ? `<div class="listo"><div class="ico">✓</div><h1>¡Listo, ${esc(p.cliente.nombre.split(' ')[0])}!</h1>
         <p class="intro">Recibimos los datos de tu invitación. Te escribiremos por WhatsApp cuando esté lista para revisarla.</p>
         <p>Tu folio:</p><p class="folio">${esc(enviado.folio)}</p>
-        <div class="acciones">${wa ? `<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent(msg)}">Avisar por WhatsApp</a>` : ''}</div></div>`
+        <div class="acciones">${wa ? `<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent(msg)}">Avisar por WhatsApp</a>` : ''}</div>
+        ${vistaPago(enviado.folio, p.cliente.paquete)}</div>`
       : `<div class="listo"><div class="ico" style="background:var(--accent-bg);color:var(--accent)">✉</div><h1>Ya casi</h1>
         ${enviado.fallo ? '<p class="error">No pudimos enviarlo por internet. No te preocupes: tus datos están guardados.</p>' : ''}
         <p class="intro">Manda el archivo con tus datos por WhatsApp${N.whatsapp ? '' : ' a quien hace tu invitación'}. Incluye tus fotos.</p>
@@ -492,6 +558,7 @@
       bajar(); if (wa) window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg + ' (te lo adjunto como documento)')}`, '_blank');
     };
     const d = $('#bajar'); if (d) d.onclick = bajar;
+    montarPago(enviado.folio, p.cliente.nombre);
     const r = $('#reintentar'); if (r) r.onclick = () => { enviado = null; $('#nav').hidden = false; E.paso = PASOS.length - 1; pintar(); enviar(); };
     const v = $('#volver'); if (v) v.onclick = () => { enviado = null; $('#nav').hidden = false; pintar(); };
   }
@@ -499,6 +566,15 @@
   // ---------------------------------------------------------------------------
   // Inicio: recupera el borrador si existe
   // ---------------------------------------------------------------------------
+  // Enlace de pago que manda el administrador: pedido.html?pagar=FOLIO&paquete=Premium
+  if (q.get('pagar')) {
+    $('#nav').hidden = true; $('#barra').style.width = '100%'; $('#paso-txt').textContent = '';
+    const folio = q.get('pagar').replace(/[^\w-]/g, '').slice(0, 30);
+    app.innerHTML = `<div class="listo" style="padding-top:10px"><h1>Pago de tu invitación</h1><p>Folio:</p><p class="folio">${esc(folio)}</p>
+      ${vistaPago(folio, q.get('paquete') || '') || `<p class="intro">Escríbenos por WhatsApp para darte los datos de pago.</p>`}</div>`;
+    montarPago(folio, '');
+    return;
+  }
   DB.abrir().then(DB.leer).then(b => {
     if (b && b.cliente) { E = Object.assign(vacio(), b); if (E.paso) $('#guardado').textContent = '✓ Seguimos donde te quedaste'; }
     pintar();
