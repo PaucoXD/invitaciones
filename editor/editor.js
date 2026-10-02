@@ -281,9 +281,15 @@
           el('li', {}, el('code', {}, 'Implementar → Nueva implementación'), ' → tipo ', el('code', {}, 'App web'), ' → Ejecutar como: ', el('b', {}, 'Yo'), ' → Quién tiene acceso: ', el('b', {}, 'Cualquier persona'), ' → Implementar. Autoriza con tu cuenta (en “Configuración avanzada” → “Ir a…”).'),
           el('li', {}, 'Copia la ', el('b', {}, 'URL de la app web'), ' y pégala aquí abajo. Listo.')),
         el('p', { class: 'ayuda' }, '¿Ya lo tenías instalado? Para tener “Mis bodas”, copia el código otra vez, pégalo en Apps Script y ve a Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión → Implementar. La URL no cambia. Luego vuelve a “Sincronizar” cada boda para que aparezcan sus nombres y fecha.'),
-        el('button', { class: 'b chico', type: 'button', onclick: () => {
-          const t = window.CODIGO_SHEETS || '';
-          (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => avisar('Código copiado ✓ Pégalo en Apps Script'), () => descargar('confirmaciones.gs', t, 'text/plain'));
+        el('button', { class: 'b chico', type: 'button', onclick: async () => {
+          // Se descarga el código más reciente (el navegador puede tener guardada una versión vieja)
+          let t = window.CODIGO_SHEETS || '';
+          try {
+            const src = await (await fetch('servidor/codigo-sheets.js?t=' + Date.now(), { cache: 'no-store' })).text();
+            const m = /String\.raw`([\s\S]*)`;\s*$/.exec(src); if (m) t = m[1];
+          } catch (e) { /* sin internet: se usa el que ya estaba cargado */ }
+          const v = (/var VERSION = (\d+)/.exec(t) || [])[1];
+          (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => avisar(`Código${v ? ' versión ' + v : ''} copiado ✓ Pégalo en Apps Script`), () => descargar('confirmaciones.gs', t, 'text/plain'));
         } }, '📋 Copiar código para Google Sheets'));
     } else if (t === 'aparta') {
       const estado = el('p', { class: 'conf-estado' });
