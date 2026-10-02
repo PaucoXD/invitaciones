@@ -18,7 +18,7 @@ window.CODIGO_SHEETS = String.raw`// ===== Confirmaciones de invitaciones — pe
 // Después: Implementar → Nueva implementación → App web → Ejecutar como: Yo → Acceso: Cualquier persona.
 // ¿Actualizando? Implementar → Administrar implementaciones → ✏️ → Versión: "Nueva versión" → Implementar (la URL no cambia).
 
-var VERSION = 6;
+var VERSION = 7;
 
 var ENC_CONF = ['Fecha', 'Boda', 'Tipo', 'Invitado', 'Asiste', 'Personas', 'Mensaje', 'Lugares', 'Mesa'];
 var ENC_INV = ['Boda', 'Invitado', 'Lugares', 'Mesa', 'Teléfono'];
@@ -120,8 +120,9 @@ function leerPedido_(id) {
   if (!h) return null;
   var v = h.getDataRange().getValues();
   for (var i = 1; i < v.length; i++) if (String(v[i][1]) === String(id)) {
+    var txt = DriveApp.getFileById(String(v[i][9])).getBlob().getDataAsString();
     if (String(v[i][10]) === 'Nuevo') h.getRange(i + 1, 11).setValue('Abierto');
-    return JSON.parse(DriveApp.getFileById(String(v[i][9])).getBlob().getDataAsString());
+    return txt; // el texto tal cual (ya es JSON): no se vuelve a convertir, así pesa menos
   }
   return null;
 }
@@ -229,6 +230,10 @@ function doPost(e) {
 }
 
 function doGet(e) {
+  // Si algo falla se responde con el error en JSON (si no, Google manda una página HTML y no se sabe qué pasó)
+  try { return doGet_(e); } catch (err) { return json_({ ok: false, error: 'Error en Google: ' + String(err && err.message || err) }); }
+}
+function doGet_(e) {
   var p = e.parameter || {};
   if (p.accion === 'ping') return json_({ ok: true, mensaje: 'Conexión correcta', version: VERSION });
   if (p.accion === 'admin') {
@@ -238,7 +243,8 @@ function doGet(e) {
   if (p.accion === 'pedido') {
     if (!adminCorrecto_(p.clave)) return json_({ ok: false, error: 'Clave de administrador incorrecta' });
     var ped = leerPedido_(p.id);
-    return json_(ped ? { ok: true, pedido: ped } : { ok: false, error: 'No se encontró ese pedido' });
+    if (!ped) return json_({ ok: false, error: 'No se encontró ese pedido' });
+    return ContentService.createTextOutput('{"ok":true,"pedido":' + ped + '}').setMimeType(ContentService.MimeType.JSON);
   }
   var boda = texto_(p.boda, 80);
   if (!boda || !claveCorrecta_(boda, p.clave, false)) return json_({ ok: false, error: 'ID de boda o clave incorrectos' });

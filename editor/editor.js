@@ -831,6 +831,13 @@
       fila('WhatsApp', pedido.tel), fila('Paquete', pedido.paquete), fila('Canción', pedido.cancion), fila('Comentarios', pedido.comentarios),
       wa ? el('a', { class: 'b chico', href: `https://wa.me/${wa}`, target: '_blank', rel: 'noopener', style: 'text-decoration:none' }, 'Escribirle por WhatsApp') : null);
   }
+  /** Google a veces responde con una página HTML de error: se saca su mensaje para mostrarlo. */
+  function leerRespuesta(t) {
+    try { return JSON.parse(t); } catch (e) {
+      const msg = (new DOMParser().parseFromString(t, 'text/html').body.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 220);
+      throw new Error(`Google respondió con un error${msg ? ': “' + msg + '”' : ''}. Actualiza tu código de Google a la versión 7 (manual, sección 3.0) y vuelve a intentar.`);
+    }
+  }
   if (qp.get('pedido')) (async () => {
     let s = {}; try { s = JSON.parse(localStorage.getItem('mis-bodas-admin')) || {}; } catch (e) {}
     const url = s.url || (window.NEGOCIO && NEGOCIO.hojaConfirmaciones) || '';
@@ -840,7 +847,7 @@
       el('b', {}, `Abriendo el pedido ${qp.get('pedido')}…`), el('p', {}, 'Con fotos puede tardar unos segundos.')));
     document.body.append(capa);
     try {
-      const r = await (await fetch(`${url}${url.includes('?') ? '&' : '?'}accion=pedido&id=${encodeURIComponent(qp.get('pedido'))}&clave=${encodeURIComponent(s.clave)}`)).json();
+      const r = leerRespuesta(await (await fetch(`${url}${url.includes('?') ? '&' : '?'}accion=pedido&id=${encodeURIComponent(qp.get('pedido'))}&clave=${encodeURIComponent(s.clave)}`)).text());
       if (!r.ok) throw new Error(/boda o clave/i.test(r.error || '') ? 'tu código de Google es de una versión anterior; actualízalo (manual, sección 3.0)' : r.error);
       abrirPedido(r.pedido, qp.get('pedido'));
       history.replaceState(null, '', location.pathname);
