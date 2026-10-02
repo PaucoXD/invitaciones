@@ -72,10 +72,12 @@
       var base = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'accion=pedido&id=' + encodeURIComponent(folio) + '&clave=' + encodeURIComponent(ses.clave);
       var leer = function (n) {
         return fetch(base + '&parte=' + n + '&t=' + Date.now()).then(function (r) { return r.text(); })
-          .then(function (t) { try { return JSON.parse(t); } catch (e) { throw new Error('Google respondió con un error. Actualiza tu código de Google a la versión 8 (manual, sección 3.0).'); } })
+          .then(function (t) { try { return JSON.parse(t); } catch (e) { throw new Error('Google respondió con un error. Si ya tienes la versión 9, en Apps Script ejecuta la función “probarPedido” para ver el error exacto.'); } })
           .then(function (r) { if (!r.ok) throw new Error(r.error || 'error'); return r; });
       };
-      leer(0).then(function (r) {
+      fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'accion=ping&t=' + Date.now()).then(function (r) { return r.json(); }).catch(function () { return {}; })
+      .then(function (pg) { if (pg.version && pg.version < 9) throw new Error('tu Google todavía usa el código versión ' + pg.version + '. Actualízalo a la versión 9 (manual, sección 3.0).'); return leer(0); })
+      .then(function (r) {
         if (r.pedido) return r.pedido;
         var texto = r.texto, n = 1;
         var siguiente = function () {

@@ -841,7 +841,7 @@
   function leerRespuesta(t) {
     try { return JSON.parse(t); } catch (e) {
       const msg = (new DOMParser().parseFromString(t, 'text/html').body.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 220);
-      throw new Error(`Google respondió con un error${msg ? ': “' + msg + '”' : ''}. Actualiza tu código de Google a la versión 8 (manual, sección 3.0) y vuelve a intentar.`);
+      throw new Error(`Google respondió con un error${msg ? ': “' + msg + '”' : ''}. Si ya tienes la versión 9, en Apps Script ejecuta la función “probarPedido” para ver el error exacto (manual, sección 3.0).`);
     }
   }
   /** Descarga un pedido del formulario en partes (con fotos pesa varios MB). */
@@ -850,6 +850,10 @@
       const t = await (await fetch(`${url}${url.includes('?') ? '&' : '?'}accion=pedido&id=${encodeURIComponent(id)}&clave=${encodeURIComponent(clave)}&parte=${n}&t=${Date.now()}`)).text();
       return leerRespuesta(t);
     };
+    // Primero se pregunta la versión del código de Google (respuesta chiquita): así se sabe si falta actualizarlo
+    let v = 0;
+    try { v = leerRespuesta(await (await fetch(`${url}${url.includes('?') ? '&' : '?'}accion=ping&t=${Date.now()}`)).text()).version || 0; } catch (e) { /* se intenta de todos modos */ }
+    if (v && v < 9) throw new Error(`Tu Google todavía usa el código versión ${v}. Copia el código otra vez (debe decir versión 9), pégalo en Apps Script y en Implementar → Administrar implementaciones → ✏️ elige “Nueva versión” → Implementar.`);
     const r = await pedir(0);
     if (!r.ok) throw new Error(/boda o clave/i.test(r.error || '') ? 'tu código de Google es de una versión anterior; actualízalo (manual, sección 3.0)' : r.error);
     if (r.pedido) return r.pedido; // código de Google anterior (todo de una vez)

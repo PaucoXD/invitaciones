@@ -18,7 +18,7 @@ window.CODIGO_SHEETS = String.raw`// ===== Confirmaciones de invitaciones — pe
 // Después: Implementar → Nueva implementación → App web → Ejecutar como: Yo → Acceso: Cualquier persona.
 // ¿Actualizando? Implementar → Administrar implementaciones → ✏️ → Versión: "Nueva versión" → Implementar (la URL no cambia).
 
-var VERSION = 8;
+var VERSION = 9;
 
 var ENC_CONF = ['Fecha', 'Boda', 'Tipo', 'Invitado', 'Asiste', 'Personas', 'Mensaje', 'Lugares', 'Mesa'];
 var ENC_INV = ['Boda', 'Invitado', 'Lugares', 'Mesa', 'Teléfono'];
@@ -161,6 +161,20 @@ function guardarVista_(boda, nombre) {
   h.appendRow([boda, nombre, ahora, ahora, 1]);
   return { ok: true };
 }
+/**
+ * PRUEBA: en Apps Script elige "probarPedido" arriba y toca ▶ Ejecutar.
+ * Lee el pedido más reciente y escribe en el registro si se pudo (o el error exacto).
+ * Si Google pide permisos, acéptalos: a veces la app web falla solo porque faltaba autorizar.
+ */
+function probarPedido() {
+  var ps = pedidos_();
+  if (!ps.length) { Logger.log('No hay pedidos todavía.'); return; }
+  var p = ps[0];
+  try {
+    var t = leerPedido_(p.pedido);
+    Logger.log('✓ Pedido ' + p.pedido + ' (' + p.nombres + '): ' + Math.round(t.length / 1024) + ' KB. Versión del código: ' + VERSION);
+  } catch (err) { Logger.log('✕ Error al leer el pedido ' + p.pedido + ': ' + err); }
+}
 function filas_(nombre, boda, colBoda) {
   var h = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(nombre);
   if (!h) return [];
@@ -244,8 +258,8 @@ function doGet_(e) {
     if (!adminCorrecto_(p.clave)) return json_({ ok: false, error: 'Clave de administrador incorrecta' });
     var ped = leerPedido_(p.id);
     if (!ped) return json_({ ok: false, error: 'No se encontró ese pedido' });
-    // Con fotos el pedido pesa varios MB y Google no puede mandarlo de una vez: se manda en partes de ~1.5 MB
-    var TAM = 1500000, partes = Math.max(1, Math.ceil(ped.length / TAM)), n = Math.min(Math.max(0, Number(p.parte) || 0), partes - 1);
+    // Con fotos el pedido pesa varios MB y Google no puede mandarlo de una vez: se manda en partes de ~600 KB
+    var TAM = 600000, partes = Math.max(1, Math.ceil(ped.length / TAM)), n = Math.min(Math.max(0, Number(p.parte) || 0), partes - 1);
     return json_({ ok: true, partes: partes, parte: n, texto: ped.slice(n * TAM, (n + 1) * TAM) });
   }
   var boda = texto_(p.boda, 80);
