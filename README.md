@@ -1,6 +1,6 @@
 # Estudio de Invitaciones Digitales
 
-Sistema para hacer invitaciones digitales de **boda y XV años** **sin tocar código**: eliges un diseño,
+Sistema para hacer invitaciones digitales de **boda, XV años, bautizo, primera comunión, baby shower y cumpleaños** **sin tocar código**: eliges un diseño,
 llenas un formulario y descargas la invitación lista para publicar.
 
 ## Qué hay aquí
@@ -19,11 +19,12 @@ llenas un formulario y descargas la invitación lista para publicar.
 | `editor.html` | **El editor.** Formulario + vista previa en vivo + descarga. |
 | `invitacion.html` | Muestra una invitación (`?plantilla=boho`, `?b=nombre-de-boda`). |
 | `demos/` | Un archivo de demostración por diseño, listo para enviar a clientes. |
-| `plantillas/` | 6 diseños de boda (Vino y Olivo, Floral Romántica, Rústica Campestre, Boho Terracota, Elegante Negro y Dorado, Jardín Botánico) y 3 de XV años (Princesa Rosa, Mariposas Lila, Noche de Gala). |
+| `plantillas/` | 6 diseños de boda (Vino y Olivo, Floral Romántica, Rústica Campestre, Boho Terracota, Elegante Negro y Dorado, Jardín Botánico) 3 de XV años (Princesa Rosa, Mariposas Lila, Noche de Gala) y Cielo Tierno (bautizo, comunión, baby shower). Cada diseño dice para qué eventos sirve (`eventos`). |
 | `plantillas/adornos/` | Aquí van tus ilustraciones PNG propias (ver `LEEME.md`). |
 | `motor/` | El código compartido (no necesitas abrirlo). |
 | `bodas/ejemplo.js` | Datos de la boda ficticia de ejemplo. |
 | `bodas/ejemplo-xv.js` | Datos de unos XV años ficticios de ejemplo. |
+| `bodas/ejemplos-eventos.js` | Ejemplos de bautizo, primera comunión, baby shower y cumpleaños. |
 
 ## Tu página de ventas
 
@@ -51,6 +52,14 @@ lo abres con **📂 Abrir**. Enlaces útiles: `pedido.html?evento=xv`, `pedido.h
    GitHub Pages o Vercel. Con dominio propio queda como `tunegocio.com/valeria-y-santiago`.
 6. **Enlaces de invitados** → pega la dirección publicada y la lista `Nombre | lugares`.
    Te da un enlace por invitado (con su nombre en el sobre) y un botón para mandarlo por WhatsApp.
+
+## Otros eventos
+
+En el editor, arriba de los diseños, elige el evento: Boda, XV años, Bautizo, Primera comunión, Baby shower o
+Cumpleaños. Los textos, el formulario, los mensajes de WhatsApp, el PDF y el libro de recuerdos se adaptan solos
+(un solo nombre, "Mi bautizo", "¿Me acompañarás?"…). Los tipos de evento están en `motor/invitacion.js` (`EVENTOS`):
+para agregar uno nuevo basta con agregarlo ahí y poner su clave en `eventos` de los diseños que le sirvan.
+Demos: `invitacion.html?plantilla=nube&evento=bautizo`.
 
 ## XV años
 

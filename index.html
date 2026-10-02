@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Invitaciones digitales de boda</title>
-<meta name="description" content="Invitaciones digitales para boda y XV años: sobre animado, nombre de cada familia, confirmaciones automáticas, plano de mesas y versión en PDF.">
+<meta name="description" content="Invitaciones digitales para boda, XV años, bautizo, primera comunión, baby shower y cumpleaños: sobre animado, nombre de cada familia, confirmaciones automáticas, plano de mesas y versión en PDF.">
 <meta property="og:title" content="Invitaciones digitales de boda">
 <meta property="og:description" content="Sobre animado, nombre de cada familia, confirmaciones automáticas, plano de mesas y PDF para imprimir.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,6 +21,7 @@
 <script src="plantillas/xv-princesa.js"></script>
 <script src="plantillas/xv-mariposas.js"></script>
 <script src="plantillas/xv-gala.js"></script>
+<script src="plantillas/nube.js"></script>
 <style>
   :root{--bg:#faf6f1;--bg2:#f3ece3;--card:#fff;--ink:#2e2721;--muted:#72685e;--line:#e8dfd3;--accent:#8e3b4a;--accent2:#b8955a;--dark:#2b1a1e;--serif:'Cormorant Garamond',Georgia,serif;--sans:Inter,system-ui,sans-serif}
   *{box-sizing:border-box;margin:0;padding:0}
@@ -75,7 +76,7 @@
   .ben p{color:var(--muted);font-size:14px}
 
   /* Diseños */
-  .filtros{display:flex;justify-content:center;gap:10px;margin-top:28px}
+  .filtros{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:28px}
   .filtros button{font:inherit;font-size:14px;padding:10px 22px;border-radius:40px;border:1px solid currentColor;background:transparent;cursor:pointer;opacity:.7}
   .filtros button.on{opacity:1;font-weight:600;box-shadow:0 0 0 3px rgba(0,0,0,.06)}
   .tarjeta[hidden]{display:none}
@@ -234,7 +235,7 @@
   <p class="eyebrow rv">Catálogo</p>
   <h2 class="rv">Elige tu diseño</h2>
   <p class="sub rv">Toca cualquiera para verlo completo. Todos incluyen las mismas funciones; también lo adaptamos a tus colores.</p>
-  <div class="filtros rv" id="filtros"><button class="on" data-ev="boda">💍 Bodas</button><button data-ev="xv">👑 XV años</button></div>
+  <div class="filtros rv" id="filtros"></div>
   <div class="rejilla" id="catalogo"></div>
 </div></section>
 
@@ -334,29 +335,39 @@
     N.tiktok && `<a href="https://tiktok.com/@${esc(N.tiktok)}" target="_blank" rel="noopener">TikTok</a>`,
     N.correo && `<a href="mailto:${esc(N.correo)}">${esc(N.correo)}</a>`].filter(Boolean).join('');
 
-  // Catálogo de diseños
+  // Catálogo de diseños (filtrado por tipo de evento; cada diseño muestra el ejemplo de ese evento)
   const cat = document.getElementById('catalogo');
+  const EVS = Invitacion.EVENTOS;
+  const PARA = { boda: 'para mi boda', xv: 'para unos XV años', bautizo: 'para un bautizo', comunion: 'para una primera comunión', babyshower: 'para un baby shower', cumple: 'para un cumpleaños' };
   Object.values(Invitacion.plantillas).forEach(p => {
-    const t = document.createElement('article'); t.className = 'tarjeta rv'; t.dataset.ev = p.evento || 'boda';
-    if (t.dataset.ev !== 'boda') t.hidden = true;
+    const t = document.createElement('article'); t.className = 'tarjeta rv'; t.dataset.pl = p.id;
     t.innerHTML = `
-      <a class="mini" href="invitacion.html?plantilla=${p.id}" target="_blank" rel="noopener" aria-label="Ver demo ${esc(p.nombre)}">
-        <iframe loading="lazy" tabindex="-1" title="${esc(p.nombre)}" ${(p.evento || 'boda') === 'boda' ? 'src' : 'data-src'}="invitacion.html?plantilla=${p.id}&sinSobre=1"></iframe></a>
+      <a class="mini" target="_blank" rel="noopener" aria-label="Ver demo ${esc(p.nombre)}"><iframe loading="lazy" tabindex="-1" title="${esc(p.nombre)}"></iframe></a>
       <h3>${esc(p.nombre)}</h3>
       <div class="sw">${(p.colores || []).map(c => `<span style="background:${esc(c)}"></span>`).join('')}</div>
       <p>${esc(p.descripcion)}</p>
       <div class="acc">
-        <a class="btn chico" href="invitacion.html?plantilla=${p.id}" target="_blank" rel="noopener">Ver demo</a>
-        <a class="btn chico wa" data-wa="Hola, me encantó el diseño “${esc(p.nombre)}” ${p.evento === 'xv' ? 'para unos XV años 👑' : 'para mi boda 💍'}" target="_blank" rel="noopener">Lo quiero</a>
+        <a class="btn chico demo" target="_blank" rel="noopener">Ver demo</a>
+        <a class="btn chico wa quiero" target="_blank" rel="noopener">Lo quiero</a>
       </div>`;
     cat.appendChild(t);
   });
-  document.getElementById('filtros').addEventListener('click', (e) => {
-    const b = e.target.closest('button'); if (!b) return;
-    document.querySelectorAll('#filtros button').forEach(x => x.classList.toggle('on', x === b));
-    cat.querySelectorAll('.tarjeta').forEach(t => { t.hidden = t.dataset.ev !== b.dataset.ev; if (t.hidden) return; t.classList.add('vis'); const f = t.querySelector('iframe[data-src]'); if (f) { f.src = f.dataset.src; f.removeAttribute('data-src'); } });
+  function filtrar(ev) {
+    document.querySelectorAll('#filtros button').forEach(x => x.classList.toggle('on', x.dataset.ev === ev));
+    const pri = cat.querySelector(`.tarjeta[data-pl="${EVS[ev].plantilla}"]`); if (pri) cat.prepend(pri); // primero el diseño principal del evento
+    cat.querySelectorAll('.tarjeta').forEach(t => {
+      const p = Invitacion.plantillas[t.dataset.pl];
+      t.hidden = !Invitacion.sirvePara(p, ev); if (t.hidden) return;
+      t.classList.add('vis');
+      const demo = `invitacion.html?plantilla=${p.id}&evento=${ev}`, f = t.querySelector('iframe');
+      t.querySelector('.mini').href = demo; t.querySelector('.demo').href = demo;
+      t.querySelector('.quiero').href = wa(`Hola, me encantó el diseño “${p.nombre}” ${PARA[ev]} ${EVS[ev].emoji}`);
+      if (f.dataset.ev !== ev) { f.dataset.ev = ev; f.src = demo + '&sinSobre=1'; }
+    });
     escalar();
-  });
+  }
+  document.getElementById('filtros').innerHTML = Object.entries(EVS).map(([k, e]) => `<button data-ev="${k}">${e.emoji} ${esc(k === 'boda' ? 'Bodas' : e.nombre)}</button>`).join('');
+  document.getElementById('filtros').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) filtrar(b.dataset.ev); });
 
   // Opiniones (solo si el negocio agregó alguna en negocio.js)
   const ops = (N.testimonios || []).filter(t => t && t.texto);
@@ -389,7 +400,7 @@
     document.querySelectorAll('.mini').forEach(m => { const f = m.querySelector('iframe'); if (!m.clientWidth) return; f.style.transform = `scale(${m.clientWidth / 390})`; });
     const p = document.getElementById('pantalla-panel'); if (p) p.querySelector('iframe').style.transform = `scale(${p.clientWidth / 1100})`;
   }
-  addEventListener('resize', escalar); escalar();
+  addEventListener('resize', escalar); filtrar('boda');
 
   // Animación al aparecer
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); } }), { threshold: .12 });

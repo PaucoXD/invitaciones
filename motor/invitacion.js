@@ -49,15 +49,57 @@
     const [y, m, dd] = iso.split('-').map(Number);
     return `${dd} de ${MESES[m - 1].toLowerCase()} de ${y}`;
   }
-  /** Tipo de evento: 'boda' (dos nombres) o 'xv' (XV años, un solo nombre). */
+  // ---------------------------------------------------------------------------
+  // Tipos de evento. Solo la boda lleva dos nombres; los demás, uno (d.festejada).
+  // voz: 'yo' (habla quien celebra: "¿Me acompañarás?") o 'nos' (hablan los novios o los papás).
+  // {n} = nombre de quien celebra. Para agregar un evento basta con agregarlo aquí.
+  // ---------------------------------------------------------------------------
+  const EVENTOS = {
+    boda: { nombre: 'Boda', mio: 'nuestra boda', emoji: '💍', voz: 'nos', plantilla: 'floral', intro: 'Nos casamos', del: 'la boda de {n}', cal: 'Boda {n}', titulo: '{n} · Nuestra boda', og: '{n} · ¡Nos casamos!',
+      padres: 'Padres de la novia', recibe: 'los novios', contactos: ['', ''], honor: 'Novios', fiesta: 'la boda', etqNombre: '',
+      familia: ['Con la bendición de Dios y de nuestros padres', 'tenemos el honor de invitarte a celebrar la unión de nuestras vidas'], historia: 'Nuestra historia', despedida: 'Gracias por ser parte de nuestra historia',
+      itinerario: [['17:00', 'Ceremonia religiosa', 'iglesia'], ['19:00', 'Cóctel de bienvenida', 'copa'], ['20:30', 'Cena', 'cena'], ['22:00', '¡A bailar!', 'musica']], lugares: ['Ceremonia', 'Recepción'] },
+    xv: { nombre: 'XV años', mio: 'mis XV años', emoji: '👑', voz: 'yo', plantilla: 'princesa', intro: 'Mis XV años', sello: 'XV', del: 'los XV años de {n}', cal: 'XV años de {n}', titulo: '{n} · Mis XV años', og: '{n} · ¡Mis XV años!',
+      padres: 'Mis padres', recibe: '{n}', contactos: ['Mamá', 'Papá'], honor: 'Mesa de honor', fiesta: 'la fiesta', etqNombre: 'Nombre de la quinceañera',
+      familia: ['Con la bendición de Dios y de mis padres', 'tengo el honor de invitarte a celebrar mis quince años'], historia: 'Mis momentos', despedida: 'Gracias por acompañarme en este día tan especial',
+      itinerario: [['18:00', 'Misa de acción de gracias', 'iglesia'], ['20:00', 'Recepción', 'copa'], ['20:45', 'Vals', 'corona'], ['21:30', 'Cena', 'cena'], ['22:30', '¡A bailar!', 'musica']], lugares: ['Misa', 'Recepción'] },
+    bautizo: { nombre: 'Bautizo', mio: 'mi bautizo', emoji: '🕊️', voz: 'yo', plantilla: 'nube', intro: 'Mi bautizo', del: 'el bautizo de {n}', cal: 'Bautizo de {n}', titulo: '{n} · Mi bautizo', og: '{n} · ¡Mi bautizo!',
+      padres: 'Mis papás', recibe: '{n} y sus papás', contactos: ['Mamá', 'Papá'], honor: 'Mesa principal', fiesta: 'la celebración', etqNombre: 'Nombre del bebé',
+      familia: ['Con la bendición de Dios y el amor de mis papás', 'te invito a celebrar mi bautizo'], historia: 'Mis primeros momentos', despedida: 'Gracias por acompañarme en este día tan especial',
+      itinerario: [['12:00', 'Misa de bautizo', 'iglesia'], ['14:00', 'Recepción', 'copa'], ['15:00', 'Comida', 'cena'], ['17:00', 'Pastel', 'pastel']], lugares: ['Misa', 'Recepción'] },
+    comunion: { nombre: 'Primera comunión', mio: 'mi primera comunión', emoji: '✨', voz: 'yo', plantilla: 'nube', intro: 'Mi primera comunión', del: 'la primera comunión de {n}', cal: 'Primera comunión de {n}', titulo: '{n} · Mi primera comunión', og: '{n} · ¡Mi primera comunión!',
+      padres: 'Mis papás', recibe: '{n}', contactos: ['Mamá', 'Papá'], honor: 'Mesa principal', fiesta: 'la celebración', etqNombre: 'Nombre de quien hace su primera comunión',
+      familia: ['Con la bendición de Dios y de mis papás', 'te invito a celebrar mi primera comunión'], historia: 'Mis momentos', despedida: 'Gracias por acompañarme en este día tan especial',
+      itinerario: [['11:00', 'Misa de primera comunión', 'iglesia'], ['13:30', 'Recepción', 'copa'], ['14:30', 'Comida', 'cena'], ['16:30', 'Pastel', 'pastel']], lugares: ['Misa', 'Recepción'] },
+    babyshower: { nombre: 'Baby shower', mio: 'nuestro baby shower', emoji: '🍼', voz: 'nos', plantilla: 'nube', intro: 'Baby shower', del: 'el baby shower de {n}', cal: 'Baby shower de {n}', titulo: 'Baby shower de {n}', og: '¡Baby shower de {n}!',
+      padres: 'Los papás', recibe: 'los papás', contactos: ['Mamá', 'Papá'], honor: 'Mesa de los papás', fiesta: 'el baby shower', etqNombre: 'Nombre del bebé (o de la mamá)',
+      familia: ['Con mucha ilusión', 'te invitamos a celebrar la próxima llegada de nuestro bebé'], historia: 'Esperándote', despedida: 'Gracias por celebrar con nosotros la llegada de nuestro bebé',
+      itinerario: [['16:00', 'Bienvenida', 'copa'], ['17:00', 'Juegos', 'corazon'], ['18:00', 'Abrir regalos', 'regalo'], ['18:30', 'Pastel', 'pastel']], lugares: ['Lugar', ''] },
+    cumple: { nombre: 'Cumpleaños', mio: 'mi cumpleaños', emoji: '🎂', voz: 'yo', plantilla: 'dorada', intro: '¡Celebremos!', del: 'el cumpleaños de {n}', cal: 'Cumpleaños de {n}', titulo: '{n} · Mi cumpleaños', og: '¡Cumpleaños de {n}!',
+      padres: 'Con cariño de', recibe: '{n}', contactos: ['Festejado', 'Organización'], honor: 'Mesa principal', fiesta: 'la fiesta', etqNombre: 'Nombre del festejado',
+      familia: ['¡Vamos a celebrar!', 'te invito a festejar conmigo un año más de vida'], historia: 'Mis momentos', despedida: 'Gracias por celebrar conmigo',
+      itinerario: [['20:00', 'Recepción', 'copa'], ['21:00', 'Cena', 'cena'], ['22:00', 'Pastel', 'pastel'], ['22:30', '¡A bailar!', 'musica']], lugares: ['Fiesta', ''] }
+  };
+  const ev = (d) => EVENTOS[d && d.evento] || EVENTOS.boda;
+  /** ¿Lleva un solo nombre (todo menos la boda)? */
+  const unNombre = (d) => (d && d.evento || 'boda') !== 'boda';
   const esXV = (d) => d.evento === 'xv';
+  const habloYo = (d) => ev(d).voz === 'yo';
+  const conNombre = (t, d) => String(t || '').replace(/\{n\}/g, titular(d));
   /** Quién celebra: "Valeria & Santiago" o "Sofía". */
-  const titular = (d) => esXV(d) ? (d.festejada || '') : `${d.novia} & ${d.novio}`;
-  /** "la boda de Valeria & Santiago" / "los XV años de Sofía" */
-  const delEvento = (d) => esXV(d) ? `los XV años de ${d.festejada}` : `la boda de ${d.novia} & ${d.novio}`;
+  function titular(d) { return unNombre(d) ? (d.festejada || '') : `${d.novia} & ${d.novio}`; }
+  /** "la boda de Valeria & Santiago" / "los XV años de Sofía" / "el bautizo de Mateo" */
+  const delEvento = (d) => conNombre(ev(d).del, d);
+  /** Para Mis bodas y el panel: "Valeria & Santiago" / "XV años de Sofía" / "Bautizo de Mateo" */
+  const cabecera = (d) => unNombre(d) ? `${ev(d).nombre} de ${d.festejada}` : titular(d);
+  /** Textos que cambian según quién habla */
+  const VOZ = { yo: { acompanas: '¿Me acompañarás?', dejanos: 'Déjame un mensaje', nuestros: 'Para mis invitados', acompanaron: 'me acompañaron', conNos: 'conmigo', dia: 'Mi día', escribieron: 'Lo que me escribieron mis invitados', gracias: 'acompañarme' },
+    nos: { acompanas: '¿Nos acompañarás?', dejanos: 'Déjanos un mensaje', nuestros: 'Para nuestros invitados', acompanaron: 'nos acompañaron', conNos: 'nosotros', dia: 'Nuestro día', escribieron: 'Lo que nos escribieron nuestros invitados', gracias: 'acompañarnos' } };
+  const voz = (d) => VOZ[ev(d).voz] || VOZ.nos;
   function iniciales(d) {
     if (d.iniciales && d.iniciales.trim()) return d.iniciales.trim();
-    if (esXV(d)) return 'XV';
+    if (ev(d).sello) return ev(d).sello;
+    if (unNombre(d)) return ((d.festejada || '').trim()[0] || '♥').toUpperCase();
     return `${(d.novia || 'A').trim()[0] || ''} & ${(d.novio || 'B').trim()[0] || ''}`;
   }
   function enlaceCalendario(d) {
@@ -68,7 +110,7 @@
     const z = (x) => x.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
     const recepcion = (d.lugares || [])[1] || (d.lugares || [])[0] || {};
     const q = new URLSearchParams({
-      action: 'TEMPLATE', text: esXV(d) ? `XV años de ${d.festejada}` : `Boda ${d.novia} & ${d.novio}`, dates: `${z(ini)}/${z(fin)}`,
+      action: 'TEMPLATE', text: conNombre(ev(d).cal, d), dates: `${z(ini)}/${z(fin)}`,
       location: [recepcion.nombre, recepcion.direccion].filter(Boolean).join(', ').replace(/\n/g, ' '),
       details: '¡Te esperamos!'
     });
@@ -120,25 +162,25 @@
   const SECCIONES = ['frase', 'familia', 'cuenta', 'itinerario', 'ubicacion', 'vestimenta', 'historia', 'regalos', 'hospedaje', 'rsvp', 'deseos', 'canciones', 'contactos', 'cierre'];
   function normalizar(d) {
     d = JSON.parse(JSON.stringify(d || {}));
-    const xv = d.evento === 'xv';
+    const E = EVENTOS[d.evento] || EVENTOS.boda, uno = E !== EVENTOS.boda, yo = E.voz === 'yo';
     const def = {
-      evento: 'boda', plantilla: xv ? 'princesa' : 'floral', novia: xv ? '' : 'Novia', novio: xv ? '' : 'Novio', festejada: xv ? 'Quinceañera' : '', iniciales: '',
+      evento: 'boda', plantilla: E.plantilla, novia: uno ? '' : 'Novia', novio: uno ? '' : 'Novio', festejada: uno ? 'Nombre' : '', iniciales: '',
       fecha: '2027-03-20', hora: '17:00', zonaHoraria: '-06:00', ciudad: '',
-      introPortada: xv ? 'Mis XV años' : 'Nos casamos', fotoPortada: '',
+      introPortada: E.intro, fotoPortada: '',
       frase: '', fraseAutor: '',
-      tituloFamilia: xv ? 'Con la bendición de Dios y de mis padres' : 'Con la bendición de Dios y de nuestros padres',
-      textoFamilia: xv ? 'tengo el honor de invitarte a celebrar mis quince años' : 'tenemos el honor de invitarte a celebrar la unión de nuestras vidas',
+      tituloFamilia: E.familia[0],
+      textoFamilia: E.familia[1],
       padresNovia: '', padresNovio: '', padrinos: [],
       itinerario: [], lugares: [],
       vestimenta: { tipo: 'Formal', texto: '', colores: [], nota: '' },
-      historia: { titulo: xv ? 'Mis momentos' : 'Nuestra historia', texto: '', fotos: [] },
-      regalos: { titulo: xv ? 'Tu presencia es mi mejor regalo' : 'Tu presencia es nuestro mejor regalo', texto: '', opciones: [], banco: '', titular: '', clabe: '' },
+      historia: { titulo: E.historia, texto: '', fotos: [] },
+      regalos: { titulo: yo ? 'Tu presencia es mi mejor regalo' : 'Tu presencia es nuestro mejor regalo', texto: '', opciones: [], banco: '', titular: '', clabe: '' },
       rsvp: { whatsapp: '', fechaLimite: '', pases: 2, texto: '' },
       hospedaje: [], contactos: { novia: '', novio: '' },
       invitados: [], mesas: { activo: false, texto: '', lista: [], elementos: [] },
       confirmaciones: { url: '', boda: '', clave: '', whatsapp: false },
       acceso: { activo: false, texto: '' },
-      hashtag: '', nota: '', despedida: xv ? 'Gracias por acompañarme en este día tan especial' : 'Gracias por ser parte de nuestra historia',
+      hashtag: '', nota: '', despedida: E.despedida,
       musica: 'melodia', adornos: {}, ocultar: {}, encuadres: {}
     };
     for (const k in def) {
@@ -170,7 +212,7 @@
   const iconoEnviar = (d) => conHoja(d) && !d.confirmaciones.whatsapp ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>' : ICONOS.whatsapp;
 
   const S = {
-    esc, br, lineas, hay, fechaInfo, iniciales, esXV, titular, delEvento, ICONOS, adorno, seccion, encabezado,
+    esc, br, lineas, hay, fechaInfo, iniciales, esXV, unNombre, ev, voz, titular, delEvento, cabecera, ICONOS, adorno, seccion, encabezado,
 
     sobre(d, o = {}) {
       return `
@@ -190,7 +232,7 @@
     },
 
     nombres(d, tag = 'h1', amp = '&amp;') {
-      if (esXV(d)) return `<${tag} class="nombres nombre-xv"><span class="n1">${esc(d.festejada)}</span></${tag}>`;
+      if (unNombre(d)) return `<${tag} class="nombres nombre-xv nombre-uno"><span class="n1">${esc(d.festejada)}</span></${tag}>`;
       return `<${tag} class="nombres"><span class="n1">${esc(d.novia)}</span><span class="amp">${amp}</span><span class="n2">${esc(d.novio)}</span></${tag}>`;
     },
 
@@ -208,9 +250,9 @@
       if (d.ocultar.familia) return '';
       const [t1, ...t2] = String(d.tituloFamilia).split(' y de ');
       const titulo = t2.length ? `<p class="eyebrow rv">${esc(t1)}</p><h2 class="titulo rv">y de ${esc(t2.join(' y de '))}</h2>` : `<h2 class="titulo rv">${esc(d.tituloFamilia)}</h2>`;
-      if (esXV(d)) d = Object.assign({}, d, { padresNovio: '' });
+      if (unNombre(d)) d = Object.assign({}, d, { padresNovio: '' });
       const padres = (hay(d.padresNovia) || hay(d.padresNovio)) ? `<div class="padres">
-        ${hay(d.padresNovia) ? `<div class="rv"><h3>${esXV(d) ? 'Mis padres' : 'Padres de la novia'}</h3><p>${lineas(d.padresNovia).map(esc).join('<br>')}</p></div>` : ''}
+        ${hay(d.padresNovia) ? `<div class="rv"><h3>${esc(ev(d).padres)}</h3><p>${lineas(d.padresNovia).map(esc).join('<br>')}</p></div>` : ''}
         ${hay(d.padresNovio) ? `<div class="rv"><h3>Padres del novio</h3><p>${lineas(d.padresNovio).map(esc).join('<br>')}</p></div>` : ''}
       </div>` : '';
       const pad = (d.padrinos || []).filter(p => hay(p.nombres));
@@ -297,13 +339,13 @@
       return `<form id="form-rsvp" class="rv" novalidate>
           <label for="f-nombre">Nombre completo</label>
           <input type="text" id="f-nombre" placeholder="Tu nombre" autocomplete="name">
-          <label>${esXV(d) ? '¿Me acompañarás?' : '¿Nos acompañarás?'}</label>
+          <label>${voz(d).acompanas}</label>
           <div class="opciones">
             <input type="radio" name="asiste" id="asiste-si" value="si" checked><label for="asiste-si">Sí, ahí estaré</label>
             <input type="radio" name="asiste" id="asiste-no" value="no"><label for="asiste-no">No podré asistir</label>
           </div>
           <div id="caja-pases"><label for="f-pases">Número de asistentes</label><select id="f-pases"></select></div>
-          <label for="f-msg">Mensaje para ${esXV(d) ? esc(d.festejada) : 'los novios'} (opcional)</label>
+          <label for="f-msg">Mensaje para ${esc(conNombre(ev(d).recibe, d))} (opcional)</label>
           <textarea id="f-msg" placeholder="Escribe unas palabras…"></textarea>
           <button class="btn solido" type="submit">${iconoEnviar(d)}${conHoja(d) && !d.confirmaciones.whatsapp ? 'Enviar confirmación' : 'Confirmar por WhatsApp'}</button>
           ${hay(r.fechaLimite) ? `<p class="limite">Agradeceremos tu confirmación antes del ${esc(fechaTexto(r.fechaLimite))}</p>` : ''}
@@ -321,7 +363,7 @@
     hospedaje(d, o = {}) {
       const hs = (d.hospedaje || []).filter(h => hay(h.nombre));
       if (!hs.length || d.ocultar.hospedaje) return '';
-      return seccion('hospedaje', `${encabezado(esXV(d) ? 'Para mis invitados' : 'Para nuestros invitados', o.titulo || 'Hospedaje')}
+      return seccion('hospedaje', `${encabezado(voz(d).nuestros, o.titulo || 'Hospedaje')}
         <div class="hoteles">${hs.map(h => `<div class="hotel rv"><h4>${esc(h.nombre)}</h4>${hay(h.nota) ? `<p class="hotel-nota">${br(h.nota)}</p>` : ''}${hay(h.direccion) ? `<p class="hotel-dir">${br(h.direccion)}</p>` : ''}<a class="btn" target="_blank" rel="noopener" href="${esc(enlaceMapa(h))}">${ICONOS.mapa}Ver ubicación</a></div>`).join('')}</div>`, o);
     },
 
@@ -335,7 +377,7 @@
     },
     deseos(d, o = {}) {
       if (d.ocultar.deseos || !(hay(d.rsvp.whatsapp) || conHoja(d))) return '';
-      return seccion('deseos', `${encabezado(esXV(d) ? 'Déjame un mensaje' : 'Déjanos un mensaje', o.titulo || 'Buenos deseos', o.texto || 'Tus palabras serán un recuerdo para siempre')}${S.formWhats(d, 'deseo', { boton: 'Enviar mis buenos deseos' })}`, o);
+      return seccion('deseos', `${encabezado(voz(d).dejanos, o.titulo || 'Buenos deseos', o.texto || 'Tus palabras serán un recuerdo para siempre')}${S.formWhats(d, 'deseo', { boton: 'Enviar mis buenos deseos' })}`, o);
     },
     canciones(d, o = {}) {
       if (d.ocultar.canciones || !(hay(d.rsvp.whatsapp) || conHoja(d))) return '';
@@ -345,13 +387,13 @@
       const c = d.contactos || {};
       if (d.ocultar.contactos || (!hay(c.novia) && !hay(c.novio))) return '';
       const b = (num, quien) => hay(num) ? `<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${esc(String(num).replace(/\D/g, ''))}">${ICONOS.whatsapp}${esc(quien)}</a>` : '';
-      return seccion('contactos', `${encabezado('¿Tienes dudas?', o.titulo || 'Contactos')}<div class="contactos rv">${b(c.novia, esXV(d) ? 'Mamá' : d.novia)}${b(c.novio, esXV(d) ? 'Papá' : d.novio)}</div>`, o);
+      return seccion('contactos', `${encabezado('¿Tienes dudas?', o.titulo || 'Contactos')}<div class="contactos rv">${b(c.novia, unNombre(d) ? ev(d).contactos[0] : d.novia)}${b(c.novio, unNombre(d) ? ev(d).contactos[1] : d.novio)}</div>`, o);
     },
     /** Hospedaje, buenos deseos, canciones y contactos juntos. */
     /** Plano del salón con las mesas (paquete opcional "Mesas"). */
     plano(d) {
       const m = d.mesas || {};
-      const ETQ = { pista: 'Pista', novios: esXV(d) ? 'Mesa de honor' : 'Novios', entrada: 'Entrada', barra: 'Barra', dj: 'DJ', pastel: 'Pastel' };
+      const ETQ = { pista: 'Pista', novios: ev(d).honor, entrada: 'Entrada', barra: 'Barra', dj: 'DJ', pastel: 'Pastel' };
       return `<div class="plano">
         ${(m.elementos || []).map(x => `<div class="pl-el pl-${esc(x.tipo)}" style="left:${+x.x || 0}%;top:${+x.y || 0}%;width:${+x.w || 20}%;height:${+x.h || 15}%"><span>${esc(x.texto || ETQ[x.tipo] || '')}</span></div>`).join('')}
         ${(m.lista || []).map(x => `<div class="pl-mesa ${x.forma === 'rectangular' ? 'rect' : ''}" data-mesa="${esc(x.nombre)}" style="left:${+x.x || 0}%;top:${+x.y || 0}%"><span>${esc(x.nombre)}</span></div>`).join('')}
@@ -926,7 +968,8 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
       g.querySelector('button').addEventListener('click', function () { g.remove(); form.style.display = ''; });
       form.style.display = 'none'; form.parentNode.insertBefore(g, form.nextSibling);
     }
-    var xv = d.evento === 'xv', quien = xv ? d.festejada : d.novia + ' & ' + d.novio, delEv = xv ? 'los XV años de ' + quien : 'la boda de ' + quien;
+    var EV = d._ev || {}, xv = !!EV.uno, quien = EV.quien || (d.novia + ' & ' + d.novio), delEv = EV.del || 'la boda de ' + quien;
+    var aDel = /^el /.test(delEv) ? 'al ' + delEv.slice(3) : 'a ' + delEv; // "al bautizo", "a la boda"
     var claveLocal = 'inv-rsvp:' + (C.boda || quien) + ':' + (invitado || '');
     function recordar(v) { try { localStorage.setItem(claveLocal, JSON.stringify(v)); } catch (e) {} }
     function recordado() { try { return JSON.parse(localStorage.getItem(claveLocal)); } catch (e) { return null; } }
@@ -952,7 +995,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         g.fillStyle = fondo; g.fillRect(0, 0, W2, H2);
         g.strokeStyle = acento; g.lineWidth = 3; g.strokeRect(28, 28, W2 - 56, H2 - 56); g.lineWidth = 1; g.strokeRect(40, 40, W2 - 80, H2 - 80);
         g.textAlign = 'center'; g.fillStyle = acento; g.font = '600 22px ' + fE; g.fillText('PASE DE ENTRADA', W2 / 2, 120);
-        var quien = d.evento === 'xv' ? 'XV años de ' + d.festejada : d.novia + ' & ' + d.novio;
+        var quien = EV.cabecera || (d.novia + ' & ' + d.novio);
         g.fillStyle = tinta; g.font = 'italic 30px ' + fX; g.fillText(quien, W2 / 2, 172);
         var p2 = String(d.fecha || '').split('-'); if (p2.length === 3) { g.font = '22px ' + fE; g.fillText(p2[2] + ' · ' + p2[1] + ' · ' + p2[0], W2 / 2, 212); }
         g.fillStyle = tit; var tam = 64; g.font = tam + 'px ' + fT; while (g.measureText(invitado).width > W2 - 120 && tam > 30) { tam -= 4; g.font = tam + 'px ' + fT; }
@@ -983,7 +1026,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         if (usarWa) abrirWa(msg);
         if (!usarHoja) return;
         aHoja({ tipo: tipo, nombre: nom || invitado, mensaje: txt }).then(function (ok) {
-          if (ok) { gracias(f, tipo === 'cancion' ? '¡Anotada!' : '¡Gracias por tus palabras!', tipo === 'cancion' ? 'La pondremos en la lista para la pista.' : (xv ? quien + ' recibirá tu mensaje.' : 'Los novios recibirán tu mensaje.')); $('[name=texto]', f).value = ''; }
+          if (ok) { gracias(f, tipo === 'cancion' ? '¡Anotada!' : '¡Gracias por tus palabras!', tipo === 'cancion' ? 'La pondremos en la lista para la pista.' : (EV.msgRecibe || 'Los novios recibirán tu mensaje.')); $('[name=texto]', f).value = ''; }
           else if (!usarWa) { avisar('Sin conexión; te abrimos WhatsApp'); abrirWa(msg); }
         });
       });
@@ -1025,8 +1068,8 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         var nom = fNombre.value.trim();
         if (!nom) { avisar('Escribe tu nombre, por favor'); fNombre.focus(); return; }
         var si = $('#asiste-si').checked, msg = $('#f-msg').value.trim();
-        var txt = si ? '¡Hola! Soy ' + nom + ' y confirmo mi asistencia a ' + delEv + (xv ? ' 👑' : ' 💍') + '\nAsistentes: ' + sel.value
-                     : 'Hola, soy ' + nom + '. Lamentablemente no podré asistir a ' + delEv + ', ¡pero ' + (xv ? 'le' : 'les') + ' deseo lo mejor! 🤍';
+        var txt = si ? '¡Hola! Soy ' + nom + ' y confirmo mi asistencia ' + aDel + ' ' + (EV.emoji || '💍') + '\nAsistentes: ' + sel.value
+                     : 'Hola, soy ' + nom + '. Lamentablemente no podré asistir ' + aDel + ', ¡pero ' + (EV.les || 'les') + ' deseo lo mejor! 🤍';
         if (msg) txt += '\n\nMensaje: ' + msg;
         if (!usarHoja && !numWa) { avisar('Falta configurar el número de WhatsApp'); return; }
         if (usarWa) abrirWa(txt);
@@ -1035,7 +1078,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         aHoja({ tipo: 'rsvp', nombre: nom, asiste: si, personas: personas, mensaje: msg, pases: pases, mesa: mesa }).then(function (ok) {
           if (ok) {
             recordar({ si: si, personas: personas });
-            gracias(form, si ? '¡Gracias, ' + nom + '!' : 'Gracias por avisarnos', si ? 'Registramos tu confirmación para ' + personas + (personas === 1 ? ' persona' : ' personas') + '. ¡Nos vemos en ' + (xv ? 'la fiesta' : 'la boda') + '!' : 'Te vamos a extrañar. Tu respuesta quedó registrada.');
+            gracias(form, si ? '¡Gracias, ' + nom + '!' : 'Gracias por avisarnos', si ? 'Registramos tu confirmación para ' + personas + (personas === 1 ? ' persona' : ' personas') + '. ¡Nos vemos en ' + (EV.fiesta || 'la boda') + '!' : 'Te vamos a extrañar. Tu respuesta quedó registrada.');
           } else if (!usarWa) { avisar('Sin conexión; te abrimos WhatsApp'); abrirWa(txt); }
         });
       });
@@ -1059,6 +1102,10 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
     d._rutaAdornos = opciones.rutaAdornos != null ? opciones.rutaAdornos : 'plantillas/adornos/';
     d._efecto = p.efecto || null;
     d._efectoColores = p.efectoColores || null;
+    // Textos del tipo de evento que usa la página ya publicada (runtime no puede leer EVENTOS)
+    const E = ev(d), recibe = conNombre(E.recibe, d), plural = /^los |^las | y /i.test(recibe);
+    d._ev = { uno: unNombre(d), quien: titular(d), del: delEvento(d), cabecera: cabecera(d), emoji: E.emoji, fiesta: E.fiesta, les: E.voz === 'nos' ? 'les' : 'le',
+      msgRecibe: recibe.charAt(0).toUpperCase() + recibe.slice(1) + (plural ? ' recibirán' : ' recibirá') + ' tu mensaje.' };
     d.confirmaciones = { url: d.confirmaciones.url || '', boda: d.confirmaciones.boda || '', whatsapp: !!d.confirmaciones.whatsapp };
     let html = p.render(d, S);
     // Encuadre de fotos: posición (x, y en %) y zoom elegidos en el editor
@@ -1071,7 +1118,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         return `<span class="encuadre">${tag.replace('<img', `<img style="object-position:${x}% ${y}%;transform:scale(${z});transform-origin:${x}% ${y}%"`)}</span>`;
       });
     }
-    const titulo = esXV(d) ? `${d.festejada} · Mis XV años` : `${d.novia} & ${d.novio} · Nuestra boda`;
+    const titulo = conNombre(ev(d).titulo, d);
     return { d, p, html, css: CSS_BASE + '\n' + (p.css || ''), fuentes: p.fuentes || '', titulo, descripcion: `${fechaInfo(d).larga}${d.ciudad ? ' — ' + d.ciudad : ''}` };
   }
 
@@ -1104,7 +1151,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(r.titulo)}</title>
 <meta name="description" content="${esc(r.descripcion)}">
-<meta property="og:title" content="${esXV(r.d) ? `${esc(r.d.festejada)} · ¡Mis XV años!` : `${esc(r.d.novia)} & ${esc(r.d.novio)} · ¡Nos casamos!`}">
+<meta property="og:title" content="${esc(conNombre(ev(r.d).og, r.d))}">
 <meta property="og:description" content="${esc(r.descripcion)}">
 ${r.d.fotoPortada && !/^data:/.test(r.d.fotoPortada) ? `<meta property="og:image" content="${esc(r.d.fotoPortada)}">` : ''}
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1123,6 +1170,8 @@ ${r.d.acceso && r.d.acceso.activo && window.QR_FUENTE ? `<script>${window.QR_FUE
     registrar(p) { Plantillas[p.id] = p; },
     plantillas: Plantillas,
     construir, montar, exportarHTML, normalizar,
-    ICONOS, ICONOS_EVENTO, ICONOS_REGALO, SECCIONES, fechaInfo, huella, titular, esXV, S
+    ICONOS, ICONOS_EVENTO, ICONOS_REGALO, SECCIONES, EVENTOS, fechaInfo, huella, titular, cabecera, delEvento, esXV, unNombre, S,
+    /** ¿Esta plantilla sirve para este tipo de evento? */
+    sirvePara: (p, e) => (p.eventos || [p.evento || 'boda']).includes(e || 'boda')
   };
 })();

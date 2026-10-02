@@ -118,7 +118,7 @@
   <a class="sub" href="#invitados">Invitados</a>
   <a class="sub" href="#mesas">Paquete Mesas</a>
   <a class="sub" href="#confirmaciones">Confirmaciones automáticas</a>
-  <a class="sub" href="#xv">XV años</a>
+  <a class="sub" href="#xv">XV años y otros eventos</a>
   <a class="sub" href="#acceso">Pase de entrada con QR</a>
   <a class="sub" href="#libro">Libro de recuerdos</a>
   <a href="#publicar">4. Publicar y enviar</a>
@@ -224,7 +224,7 @@
     <li>Revisa, ajusta y sigue como siempre (Guardar datos, Descargar, Enlaces…).</li>
   </ol>
   <div class="caja tip"><b>Enlaces que puedes mandar</b><code>pedido.html?evento=xv</code> (empieza en XV años) · <code>pedido.html?plantilla=gala</code> (con el diseño ya elegido) · <code>pedido.html?paquete=Premium</code> (con el paquete elegido).</div>
-  <div class="caja ojo"><b>Actualiza tu código de Google (versión 4)</b>Para recibir pedidos y usar el pase de entrada con QR, copia otra vez el código desde el editor (sección Confirmaciones automáticas), pégalo en Apps Script y ve a <b>Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión → Implementar</b>. Google te pedirá <b>permiso para usar tu Drive</b> (ahí guarda las fotos): acéptalo. La dirección no cambia.</div>
+  <div class="caja ojo"><b>Actualiza tu código de Google (versión 5)</b>Para recibir pedidos y usar el pase de entrada con QR, copia otra vez el código desde el editor (sección Confirmaciones automáticas), pégalo en Apps Script y ve a <b>Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión → Implementar</b>. Google te pedirá <b>permiso para usar tu Drive</b> (ahí guarda las fotos): acéptalo. La dirección no cambia.</div>
   <div class="caja tip"><b>¿Sin Google Sheets?</b>El formulario también funciona: al final el cliente toca <b>Compartir archivo por WhatsApp</b> (o lo descarga) y te lo manda. Tú lo abres en el editor con <span class="btn">📂 Abrir</span>.</div>
 
   <h3 id="editor">3.1 El editor, botón por botón</h3>
@@ -244,7 +244,7 @@
   <div class="caja tip"><b>Guardado automático</b>El editor recuerda lo último que hiciste en ese navegador (dice "guardado en este navegador"). Pero si subes muchas fotos puede no caber, y si limpias el navegador se pierde. <b>El respaldo real es "Guardar datos".</b></div>
 
   <h3 id="secciones">3.2 Las secciones del formulario</h3>
-  <p>Arriba eliges el tipo de evento (<b>💍 Boda</b> o <b>👑 XV años</b>) y el <b>diseño</b> (puedes cambiarlo cuando quieras; los datos se conservan). Luego abre cada sección:</p>
+  <p>Arriba eliges el tipo de evento (boda, XV años, bautizo, primera comunión, baby shower o cumpleaños) y el <b>diseño</b> (puedes cambiarlo cuando quieras; los datos se conservan). Luego abre cada sección:</p>
   <table>
     <tr><th>Sección</th><th>Qué llenar</th></tr>
     <tr><td>Pareja y fecha</td><td>Nombres, iniciales del sello, fecha, hora, zona horaria (para la cuenta regresiva) y ciudad.</td></tr>
@@ -310,18 +310,17 @@
   <div class="caja ojo"><b>Si cambias la lista de invitados</b>Vuelve a dar clic en "Sincronizar lista de invitados".</div>
   <p>Cuando un invitado confirma, ve "¡Gracias, Familia López! Registramos tu confirmación…" y la respuesta aparece en el panel de los novios y en Mis bodas.</p>
 
-  <h3 id="xv">3.7 Invitaciones de XV años</h3>
-  <p>Se hacen en el mismo editor, con todas las mismas funciones (sobre, nombre de cada familia, confirmaciones, mesas, PDF).</p>
+  <h3 id="xv">3.7 XV años, bautizo, primera comunión, baby shower y cumpleaños</h3>
+  <p>Se hacen en el mismo editor con todas las mismas funciones (sobre, nombre de cada familia, confirmaciones, mesas, pase QR, PDF y libro de recuerdos).</p>
   <ol class="pasos">
-    <li>Arriba de los diseños toca <span class="btn">👑 XV años</span>. Aparecen los 3 diseños de XV: <b>Princesa Rosa</b>, <b>Mariposas Lila</b> y <b>Noche de Gala</b>.</li>
-    <li>Si vas a empezar de cero, da clic en <span class="btn">Nueva</span> <b>después</b> de elegir XV años: se llena con un ejemplo de XV (misa, vals, padrinos…).</li>
-    <li>En vez de novia y novio, escribes el <b>nombre de la quinceañera</b>. Los textos cambian solos a primera persona: "Mis XV años", "tengo el honor de invitarte…", "Mis padres", "¿Me acompañarás?".</li>
-    <li><b>Padres y padrinos:</b> en "Mis padres" van papá y mamá; en "Padrinos y chambelanes" agregas los que quieras (velación, anillo, última muñeca, chambelán de honor…).</li>
-    <li><b>Itinerario:</b> hay íconos nuevos para XV: corona (vals), zapatilla (cambio de zapatilla), mariposa y estrella.</li>
-    <li><b>Contactos:</b> WhatsApp de mamá y de papá.</li>
+    <li>Arriba de los diseños elige el evento: <span class="btn">💍 Boda</span> <span class="btn">👑 XV años</span> <span class="btn">🕊️ Bautizo</span> <span class="btn">✨ Primera comunión</span> <span class="btn">🍼 Baby shower</span> <span class="btn">🎂 Cumpleaños</span>. Aparecen solo los diseños que sirven para ese evento y se elige su diseño principal (por ejemplo <b>Cielo Tierno</b> para bautizo, primera comunión y baby shower).</li>
+    <li>Si vas a empezar de cero, toca <span class="btn">Nueva</span> <b>después</b> de elegir el evento: se llena con su programa del día típico (misa, recepción, pastel…).</li>
+    <li>En vez de novia y novio escribes <b>un solo nombre</b> (la quinceañera, el bebé, el festejado). Los textos cambian solos: "Mi bautizo", "¿Me acompañarás?", "Mis papás"… En el baby shower hablan los papás ("Te invitamos", "¿Nos acompañarás?").</li>
+    <li>El texto de arriba de la portada se puede cambiar, por ejemplo "Mis 30" o "Mis 50 años" en un cumpleaños.</li>
+    <li><b>Padres y padrinos:</b> el primer cuadro es para los papás; en padrinos agregas los que quieras (de bautizo, de vela, chambelanes…).</li>
   </ol>
-  <div class="caja tip"><b>En Mis bodas y en el panel</b>Los XV aparecen como "XV años de Sofía". El botón de acceso dice "Copiar acceso para la familia" y el mensaje de recordatorio dice "a los XV años de Sofía".</div>
-  <div class="caja ojo"><b>¿Ya hiciste algunos datos como boda?</b>Si cambias de Boda a XV años, los textos que no habías cambiado se pasan solos a la versión de XV, y el nombre de la novia se usa como nombre de la quinceañera. Revisa todo antes de enviar.</div>
+  <div class="caja tip"><b>Todo se adapta</b>Los mensajes de WhatsApp ("confirmo mi asistencia al bautizo de Mateo 🕊️"), el título de la invitación, el PDF, el libro de recuerdos, el mensaje para mandar los enlaces y el panel. En Mis bodas aparecen como "Bautizo de Mateo", "Cumpleaños de Andrea", etc.</div>
+  <div class="caja ojo"><b>¿Ya llenaste datos de otro evento?</b>Si cambias de evento, los textos que no habías cambiado se pasan solos al nuevo evento. Revisa todo antes de enviar.</div>
 
   <h3 id="acceso">3.8 Pase de entrada con QR (paquete)</h3>
   <p>Cada familia ve en su invitación un <b>pase de entrada</b> con su nombre, sus lugares, su mesa y un código QR, y puede guardarlo como imagen en su celular. También sale en su PDF. El día del evento, quien esté en la puerta lo escanea con su celular y queda registrado quién llegó y cuántos son.</p>
@@ -333,7 +332,7 @@
     <li>En la puerta: <b>Escanear pase</b> → aparece "¡Bienvenidos! Familia López · 4 lugares · Mesa 5" → <b>Registrar entrada</b>. Si alguien no trae su pase, se busca por nombre en la lista.</li>
   </ol>
   <div class="caja tip"><b>Qué avisa la página de la puerta</b>Si ese pase ya entró (con la hora), si la familia no está en la lista, o si el pase es de otro evento. Se pueden ajustar las personas que llegaron o deshacer una entrada. Si se va la señal, guarda los registros y los manda solos cuando vuelve el internet. Varios celulares pueden registrar a la vez.</div>
-  <div class="caja ojo"><b>Necesita el código de Google versión 4</b>Si ya lo tenías instalado, actualízalo como se explica en la sección <a href="#formulario">3.0</a>. Para practicar sin internet: <a href="entrada.html?demo=1" target="_blank" rel="noopener">entrada.html?demo=1</a>.</div>
+  <div class="caja ojo"><b>Necesita el código de Google versión 4 o más nueva</b>Si ya lo tenías instalado, actualízalo como se explica en la sección <a href="#formulario">3.0</a>. Para practicar sin internet: <a href="entrada.html?demo=1" target="_blank" rel="noopener">entrada.html?demo=1</a>.</div>
 
   <h3 id="libro">3.9 Libro de recuerdos (paquete)</h3>
   <p>Después del evento, un PDF con el diseño de la invitación que junta todo lo que escribieron los invitados: un regalo bonito para los novios o la quinceañera, que se puede mandar o imprimir.</p>

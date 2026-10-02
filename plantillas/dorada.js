@@ -16,6 +16,7 @@
 
   window.Invitacion.registrar({
     id: 'dorada',
+    eventos: ['boda', 'cumple', 'xv'],
     nombre: 'Elegante Negro y Dorado',
     descripcion: 'Art déco de gala: fondo negro, letras con brillo dorado y destellos.',
     colores: ['#0f0e0c', '#d4af6a', '#f3e2b3', '#2a2620'],

@@ -12,7 +12,7 @@
 <!--
   Formulario para que el cliente llene los datos de su invitación.
   Se manda a tu Google Sheets (si pusiste hojaConfirmaciones en negocio.js) y aparece en "Mis bodas".
-  Enlaces útiles:  pedido.html            pedido.html?evento=xv            pedido.html?plantilla=gala&paquete=Premium
+  Enlaces útiles:  pedido.html            pedido.html?evento=xv (o bautizo, comunion, babyshower, cumple)            pedido.html?plantilla=gala&paquete=Premium
 -->
 <script src="negocio.js" onerror="window.NEGOCIO={}"></script>
 <script src="motor/invitacion.js"></script>
@@ -25,6 +25,7 @@
 <script src="plantillas/xv-princesa.js"></script>
 <script src="plantillas/xv-mariposas.js"></script>
 <script src="plantillas/xv-gala.js"></script>
+<script src="plantillas/nube.js"></script>
 <style>
   :root{--bg:#faf6f1;--card:#fff;--ink:#2e2721;--muted:#6f655b;--line:#e6dccf;--accent:#8e3b4a;--accent-bg:#f6eaec;--ok:#3f7a52;--ok-bg:#e8f3eb;--no:#a9473e;--no-bg:#f8e9e7;--dark:#2b1a1e;--serif:'Cormorant Garamond',Georgia,serif}
   *{box-sizing:border-box;margin:0;padding:0}
@@ -53,7 +54,7 @@
   .ayuda{font-size:13.5px;color:var(--muted);margin-top:6px}
   .fila{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .fila>div>label.c{margin-top:14px}
-  .opc{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .opc{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
   .opc label{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:2px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;font-weight:600;min-height:56px;text-align:center}
   .opc input{position:absolute;opacity:0;pointer-events:none}
   .opc input:checked+label{border-color:var(--accent);background:var(--accent-bg);color:var(--accent)}
@@ -124,19 +125,18 @@
   // ---------------------------------------------------------------------------
   // Estado (se guarda solo en este celular, también las fotos)
   // ---------------------------------------------------------------------------
-  const ITIN = {
-    boda: [['17:00', 'Ceremonia religiosa'], ['19:00', 'Recepción'], ['21:00', 'Cena'], ['22:30', '¡A bailar!']],
-    xv: [['18:00', 'Misa de acción de gracias'], ['20:00', 'Recepción'], ['20:45', 'Vals'], ['21:30', 'Cena'], ['22:30', '¡A bailar!']]
-  };
+  const EVS = Invitacion.EVENTOS;
+  const itin = (ev) => (EVS[ev] || EVS.boda).itinerario.map(([hora, evento]) => ({ hora, evento }));
   function vacio() {
-    const ev = q.get('evento') === 'xv' || (PL[q.get('plantilla')] || {}).evento === 'xv' ? 'xv' : 'boda';
+    const pq = PL[q.get('plantilla')];
+    const ev = EVS[q.get('evento')] ? q.get('evento') : pq ? (pq.eventos || ['boda'])[0] : 'boda';
     return {
       paso: 0, cliente: { nombre: '', tel: '', paquete: q.get('paquete') || '', comentarios: '', cancion: '' },
       evento: ev, plantilla: PL[q.get('plantilla')] ? q.get('plantilla') : '',
       novia: '', novio: '', festejada: '', fecha: '', hora: '', ciudad: '', zona: '-06:00',
-      lugar1: { tipo: ev === 'xv' ? 'Misa' : 'Ceremonia', nombre: '', direccion: '', hora: '', mapa: '' },
-      lugar2: { tipo: 'Recepción', nombre: '', direccion: '', hora: '', mapa: '' }, mismoLugar: false,
-      padres1: '', padres2: '', padrinos: '', itinerario: ITIN[ev].map(([hora, evento]) => ({ hora, evento })),
+      lugar1: { tipo: EVS[ev].lugares[0], nombre: '', direccion: '', hora: '', mapa: '' },
+      lugar2: { tipo: 'Recepción', nombre: '', direccion: '', hora: '', mapa: '' }, mismoLugar: !EVS[ev].lugares[1],
+      padres1: '', padres2: '', padrinos: '', itinerario: itin(ev),
       vestimenta: 'Formal', notaVestimenta: '', frase: '', historia: '',
       regalos: '', sobres: true, banco: '', clabe: '', titular: '',
       portada: '', fotos: [],
@@ -158,7 +158,11 @@
     tGuardar = setTimeout(() => { DB.poner(JSON.parse(JSON.stringify(E))); $('#guardado').textContent = '✓ Guardado en este celular'; }, 500);
   }
 
-  const xv = () => E.evento === 'xv';
+  /** Un solo nombre (todo menos la boda) */
+  const xv = () => E.evento !== 'boda';
+  const esXV = () => E.evento === 'xv';
+  const EVd = () => EVS[E.evento] || EVS.boda;
+  const ejemploNombre = { xv: 'Sofía', bautizo: 'Mateo', comunion: 'Regina', babyshower: 'Emilia', cumple: 'Andrea' };
   const get = (ruta) => ruta.split('.').reduce((o, k) => o == null ? o : o[k], E);
   const set = (ruta, v) => { const ks = ruta.split('.'); let o = E; for (let i = 0; i < ks.length - 1; i++) o = o[ks[i]]; o[ks[ks.length - 1]] = v; guardar(); };
 
@@ -173,8 +177,8 @@
 
   function lugar(k, titulo) {
     return `<div class="caja"><h2>${titulo}</h2>
-      ${campo(k + '.tipo', 'Tipo', { ph: xv() ? 'Misa' : 'Ceremonia religiosa / civil' })}
-      ${campo(k + '.nombre', 'Nombre del lugar', { req: k === 'lugar1', ph: k === 'lugar2' ? 'Salón, jardín u hacienda' : xv() ? 'Templo de San Francisco' : 'Parroquia de San Miguel' })}
+      ${campo(k + '.tipo', 'Tipo', { ph: E.evento === 'boda' ? 'Ceremonia religiosa / civil' : EVd().lugares[0] })}
+      ${campo(k + '.nombre', 'Nombre del lugar', { req: k === 'lugar1', ph: k === 'lugar2' || EVd().lugares[0] !== 'Misa' && E.evento !== 'boda' ? 'Salón, jardín, casa…' : esXV() ? 'Templo de San Francisco' : 'Parroquia de San Miguel' })}
       ${campo(k + '.direccion', 'Dirección', { area: true, ph: 'Calle, número, colonia, ciudad' })}
       <div class="fila"><div>${campo(k + '.hora', 'Hora', { tipo: 'time' })}</div><div>${campo(k + '.mapa', 'Enlace de Google Maps', { tipo: 'url', opc: true, ph: 'https://maps.app.goo.gl/…' })}</div></div>
       <p class="ayuda">En Google Maps busca el lugar → Compartir → Copiar vínculo. Si no lo tienes, no pasa nada.</p>
@@ -186,7 +190,7 @@
   // ---------------------------------------------------------------------------
   const PASOS = [
     { t: 'Empecemos', render() {
-      const pls = Object.values(PL).filter(p => (p.evento || 'boda') === E.evento);
+      const pls = Object.values(PL).filter(p => Invitacion.sirvePara(p, E.evento));
       return `<p class="intro">Llena los datos de tu invitación. Toma unos 10 minutos y <b>se guarda solo</b>: puedes cerrar y seguir después desde este mismo celular. Lo que no sepas todavía, déjalo en blanco.</p>
         <div class="caja">
           ${campo('cliente.nombre', 'Tu nombre', { req: true, auto: 'name', ph: 'Nombre y apellido' })}
@@ -195,21 +199,22 @@
         </div>
         <div class="caja"><h2>¿Qué vas a celebrar?</h2>
           <div class="opc" style="margin-top:10px">
-            <input type="radio" name="ev" id="ev-boda" value="boda" ${E.evento === 'boda' ? 'checked' : ''}><label for="ev-boda">💍 Boda</label>
-            <input type="radio" name="ev" id="ev-xv" value="xv" ${E.evento === 'xv' ? 'checked' : ''}><label for="ev-xv">👑 XV años</label>
+            ${Object.entries(EVS).map(([k, e]) => `<input type="radio" name="ev" id="ev-${k}" value="${k}" ${E.evento === k ? 'checked' : ''}><label for="ev-${k}">${e.emoji} ${esc(e.nombre)}</label>`).join('')}
           </div>
         </div>
         <div class="caja"><h2>Elige tu diseño</h2><p class="ayuda" style="margin-bottom:12px">Toca “Ver ejemplo” para verlo completo. Si no te decides, te ayudamos.</p>
           <div class="disenos">${pls.map(p => `<div class="dis"><input type="radio" name="pl" id="pl-${p.id}" value="${p.id}" ${E.plantilla === p.id ? 'checked' : ''}>
             <label for="pl-${p.id}"><div class="sw">${(p.colores || []).map(c => `<span style="background:${esc(c)}"></span>`).join('')}</div><b>${esc(p.nombre)}</b>
-            <a href="invitacion.html?plantilla=${p.id}" target="_blank" rel="noopener">Ver ejemplo ↗</a></label></div>`).join('')}</div>
+            <a href="invitacion.html?plantilla=${p.id}&evento=${E.evento}" target="_blank" rel="noopener">Ver ejemplo ↗</a></label></div>`).join('')}</div>
         </div>`;
     }, montar() {
       $$('[name=ev]').forEach(r => r.onchange = () => {
-        const ev = r.value; if (ev === E.evento) return;
+        const ev = r.value, antes = E.evento; if (ev === antes) return;
         E.evento = ev; E.plantilla = '';
-        if (E.itinerario.every((x, i) => ITIN[ev === 'xv' ? 'boda' : 'xv'][i] && x.evento === ITIN[ev === 'xv' ? 'boda' : 'xv'][i][1])) E.itinerario = ITIN[ev].map(([hora, evento]) => ({ hora, evento }));
-        if (E.lugar1.tipo === (ev === 'xv' ? 'Ceremonia' : 'Misa')) E.lugar1.tipo = ev === 'xv' ? 'Misa' : 'Ceremonia';
+        // Si no los habían cambiado, el programa y el tipo de lugar pasan a los del nuevo evento
+        if (JSON.stringify(E.itinerario) === JSON.stringify(itin(antes))) E.itinerario = itin(ev);
+        if (E.lugar1.tipo === EVS[antes].lugares[0]) E.lugar1.tipo = EVS[ev].lugares[0];
+        if (!E.lugar2.nombre) E.mismoLugar = !EVS[ev].lugares[1];
         guardar(); pintar();
       });
       $$('[name=pl]').forEach(r => r.onchange = () => { E.plantilla = r.value; guardar(); });
@@ -218,9 +223,9 @@
       if (String(E.cliente.tel).replace(/\D/g, '').length < 10) return 'Escribe tu WhatsApp (10 dígitos).';
     } },
 
-    { t: () => xv() ? 'La quinceañera y la fecha' : 'Los novios y la fecha', render() {
+    { t: () => ({ boda: 'Los novios y la fecha', xv: 'La quinceañera y la fecha', bautizo: 'El bebé y la fecha', babyshower: 'El bebé y la fecha' })[E.evento] || 'Quien celebra y la fecha', render() {
       return `<div class="caja">
-          ${xv() ? campo('festejada', 'Nombre de la quinceañera', { req: true, ph: 'Como quieres que aparezca: Sofía' })
+          ${xv() ? campo('festejada', EVd().etqNombre, { req: true, ph: 'Como quieres que aparezca: ' + (ejemploNombre[E.evento] || 'Sofía') })
             : `<div class="fila"><div>${campo('novia', 'Nombre de la novia', { req: true, ph: 'Valeria' })}</div><div>${campo('novio', 'Nombre del novio', { req: true, ph: 'Santiago' })}</div></div>
                <p class="ayuda">Solo el nombre, como quieren que aparezca en grande.</p>`}
         </div>
@@ -230,24 +235,24 @@
           ${sel('zona', 'Zona horaria', [['-06:00', 'Centro de México (CDMX, Guadalajara, Monterrey)'], ['-05:00', 'Quintana Roo (Cancún, Tulum)'], ['-07:00', 'Sonora, Sinaloa, Nayarit, BCS'], ['-08:00', 'Baja California (Tijuana)']])}
         </div>`;
     }, validar() {
-      if (xv() ? !E.festejada.trim() : !(E.novia.trim() && E.novio.trim())) return xv() ? 'Escribe el nombre de la quinceañera.' : 'Escribe los nombres de los novios.';
+      if (xv() ? !E.festejada.trim() : !(E.novia.trim() && E.novio.trim())) return xv() ? 'Escribe el nombre (' + EVd().etqNombre.toLowerCase() + ').' : 'Escribe los nombres de los novios.';
       if (!E.fecha) return 'Elige la fecha del evento.';
     } },
 
     { t: 'Lugares', render() {
       return `<p class="intro">¿Dónde será? Tus invitados tendrán un botón para llegar con Google Maps.</p>
-        ${lugar('lugar1', xv() ? 'Misa o ceremonia' : 'Ceremonia')}
+        ${lugar('lugar1', E.evento === 'boda' ? 'Ceremonia' : EVd().lugares[0] === 'Misa' ? 'Misa o ceremonia' : 'Lugar de la fiesta')}
         <div class="caja"><label class="c" style="display:flex;gap:10px;align-items:center;margin:0;font-weight:500"><input type="checkbox" id="mismo" ${E.mismoLugar ? 'checked' : ''} style="width:22px;height:22px">Todo es en el mismo lugar</label></div>
         ${E.mismoLugar ? '' : lugar('lugar2', 'Recepción')}`;
     }, montar() { $('#mismo').onchange = (e) => { E.mismoLugar = e.target.checked; guardar(); pintar(); }; } },
 
     { t: 'Familia y padrinos', render() {
       return `<div class="caja">
-          ${campo('padres1', xv() ? 'Mis papás' : 'Papás de la novia', { area: true, ph: 'Un nombre por renglón\nEduardo Ramírez Ochoa\nClaudia Herrera de Ramírez', ayuda: 'Si alguno ya falleció, agrega † al final de su nombre.' })}
+          ${campo('padres1', xv() ? EVd().padres : 'Papás de la novia', { area: true, ph: 'Un nombre por renglón\nEduardo Ramírez Ochoa\nClaudia Herrera de Ramírez', ayuda: 'Si alguno ya falleció, agrega † al final de su nombre.' })}
           ${xv() ? '' : campo('padres2', 'Papás del novio', { area: true, ph: 'Un nombre por renglón' })}
         </div>
         <div class="caja">
-          ${campo('padrinos', xv() ? 'Padrinos y chambelanes' : 'Padrinos', { area: true, opc: true, ph: xv() ? 'Velación: Raúl y Gabriela Herrera\nAnillo: Miguel y Laura Ramírez\nChambelán de honor: Emilio Ramírez' : 'Velación: Jorge y Patricia Salinas\nAnillos: Diego y Fernanda Ríos\nLazo: Héctor y Andrea Morales', ayuda: 'Un renglón por padrinos: <b>de qué</b>, dos puntos y <b>nombres</b>.' })}
+          ${campo('padrinos', esXV() ? 'Padrinos y chambelanes' : 'Padrinos', { area: true, opc: true, ph: /bautizo|comunion/.test(E.evento) ? 'Bautizo: Jorge y Mariana Salinas\nVela: Luis y Ana Torres' : xv() && !esXV() ? 'Padrinos: Jorge y Mariana Salinas' : esXV() ? 'Velación: Raúl y Gabriela Herrera\nAnillo: Miguel y Laura Ramírez\nChambelán de honor: Emilio Ramírez' : 'Velación: Jorge y Patricia Salinas\nAnillos: Diego y Fernanda Ríos\nLazo: Héctor y Andrea Morales', ayuda: 'Un renglón por padrinos: <b>de qué</b>, dos puntos y <b>nombres</b>.' })}
         </div>`;
     } },
 
@@ -268,7 +273,7 @@
     { t: 'Vestimenta y regalos', render() {
       return `<div class="caja">
           ${sel('vestimenta', 'Código de vestimenta', [['Formal', 'Formal'], ['Etiqueta rigurosa', 'Etiqueta rigurosa'], ['Cóctel', 'Cóctel'], ['Casual elegante', 'Casual elegante'], ['Playa', 'Playa'], ['', 'Sin código de vestimenta']])}
-          ${campo('notaVestimenta', 'Nota', { opc: true, ph: xv() ? 'El color rosa está reservado para la quinceañera.' : 'El color blanco está reservado para la novia.' })}
+          ${campo('notaVestimenta', 'Nota', { opc: true, ph: esXV() ? 'El color rosa está reservado para la quinceañera.' : xv() ? 'Colores pastel, por ejemplo' : 'El color blanco está reservado para la novia.' })}
         </div>
         <div class="caja"><h2>Mesa de regalos</h2>
           ${campo('regalos', 'Tiendas', { area: true, opc: true, ph: 'Liverpool: evento 50123456\nAmazon: lista “Vale y Santi”', ayuda: 'Un renglón por tienda: nombre, dos puntos y número de evento o enlace.' })}
@@ -279,11 +284,11 @@
     }, montar() { $('#sobres').onchange = (e) => { E.sobres = e.target.checked; guardar(); }; } },
 
     { t: 'Fotos y textos', render() {
-      return `<div class="caja"><h2>Foto de portada</h2><p class="ayuda">Una foto vertical ${xv() ? 'de la quinceañera' : 'de ustedes dos'} se ve mejor. Opcional.</p>
+      return `<div class="caja"><h2>Foto de portada</h2><p class="ayuda">Una foto vertical ${esXV() ? 'de la quinceañera' : xv() ? 'de quien celebra' : 'de ustedes dos'} se ve mejor. Opcional.</p>
           <div class="fotos portada-prev">${E.portada ? `<div class="foto"><img src="${E.portada}" alt="Foto de portada"><button class="x" type="button" id="quitar-portada" aria-label="Quitar foto">×</button></div>`
             : `<label class="subir" tabindex="0"><span style="font-size:28px">📷</span>Subir foto<input type="file" accept="image/*" id="subir-portada" hidden></label>`}</div>
         </div>
-        <div class="caja"><h2>Galería ${xv() ? '“Mis momentos”' : '“Nuestra historia”'}</h2><p class="ayuda">Hasta 12 fotos. Puedes escribirles un texto corto (por ejemplo un año).</p>
+        <div class="caja"><h2>Galería “${esc(EVd().historia)}”</h2><p class="ayuda">Hasta 12 fotos. Puedes escribirles un texto corto (por ejemplo un año).</p>
           <div class="fotos">${E.fotos.map((f, i) => `<div class="foto"><img src="${f.src}" alt="Foto ${i + 1}"><button class="x" type="button" data-qf="${i}" aria-label="Quitar foto">×</button>
             <input type="text" data-pie="${i}" value="${esc(f.pie)}" placeholder="Texto (opcional)" aria-label="Texto de la foto ${i + 1}"></div>`).join('')}
             ${E.fotos.length < 12 ? `<label class="subir" tabindex="0"><span style="font-size:28px">＋</span>Agregar fotos<input type="file" accept="image/*" multiple id="subir-fotos" hidden></label>` : ''}</div>
@@ -291,7 +296,7 @@
         </div>
         <div class="caja">
           ${campo('frase', 'Frase especial', { area: true, opc: true, ph: 'Una frase, versículo o canción que les guste' })}
-          ${campo('historia', xv() ? 'Unas palabras tuyas' : 'Su historia en pocas palabras', { area: true, opc: true, ph: xv() ? 'Quince años de risas, sueños…' : 'Cómo se conocieron…' })}
+          ${campo('historia', xv() ? 'Unas palabras' : 'Su historia en pocas palabras', { area: true, opc: true, ph: esXV() ? 'Quince años de risas, sueños…' : xv() ? 'Un mensaje corto para tus invitados' : 'Cómo se conocieron…' })}
         </div>`;
     }, montar() {
       const sp = $('#subir-portada'); if (sp) sp.onchange = async () => { if (!sp.files[0]) return; $('#estado-fotos').textContent = 'Preparando foto…'; E.portada = await reducir(sp.files[0]); guardar(); pintar(); };
@@ -322,7 +327,7 @@
 
     { t: 'Últimos detalles', render() {
       return `<div class="caja">
-          ${campo('hashtag', 'Hashtag para sus fotos', { opc: true, ph: xv() ? '#LosXVdeSofi' : '#ValeYSanti' })}
+          ${campo('hashtag', 'Hashtag para sus fotos', { opc: true, ph: esXV() ? '#LosXVdeSofi' : xv() ? '#MiFiesta' : '#ValeYSanti' })}
           ${campo('nota', 'Nota para los invitados', { opc: true, ph: 'Evento solo para adultos' })}
           ${campo('cliente.cancion', 'Canción para la invitación', { opc: true, ph: 'Nombre y artista' })}
           ${campo('cliente.comentarios', 'Comentarios para quien hace tu invitación', { area: true, opc: true, ph: 'Colores que te gustan, ideas, cambios al diseño…' })}
@@ -337,9 +342,9 @@
         <div class="caja"><div class="previa"><iframe id="previa" title="Vista previa de tu invitación" src="invitacion.html?preview=1&sinSobre=1"></iframe></div>
           <p class="ayuda" style="text-align:center">Vista previa: desliza dentro del celular. Los detalles finales los ajustamos nosotros.</p></div>
         ${sec(0, 'Tú', fila('Nombre', E.cliente.nombre) + fila('WhatsApp', E.cliente.tel) + fila('Paquete', E.cliente.paquete) + fila('Diseño', (PL[d.plantilla] || {}).nombre))}
-        ${sec(1, 'Evento', fila(xv() ? 'Quinceañera' : 'Novios', xv() ? E.festejada : `${E.novia} & ${E.novio}`) + fila('Fecha', d.fecha && Invitacion.fechaInfo(d).larga) + fila('Hora', E.hora) + fila('Ciudad', E.ciudad))}
+        ${sec(1, 'Evento', fila(xv() ? EVd().nombre : 'Novios', xv() ? E.festejada : `${E.novia} & ${E.novio}`) + fila('Fecha', d.fecha && Invitacion.fechaInfo(d).larga) + fila('Hora', E.hora) + fila('Ciudad', E.ciudad))}
         ${sec(2, 'Lugares', d.lugares.map(l => fila(l.tipo, [l.nombre, l.direccion, l.hora && l.hora + ' hrs'].filter(Boolean).join('\n'))).join(''))}
-        ${sec(3, 'Familia', fila(xv() ? 'Mis papás' : 'Papás de la novia', E.padres1) + fila('Papás del novio', xv() ? '' : E.padres2) + fila('Padrinos', E.padrinos))}
+        ${sec(3, 'Familia', fila(xv() ? EVd().padres : 'Papás de la novia', E.padres1) + fila('Papás del novio', xv() ? '' : E.padres2) + fila('Padrinos', E.padrinos))}
         ${sec(4, 'Programa', d.itinerario.map(x => fila(x.hora || '—', x.evento)).join(''))}
         ${sec(5, 'Vestimenta y regalos', fila('Vestimenta', E.vestimenta) + fila('Mesa de regalos', E.regalos) + fila('Lluvia de sobres', E.sobres ? 'Sí' : '') + fila('CLABE', E.clabe))}
         ${sec(6, 'Fotos y textos', fila('Fotos', (E.portada ? 'Portada ✓ · ' : '') + E.fotos.length + ' en la galería') + fila('Frase', E.frase))}
@@ -375,29 +380,31 @@
   const lineas = (s) => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
   function armar() {
     const ev = E.evento, base = Invitacion.normalizar({ evento: ev });
-    const pl = PL[E.plantilla] && (PL[E.plantilla].evento || 'boda') === ev ? E.plantilla : Object.values(PL).find(p => (p.evento || 'boda') === ev).id;
+    const pref = PL[EVS[ev].plantilla];
+    const pl = PL[E.plantilla] && Invitacion.sirvePara(PL[E.plantilla], ev) ? E.plantilla : (pref && Invitacion.sirvePara(pref, ev) ? pref : Object.values(PL).find(p => Invitacion.sirvePara(p, ev))).id;
     const L = (l, icono) => ({ tipo: l.tipo || '', hora: l.hora || '', nombre: l.nombre || '', direccion: l.direccion || '', mapa: l.mapa || '', icono });
-    const lugares = [L(E.lugar1, /recep|sal[oó]n|jard|hacienda/i.test(E.lugar1.tipo) ? 'hacienda' : 'iglesia')];
+    const lugares = [L(E.lugar1, /misa|iglesia|ceremonia|templo|parroquia|religios/i.test(E.lugar1.tipo) ? 'iglesia' : 'hacienda')];
     if (!E.mismoLugar && E.lugar2.nombre) lugares.push(L(E.lugar2, 'hacienda'));
     const ops = lineas(E.regalos).map(l => { const [n, ...r] = l.split(':'); return { nombre: n.trim(), detalle: r.join(':').trim(), enlace: /^https?:\/\//.test(r.join(':').trim()) ? r.join(':').trim() : '', icono: /amazon|tienda/i.test(n) ? 'bolsa' : 'regalo' }; });
     if (E.sobres) ops.push({ nombre: 'Lluvia de sobres', detalle: 'El día del evento', enlace: '', icono: 'sobre' });
     const tel = String(E.rsvpTel || E.cliente.tel || '').replace(/\D/g, '');
     const datos = {
       evento: ev, plantilla: pl,
-      novia: ev === 'xv' ? '' : E.novia.trim(), novio: ev === 'xv' ? '' : E.novio.trim(), festejada: ev === 'xv' ? E.festejada.trim() : '',
-      fecha: E.fecha, hora: E.hora || E.lugar1.hora || (ev === 'xv' ? '18:00' : '17:00'), zonaHoraria: E.zona, ciudad: E.ciudad,
-      frase: E.frase, padresNovia: E.padres1, padresNovio: ev === 'xv' ? '' : E.padres2,
+      novia: ev !== 'boda' ? '' : E.novia.trim(), novio: ev !== 'boda' ? '' : E.novio.trim(), festejada: ev !== 'boda' ? E.festejada.trim() : '',
+      fecha: E.fecha, hora: E.hora || E.lugar1.hora || EVS[ev].itinerario[0][0], zonaHoraria: E.zona, ciudad: E.ciudad,
+      introPortada: base.introPortada, frase: E.frase, padresNovia: E.padres1, padresNovio: ev !== 'boda' ? '' : E.padres2,
       padrinos: lineas(E.padrinos).map(l => { const i = l.indexOf(':'); return i > 0 ? { rol: l.slice(0, i).trim(), nombres: l.slice(i + 1).trim() } : { rol: 'Padrinos', nombres: l }; }),
       itinerario: E.itinerario.filter(x => x.evento).map(x => ({ hora: x.hora, evento: x.evento, detalle: '', icono: icono(x.evento) })),
       lugares,
       vestimenta: { tipo: E.vestimenta, texto: '', colores: [], nota: E.notaVestimenta },
       historia: { titulo: base.historia.titulo, texto: E.historia, fotos: E.fotos.map(f => ({ src: f.src, pie: f.pie })) },
-      regalos: { titulo: base.regalos.titulo, texto: ops.length || E.clabe ? (ev === 'xv' ? 'pero si deseas obsequiarme algo, aquí algunas opciones' : 'pero si deseas obsequiarnos algo, aquí algunas opciones') : '', opciones: ops, banco: E.banco, titular: E.titular, clabe: String(E.clabe || '').replace(/\D/g, '') },
+      regalos: { titulo: base.regalos.titulo, texto: ops.length || E.clabe ? (EVS[ev].voz === 'yo' ? 'pero si deseas obsequiarme algo, aquí algunas opciones' : 'pero si deseas obsequiarnos algo, aquí algunas opciones') : '', opciones: ops, banco: E.banco, titular: E.titular, clabe: String(E.clabe || '').replace(/\D/g, '') },
       fotoPortada: E.portada,
       rsvp: { whatsapp: tel ? (tel.length === 10 ? '521' + tel : tel) : '', fechaLimite: E.fechaLimite, pases: 2, texto: '' },
       invitados: invitados(), hashtag: E.hashtag, nota: E.nota, musica: 'melodia'
     };
     return { tipo: 'pedido-invitacion', version: 1, creado: new Date().toISOString(),
+      titulo: ev === 'boda' ? `${datos.novia} & ${datos.novio}` : `${EVS[ev].nombre} de ${datos.festejada}`, eventoNombre: EVS[ev].nombre,
       cliente: { nombre: E.cliente.nombre.trim(), tel: E.cliente.tel, paquete: E.cliente.paquete, cancion: E.cliente.cancion, comentarios: E.cliente.comentarios },
       datos };
   }
@@ -458,7 +465,7 @@
   function pintarListo() {
     const p = enviado.p, wa = String(N.whatsapp || '').replace(/\D/g, '');
     $('#nav').hidden = true; $('#barra').style.width = '100%'; $('#paso-txt').textContent = '';
-    const quien = p.datos.evento === 'xv' ? p.datos.festejada : `${p.datos.novia} & ${p.datos.novio}`;
+    const quien = p.datos.evento && p.datos.evento !== 'boda' ? `${(EVS[p.datos.evento] || {}).nombre} de ${p.datos.festejada}` : `${p.datos.novia} & ${p.datos.novio}`;
     const msg = `¡Hola! Soy ${p.cliente.nombre}. ${enviado.folio ? `Ya envié los datos de mi invitación (${quien}). Folio: ${enviado.folio}` : `Te mando el archivo con los datos de mi invitación (${quien}).`}`;
     app.innerHTML = enviado.folio ? `<div class="listo"><div class="ico">✓</div><h1>¡Listo, ${esc(p.cliente.nombre.split(' ')[0])}!</h1>
         <p class="intro">Recibimos los datos de tu invitación. Te escribiremos por WhatsApp cuando esté lista para revisarla.</p>

@@ -48,6 +48,7 @@
 
   window.Invitacion.registrar({
     id: 'rustica',
+    eventos: ['boda', 'bautizo', 'babyshower', 'cumple'],
     nombre: 'Rústica Campestre',
     descripcion: 'Papel kraft, eucalipto, flores silvestres, serie de luces y encaje.',
     colores: ['#e9dcc4', '#7f948a', '#a87b4f', '#3f4a3c'],

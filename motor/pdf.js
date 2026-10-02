@@ -146,7 +146,7 @@
     const portada = pagina(`
       ${fotos.portada ? `<img class="pp-foto" src="${fotos.portada}" alt="">` : ''}
       <p class="pp-eye">${esc(d.introPortada)}</p>
-      <h1 class="pp-nombres">${S.esXV(d) ? esc(d.festejada) : `${esc(d.novia)}<i>&amp;</i>${esc(d.novio)}`}</h1>
+      <h1 class="pp-nombres">${S.unNombre(d) ? esc(d.festejada) : `${esc(d.novia)}<i>&amp;</i>${esc(d.novio)}`}</h1>
       <div class="pp-fecha"><span>${f.diaSemana}</span><b>${f.dia}</b><span>${f.anio}</span></div>
       <p class="pp-mes">${f.mes} · ${esc(d.hora)} hrs</p>
       ${hay(d.ciudad) ? `<p class="pp-lugar">${esc(d.ciudad)}</p>` : ''}
@@ -158,11 +158,11 @@
     // ---------- Bloques (se acomodan solos en las páginas) ----------
     const B = [];
     const bloque = (html) => B.push(`<div class="pdf-bloque">${html}</div>`);
-    if (S.esXV(d) && !d.ocultar.familia && hay(d.padresNovia)) {
-      bloque(`<p class="pdf-eye">${esc(String(d.tituloFamilia).split(' y de ')[0])}</p><h2>Mis padres</h2>
+    if (S.unNombre(d) && !d.ocultar.familia && hay(d.padresNovia)) {
+      bloque(`<p class="pdf-eye">${esc(String(d.tituloFamilia).split(' y de ')[0])}</p><h2>${esc(S.ev(d).padres)}</h2>
         <p>${S.lineas(d.padresNovia).map(esc).join('<br>')}</p>
         ${hay(d.textoFamilia) ? `<p style="font-style:italic;margin-top:8px;color:var(--suave)">${br(d.textoFamilia)}</p>` : ''}`);
-    } else if (!S.esXV(d) && !d.ocultar.familia && (hay(d.padresNovia) || hay(d.padresNovio))) {
+    } else if (!S.unNombre(d) && !d.ocultar.familia && (hay(d.padresNovia) || hay(d.padresNovio))) {
       bloque(`<p class="pdf-eye">${esc(String(d.tituloFamilia).split(' y de ')[0])}</p><h2>Nuestros padres</h2>
         <div class="pdf-col">${hay(d.padresNovia) ? `<div><h3>Padres de la novia</h3><p>${S.lineas(d.padresNovia).map(esc).join('<br>')}</p></div>` : ''}${hay(d.padresNovio) ? `<div><h3>Padres del novio</h3><p>${S.lineas(d.padresNovio).map(esc).join('<br>')}</p></div>` : ''}</div>
         ${hay(d.textoFamilia) ? `<p style="font-style:italic;margin-top:8px;color:var(--suave)">${br(d.textoFamilia)}</p>` : ''}`);
@@ -179,7 +179,7 @@
     if (!d.ocultar.historia && (gal.length || hay(d.historia.texto))) {
       // Primer bloque con título y hasta 4 fotos; las demás en grupos de 6 (se acomodan solas en las hojas)
       const figs = (lista) => lista.length ? `<div class="pdf-galeria">${lista.map(g => `<figure><img src="${g.src}" width="${g.w}" height="${g.h}" style="width:${g.w}px;height:${g.h}px" alt="">${hay(g.pie) ? `<figcaption>${esc(g.pie)}</figcaption>` : ''}</figure>`).join('')}</div>` : '';
-      bloque(`<h2>${esc(d.historia.titulo || (S.esXV(d) ? 'Mis momentos' : 'Nuestra historia'))}</h2>${hay(d.historia.texto) ? `<p style="font-style:italic;color:var(--suave)">${br(d.historia.texto)}</p>` : ''}${figs(gal.slice(0, 4))}`);
+      bloque(`<h2>${esc(d.historia.titulo || S.ev(d).historia)}</h2>${hay(d.historia.texto) ? `<p style="font-style:italic;color:var(--suave)">${br(d.historia.texto)}</p>` : ''}${figs(gal.slice(0, 4))}`);
       for (let i = 4; i < gal.length; i += 6) bloque(`<p class="pdf-eye">Más momentos</p>${figs(gal.slice(i, i + 6))}`);
     }
     const rg = d.regalos || {}, ops = (rg.opciones || []).filter(x => hay(x.nombre)), clabe = String(rg.clabe || '').replace(/\s/g, '');
@@ -191,7 +191,7 @@
     const r = d.rsvp || {};
     if (!d.ocultar.rsvp && hay(r.whatsapp)) {
       const nombre = inv && inv.nombre ? inv.nombre : '';
-      const msg = `¡Hola! ${nombre ? 'Somos ' + nombre + ' y c' : 'C'}onfirmamos nuestra asistencia a ${S.delEvento(d)} ${S.esXV(d) ? '👑' : '💍'}`;
+      const msg = `¡Hola! ${nombre ? 'Somos ' + nombre + ' y c' : 'C'}onfirmamos nuestra asistencia ${S.delEvento(d).replace(/^el /, 'al ').replace(/^(?!al )/, 'a ')} ${S.ev(d).emoji}`;
       bloque(`<p class="pdf-eye">R.S.V.P.</p><h2>Confirma tu asistencia</h2>
         <p>${hay(r.fechaLimite) ? `Por favor confírmanos antes del <b>${esc(fechaTexto(r.fechaLimite))}</b>` : 'Por favor confírmanos tu asistencia'}<br>por WhatsApp al <b>${esc(formatoTel(r.whatsapp))}</b></p>
         <a class="pdf-btn lleno" href="${esc(wa(r.whatsapp, msg))}">Confirmar por WhatsApp</a>`);
@@ -404,7 +404,7 @@
   }
   function construirLibro(datos, info, fotos) {
     const base = construir(datos, { fotos });
-    const d = base.d, f = I.fechaInfo(d), xv = S.esXV(d), L = datosLibro(info);
+    const d = base.d, f = I.fechaInfo(d), xv = S.unNombre(d), V = S.voz(d), E = S.ev(d), L = datosLibro(info);
     const nombres = xv ? esc(d.festejada) : `${esc(d.novia)}<i>&amp;</i>${esc(d.novio)}`;
     const portada = base.paginaCon(`
       ${fotos.portada ? `<img class="pp-foto" src="${fotos.portada}" alt="">` : ''}
@@ -412,18 +412,18 @@
       <h1 class="pp-nombres">${nombres}</h1>
       <div class="pp-fecha"><span>${f.diaSemana}</span><b>${f.dia}</b><span>${f.anio}</span></div>
       <p class="pp-mes">${f.mes}${hay(d.ciudad) ? ' · ' + esc(d.ciudad) : ''}</p>
-      <p class="pp-frase">${xv ? 'Las palabras de quienes me acompañaron en mis XV años' : 'Las palabras de quienes nos acompañaron en nuestra boda'}</p>`, 'pdf-portada');
+      <p class="pp-frase">Las palabras de quienes ${V.acompanaron} en ${esc(E.mio)}</p>`, 'pdf-portada');
     const B = [], bloque = (h) => B.push(`<div class="pdf-bloque">${h}</div>`);
     const num = (n, t) => n ? `<div><b>${n}</b><span>${t}</span></div>` : '';
-    bloque(`<p class="pdf-eye">${xv ? 'Mi día' : 'Nuestro día'}</p><h2>En números</h2><div class="lib-num">
+    bloque(`<p class="pdf-eye">${V.dia}</p><h2>En números</h2><div class="lib-num">
       ${num(L.invitaciones, 'invitaciones')}${num(L.confirmadas, 'personas confirmaron')}${num(L.llegaron, 'personas llegaron')}${num(L.deseos, 'mensajes')}${num(L.nCanciones, 'canciones sugeridas')}${num(L.asistentes.length && !L.llegaron ? L.asistentes.length : 0, 'familias confirmaron')}</div>`);
     if (L.mensajes.length) {
-      bloque(`<p class="pdf-eye">Con cariño</p><h2>Buenos deseos</h2><p style="font-style:italic;color:var(--suave)">${xv ? 'Lo que me escribieron' : 'Lo que nos escribieron'} nuestros invitados</p>`.replace('nuestros invitados', xv ? 'mis invitados' : 'nuestros invitados'));
+      bloque(`<p class="pdf-eye">Con cariño</p><h2>Buenos deseos</h2><p style="font-style:italic;color:var(--suave)">${V.escribieron}</p>`);
       L.mensajes.forEach(m => bloque(`<div class="lib-msg"><p>${esc(m.texto)}</p><b>${esc(m.nombre || 'Un invitado')}${m.fecha && !isNaN(new Date(m.fecha)) ? `<small>${new Date(m.fecha).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}</small>` : ''}</b></div>`));
     }
     if (L.canciones.length) bloque(`<p class="pdf-eye">La pista</p><h2>Las canciones de la fiesta</h2><ol class="lib-can">${L.canciones.map(c => `<li><span>${esc(c.titulo)}</span>${c.veces > 1 ? `<em>×${c.veces}</em>` : ''}</li>`).join('')}</ol>`);
     if (L.asistentes.length) {
-      const titulo = `<p class="pdf-eye">Gracias por ${xv ? 'acompañarme' : 'acompañarnos'}</p><h2>${L.llegaron ? 'Estuvieron con ' + (xv ? 'migo' : 'nosotros') : 'Confirmaron su asistencia'}</h2>`.replace('con migo', 'conmigo');
+      const titulo = `<p class="pdf-eye">Gracias por ${V.gracias}</p><h2>${L.llegaron ? (V.conNos === 'conmigo' ? 'Estuvieron conmigo' : 'Estuvieron con nosotros') : 'Confirmaron su asistencia'}</h2>`;
       for (let i = 0; i < L.asistentes.length; i += 40) bloque(`${i === 0 ? titulo : ''}<div class="lib-nombres">${L.asistentes.slice(i, i + 40).map(n => `<p>${esc(n)}</p>`).join('')}</div>`);
     }
     const gal = fotos.galeria || [];

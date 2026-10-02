@@ -45,6 +45,7 @@
 
   window.Invitacion.registrar({
     id: 'floral',
+    eventos: ['boda', 'xv', 'bautizo', 'comunion', 'babyshower', 'cumple'],
     nombre: 'Floral Romántica',
     descripcion: 'Rosa palo, borgoña y dorado. Rosas en acuarela y pétalos que caen.',
     colores: ['#f3c9c6', '#b5646f', '#6e3f48', '#c9a063'],

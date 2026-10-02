@@ -50,7 +50,7 @@
 
   window.Invitacion.registrar({
     id: 'princesa',
-    evento: 'xv',
+    eventos: ['xv', 'cumple', 'babyshower'],
     nombre: 'Princesa Rosa',
     descripcion: 'XV años: rosa y dorado, tiara, rosas y destellos.',
     colores: ['#fbe3e9', '#ec9fb3', '#a8445f', '#d1a556'],

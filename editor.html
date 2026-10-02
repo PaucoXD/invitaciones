@@ -18,8 +18,10 @@
 <script src="plantillas/xv-princesa.js"></script>
 <script src="plantillas/xv-mariposas.js"></script>
 <script src="plantillas/xv-gala.js"></script>
+<script src="plantillas/nube.js"></script>
 <script src="bodas/ejemplo.js"></script>
 <script src="bodas/ejemplo-xv.js"></script>
+<script src="bodas/ejemplos-eventos.js"></script>
 <script src="motor/pdf.js"></script>
 <script src="servidor/codigo-sheets.js"></script>
 <script src="negocio.js" onerror="window.NEGOCIO={}"></script>
@@ -53,8 +55,8 @@
   .cel iframe{width:390px;border-radius:28px;border:10px solid #1d1b19}
   .compu iframe{width:100%;border-radius:8px}
   /* Formulario */
-  .eventos{display:flex;gap:8px;padding:16px 16px 0}
-  .eventos .ev{flex:1;padding:10px;border:2px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted)}
+  .eventos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px 16px 0}
+  .eventos .ev{padding:9px 6px;font-size:13px;border:2px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted)}
   .eventos .ev.on{border-color:var(--accent);color:var(--ink,#333);box-shadow:0 0 0 3px rgba(155,95,104,.15)}
   .plantillas{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;padding:16px}
   .pl{border:2px solid var(--line);border-radius:10px;padding:10px;cursor:pointer;background:var(--panel);text-align:left;transition:border-color .2s}

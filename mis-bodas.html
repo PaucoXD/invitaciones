@@ -207,7 +207,7 @@
           <div class="t ok"><b>${sum(prox, 'personas')}</b><span>personas confirmadas (próximas)</span></div>
           <div class="t pend"><b>${sum(prox, 'pendientes')}</b><span>invitaciones sin responder</span></div>
         </div>
-        ${version < 4 ? '<p class="demo">Hay una versión nueva del código de Google (pedidos de clientes y pase de entrada con QR). Actualízalo: manual, sección 3.0.</p>' : ''}
+        ${version < 5 ? '<p class="demo">Hay una versión nueva del código de Google (pedidos de todos los tipos de evento, pase de entrada con QR). Actualízalo: manual, sección 3.0.</p>' : ''}
         ${seccionPedidos()}
         <div class="filtros">
           ${[['proximas', 'Próximas'], ['pasadas', 'Pasadas'], ['todas', 'Todas']].map(([k, t]) => `<button class="chip ${filtro === k ? 'on' : ''}" data-f="${k}">${t}</button>`).join('')}
@@ -257,9 +257,10 @@
     app.querySelectorAll('[data-copiar]').forEach(b => b.onclick = () => navigator.clipboard.writeText(b.dataset.copiar).then(() => avisar('Código copiado ✓')));
     app.querySelectorAll('[data-acceso]').forEach(btn => btn.onclick = () => {
       const b = bodas.find(x => x.boda === btn.dataset.acceso);
-      const esXV = /^XV años de /.test(b.nombres || '');
-      const nom = esXV ? b.nombres.replace(/^XV años de /, '') : (b.nombres || '').split('&').map(s => s.trim()).filter(Boolean).join(' y ') || 'novios';
-      const msg = `¡Hola ${nom}! ${esXV ? '👑' : '💍'} Aquí pueden ver en tiempo real quién confirmó su asistencia:\n\n👉 ${panelUrl(b)}\n\nSi algún día lo necesitan, entren a ${new URL('panel.html', location.href).href}\nCódigo: ${b.boda}\nClave: ${b.clave}\n\nTip: ábranlo y agréguenlo a la pantalla de inicio de su celular para tenerlo como app.`;
+      const m = /^(XV años|Bautizo|Primera comunión|Baby shower|Cumpleaños) de (.+)$/.exec(b.nombres || '');
+      const emoji = m ? { 'XV años': '👑', 'Bautizo': '🕊️', 'Primera comunión': '✨', 'Baby shower': '🍼', 'Cumpleaños': '🎂' }[m[1]] : '💍';
+      const nom = m ? m[2] : (b.nombres || '').split('&').map(s => s.trim()).filter(Boolean).join(' y ') || 'novios';
+      const msg = `¡Hola ${nom}! ${emoji} Aquí pueden ver en tiempo real quién confirmó su asistencia:\n\n👉 ${panelUrl(b)}\n\nSi algún día lo necesitan, entren a ${new URL('panel.html', location.href).href}\nCódigo: ${b.boda}\nClave: ${b.clave}\n\nTip: ábranlo y agréguenlo a la pantalla de inicio de su celular para tenerlo como app.`;
       navigator.clipboard.writeText(msg).then(() => avisar('Mensaje copiado ✓ Pégalo en WhatsApp'));
     });
   }
