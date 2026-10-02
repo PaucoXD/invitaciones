@@ -129,6 +129,7 @@
 .pdf-story .pdf-marco{inset:22px}
 .pdf-story .pdf-orn{width:210px}.pdf-story .pdf-orn.arriba{width:300px;top:14px}.pdf-story .pdf-orn.cuatro{width:90px}
 .pdf-story .pdf-orn.abajo-i,.pdf-story .pdf-orn.abajo-d{width:190px}
+.v-capa{display:flex;flex-direction:column;align-items:center;width:100%}
 .ap-eye{font-family:var(--f-etiqueta);font-size:15px;letter-spacing:.42em;text-transform:uppercase;color:var(--acento)}
 .ap-titulo{font-family:var(--f-titulo);font-weight:400;font-size:50px;line-height:1.05;color:var(--titulo,var(--tinta));margin:8px 0 26px}
 .pdf-story .pp-foto{width:210px;height:252px;margin-bottom:26px}
@@ -486,5 +487,5 @@
     return new Promise((ok, mal) => lienzo.toBlob(b => b ? ok(b) : mal(new Error('sin imagen')), 'image/png'));
   }
 
-  I.pdf = { construir, generar, generarTodos, libro, aparta };
+  I.pdf = { construir, generar, generarTodos, libro, aparta, _: { prepararLibs, prepararFotos, prepararRaiz, esperarImagenes } };
 })();

@@ -101,6 +101,13 @@ muestra portada, el aviso, la cuenta regresiva y el botón para agendar (`export
 Descarga la página (`…-aparta-la-fecha.html`), una imagen vertical 1080×1920 para estados (`Invitacion.pdf.aparta`)
 y copia el mensaje para WhatsApp. Vista previa: `invitacion.html?aparta=1&plantilla=paloma&evento=bautizo`.
 
+## Video para estados (paquete)
+
+`motor/video.js` → `Invitacion.video.generar(datos, { modo: 'aparta' | 'invitacion' })`. Dibuja en un canvas
+(720×1280, 15 s) las capas de la página de "Aparta la fecha" (fondo, adornos y cada texto, capturados con html2canvas),
+las anima con partículas según el efecto de la plantilla y una cuenta de días, y graba con MediaRecorder con la
+música de la invitación (MP4 si el navegador puede, si no WebM). En el editor: sección **Video para estados**.
+
 ## Invitación en PDF
 
 Para quienes no se llevan bien con la tecnología: botón **📄 PDF** en el editor.

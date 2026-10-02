@@ -310,6 +310,30 @@
           } }, '📋 Copiar mensaje')),
         estado,
         el('p', { class: 'ayuda' }, 'La página usa el diseño elegido pero solo muestra portada, aviso, cuenta regresiva y botón para agendar. El mensaje copiado usa la dirección de “Enlaces de invitados” cambiando el final por -aparta-la-fecha.html.'));
+    } else if (t === 'video') {
+      if (!Invitacion.video || !Invitacion.video.disponible()) return el('p', { class: 'conf-estado mal' }, 'Este navegador no puede grabar video. Abre el editor en Chrome o Safari actualizados.');
+      const estado = el('p', { class: 'conf-estado' });
+      const marcar = (txt, ok) => { estado.textContent = txt; estado.className = 'conf-estado ' + (ok ? 'ok' : 'mal'); };
+      const modo = el('select', {}, [['aparta', 'Aparta la fecha'], ['invitacion', 'Invitación (con la hora)']].map(([v, l]) => el('option', { value: v }, l)));
+      const barra = el('progress', { max: 1, value: 0, style: 'width:100%;display:none' });
+      const vista = el('div', { class: 'video-vista' });
+      const boton = el('button', { class: 'b chico', type: 'button', onclick: async () => {
+        boton.disabled = true; barra.style.display = ''; vista.innerHTML = '';
+        try {
+          const r = await Invitacion.video.generar(datos, { modo: modo.value, progreso: (x, txt) => { barra.value = x; marcar(txt + (x ? ` ${Math.round(x * 100)}%` : ''), true); } });
+          const nombre = `${slug()}-${modo.value === 'aparta' ? 'aparta-la-fecha' : 'invitacion'}.${r.ext}`;
+          const url = URL.createObjectURL(r.blob);
+          vista.append(el('video', { src: url, controls: '', playsinline: '', style: 'width:180px;border-radius:10px;display:block;margin:8px 0;background:#000' }),
+            el('a', { class: 'b chico', href: url, download: nombre }, '⬇️ Descargar video'));
+          descargar(nombre, r.blob, r.tipo);
+          marcar(`✓ Video listo (${(r.blob.size / 1e6).toFixed(1)} MB, ${r.ext.toUpperCase()}).${r.ext === 'webm' ? ' Tu navegador lo guardó como WebM: si WhatsApp no lo acepta, genera el video desde Chrome actualizado o Safari (iPhone/Mac) para obtener MP4.' : ''}`, true);
+        } catch (e) { console.error(e); marcar('No se pudo hacer el video: ' + e.message, false); }
+        boton.disabled = false; barra.style.display = 'none';
+      } }, '🎬 Hacer video');
+      return el('div', {},
+        el('div', { class: 'campo' }, el('label', {}, 'Tipo de video'), modo),
+        el('div', { class: 'conf-herr' }, boton), barra, estado, vista,
+        el('p', { class: 'ayuda' }, 'Tarda unos 20 segundos: el video se graba en tiempo real. No cambies de pestaña mientras se graba. Usa la música elegida en la sección “Música”.'));
     } else if (t === 'libro') {
       const estado = el('p', { class: 'conf-estado' });
       const marcar = (txt, ok) => { estado.textContent = txt; estado.className = 'conf-estado ' + (ok ? 'ok' : 'mal'); };
@@ -689,6 +713,9 @@
       { t: 'nota', texto: 'Un aviso corto que se manda meses antes: nombre, fecha, ciudad y cuenta regresiva con el mismo diseño. Incluye una página para enviar por WhatsApp y una imagen vertical para estados e Instagram.' },
       { k: 'aparta.texto', t: 'area', l: 'Mensaje (opcional)', ph: () => Invitacion.S.apartaTexto(Object.assign({}, datos, { aparta: {} })) },
       { t: 'aparta' }] },
+    { sec: 'Video para estados ✦ paquete', campos: [
+      { t: 'nota', texto: 'Un video vertical de 15 segundos con el diseño, la música y una cuenta de los días que faltan. Para estados de WhatsApp, Instagram o TikTok.' },
+      { t: 'video' }] },
     { sec: 'Libro de recuerdos ✦ paquete', campos: [
       { t: 'nota', texto: 'Después del evento: un PDF con el diseño de la invitación que junta los buenos deseos de los invitados, las canciones más pedidas, la lista de quienes asistieron y las fotos. Un recuerdo para regalar o imprimir.' },
       { t: 'libro' }] },
