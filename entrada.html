@@ -83,8 +83,10 @@
   .entrada .b{width:100%;margin-top:20px}
   .error{color:var(--no);background:var(--no-bg);border-radius:10px;padding:10px 12px;font-size:14px;margin-top:10px}
   .demo{background:var(--pend-bg);color:var(--pend);border-radius:10px;padding:9px 12px;font-size:13.5px;margin-bottom:12px}
-  .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,160px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:30px;transition:transform .3s;z-index:40;font-weight:600;max-width:90vw;text-align:center}
+  .toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translate(-50%,-200px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:18px;transition:transform .3s;z-index:40;font-weight:600;max-width:90vw;text-align:center}
   .toast.ver{transform:translate(-50%,0)}
+  .toast .t-mesa{display:block;margin-top:6px;font-size:26px;font-weight:800;letter-spacing:.02em;color:#ffd98a}
+  .mesa-grande{display:inline-block;margin:12px 0 2px;padding:8px 22px;border-radius:14px;background:#fbf1dc;color:#7a5410;font-size:30px;font-weight:800;letter-spacing:.02em}
 </style>
 </head>
 <body>
@@ -105,7 +107,11 @@
   const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
   const hora = (iso) => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }); };
   const etqMesa = (m) => !m ? '' : /^\d+$/.test(String(m)) ? 'Mesa ' + m : String(m);
-  function avisar(t) { const a = document.getElementById('toast'); a.textContent = t; a.classList.add('ver'); clearTimeout(a._t); a._t = setTimeout(() => a.classList.remove('ver'), 2600); }
+  function avisar(t, mesa) {
+    const a = document.getElementById('toast'); a.textContent = t;
+    if (mesa) { const m = document.createElement('span'); m.className = 't-mesa'; m.textContent = '🪑 ' + mesa; a.append(m); }
+    a.classList.add('ver'); clearTimeout(a._t); a._t = setTimeout(() => a.classList.remove('ver'), mesa ? 4500 : 2600);
+  }
 
   // ---------------------------------------------------------------------------
   // Datos: invitados (de la hoja), confirmaciones y entradas registradas
@@ -269,7 +275,8 @@
     v.innerHTML = `<div class="hoja" role="dialog" aria-modal="true" aria-label="Resultado">
       <div class="estado ${est.cls}"><i aria-hidden="true">${est.ico}</i>${esc(est.txt)}</div>
       ${r.nombre ? `<h2>${esc(r.nombre)}</h2>` : ''}
-      ${inv ? `<p class="det">${inv.lugares} ${inv.lugares === 1 ? 'lugar reservado' : 'lugares reservados'}${inv.mesa ? ' · <b>' + esc(etqMesa(inv.mesa)) + '</b>' : ''}<br>${rs ? (rs.asiste ? `Confirmó ${rs.personas} ${rs.personas === 1 ? 'persona' : 'personas'}` : 'Había dicho que no asistiría') : 'No confirmó por la invitación'}</p>` : ''}
+      ${inv && inv.mesa ? `<div class="mesa-grande">🪑 ${esc(etqMesa(inv.mesa))}</div>` : ''}
+      ${inv ? `<p class="det">${inv.lugares} ${inv.lugares === 1 ? 'lugar reservado' : 'lugares reservados'}<br>${rs ? (rs.asiste ? `Confirmó ${rs.personas} ${rs.personas === 1 ? 'persona' : 'personas'}` : 'Había dicho que no asistiría') : 'No confirmó por la invitación'}</p>` : ''}
       ${inv || (r.nombre && !r.error) ? `<div class="personas"><button type="button" id="menos" aria-label="Menos personas">−</button><output id="np">${personas || 1}</output><button type="button" id="mas" aria-label="Más personas">+</button></div>
         <p class="personas-txt">${est.cls === 'ya' ? 'personas en total de esta familia' : 'personas que entran ahora'}</p>` : ''}
       <div class="botones">
@@ -284,7 +291,7 @@
     if (mm) mm.onclick = () => { n = Math.max(1, n - 1); out.textContent = n; };
     if (ms) ms.onclick = () => { n = Math.min(maxP, n + 1); out.textContent = n; };
     const cerrar = (seguir) => { v.remove(); if (seguir && desdeCamara) abrirCamara(); else pintar(); };
-    const ok = v.querySelector('#ok'); if (ok) ok.onclick = () => { const nombre = inv ? inv.nombre : r.nombre; registrar(nombre, n); if (!inv && !invitados.some(i => norm(i.nombre) === norm(nombre))) invitados.push({ nombre, lugares: 0, mesa: '' }); avisar(`✓ ${nombre}: ${n} ${n === 1 ? 'persona' : 'personas'}`); cerrar(true); };
+    const ok = v.querySelector('#ok'); if (ok) ok.onclick = () => { const nombre = inv ? inv.nombre : r.nombre; registrar(nombre, n); if (!inv && !invitados.some(i => norm(i.nombre) === norm(nombre))) invitados.push({ nombre, lugares: 0, mesa: '' }); avisar(`✓ ${nombre}: ${n} ${n === 1 ? 'persona' : 'personas'}`, inv && inv.mesa ? etqMesa(inv.mesa) : ''); cerrar(true); };
     const dz = v.querySelector('#deshacer'); if (dz) dz.onclick = () => { registrar(inv.nombre, 0); avisar('Entrada deshecha'); cerrar(false); };
     v.querySelector('#cerrar').onclick = () => cerrar(true);
     const li = v.querySelector('#lista'); if (li) li.onclick = () => cerrar(false);
