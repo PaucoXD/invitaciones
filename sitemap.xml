@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Si cambias a dominio propio, cambia aquí la dirección (manual, sección 4.5) -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://paucoxd.github.io/invitaciones/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://paucoxd.github.io/invitaciones/aviso-privacidad.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://paucoxd.github.io/invitaciones/terminos.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+</urlset>

@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#2b1a1e">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -215,7 +216,7 @@
           <div class="t ok"><b>${sum(prox, 'personas')}</b><span>personas confirmadas (próximas)</span></div>
           <div class="t pend"><b>${sum(prox, 'pendientes')}</b><span>invitaciones sin responder</span></div>
         </div>
-        ${!cfg.demo && version < 12 ? '<p class="demo">Tu código de Google es la versión ' + version + '; hay una nueva (versión 12: acomodo en mesas con plano, abrir pedidos con fotos sin errores, quién abrió cada invitación y pago del anticipo). Actualízalo: manual, sección 3.0.</p>' : ''}
+        ${!cfg.demo && version < 13 ? '<p class="demo">Tu código de Google es la versión ' + version + '; hay una nueva (versión 13: protección antispam, acomodo en mesas con plano, abrir pedidos con fotos sin errores, quién abrió cada invitación y pago del anticipo). Actualízalo: manual, sección 3.0.</p>' : ''}
         ${seccionPedidos()}
         <div class="filtros">
           ${[['proximas', 'Próximas'], ['pasadas', 'Pasadas'], ['todas', 'Todas']].map(([k, t]) => `<button class="chip ${filtro === k ? 'on' : ''}" data-f="${k}">${t}</button>`).join('')}

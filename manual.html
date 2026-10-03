@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="robots" content="noindex">
 <title>Manual del administrador</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -236,8 +237,8 @@
     <li><span class="btn">💳 Enlace de pago</span> abre WhatsApp con un enlace para que el cliente pague o suba su comprobante después.</li>
   </ul>
   <div class="caja tip"><b>Enlaces que puedes mandar</b><code>pedido.html?evento=xv</code> (empieza en XV años) · <code>pedido.html?plantilla=gala</code> (con el diseño ya elegido) · <code>pedido.html?paquete=Premium</code> (con el paquete elegido).</div>
-  <div class="caja ojo"><b>Actualiza tu código de Google (versión 12)</b>Para recibir pedidos, usar el pase de entrada con QR, ver quién abrió cada invitación y recibir comprobantes de pago, copia otra vez el código desde el editor (sección Confirmaciones automáticas), pégalo en Apps Script y ve a <b>Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión → Implementar</b>. Google te pedirá <b>permiso para usar tu Drive</b> (ahí guarda las fotos): acéptalo. La dirección no cambia.</div>
-  <div class="caja ojo"><b>¿El pedido no abre?</b>Revisa que en <b>Mis bodas</b> no salga el aviso amarillo de versión (si sale, tu Google sigue con el código viejo: falta elegir <b>Nueva versión</b> al implementar). Si ya tienes la versión 12 y sigue fallando, usa el botón <b>⬇ Archivo</b> del pedido en Mis bodas (descarga el pedido de tu Drive) y ábrelo en el editor con <b>📂 Abrir</b>. Para ver el error: en Apps Script, arriba, elige la función <code>probarPedido</code> y toca <b>▶ Ejecutar</b>. Si pide permisos, acéptalos. Abajo aparece el resultado: “✓ Pedido … KB” o el error exacto.</div>
+  <div class="caja ojo"><b>Actualiza tu código de Google (versión 13)</b>Para recibir pedidos, usar el pase de entrada con QR, ver quién abrió cada invitación y recibir comprobantes de pago, copia otra vez el código desde el editor (sección Confirmaciones automáticas), pégalo en Apps Script y ve a <b>Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión → Implementar</b>. Google te pedirá <b>permiso para usar tu Drive</b> (ahí guarda las fotos): acéptalo. La dirección no cambia.</div>
+  <div class="caja ojo"><b>¿El pedido no abre?</b>Revisa que en <b>Mis bodas</b> no salga el aviso amarillo de versión (si sale, tu Google sigue con el código viejo: falta elegir <b>Nueva versión</b> al implementar). Si ya tienes la versión 13 y sigue fallando, usa el botón <b>⬇ Archivo</b> del pedido en Mis bodas (descarga el pedido de tu Drive) y ábrelo en el editor con <b>📂 Abrir</b>. Para ver el error: en Apps Script, arriba, elige la función <code>probarPedido</code> y toca <b>▶ Ejecutar</b>. Si pide permisos, acéptalos. Abajo aparece el resultado: “✓ Pedido … KB” o el error exacto.</div>
   <div class="caja tip"><b>¿Sin Google Sheets?</b>El formulario también funciona: al final el cliente toca <b>Compartir archivo por WhatsApp</b> (o lo descarga) y te lo manda. Tú lo abres en el editor con <span class="btn">📂 Abrir</span>.</div>
 
   <h3 id="editor">3.1 El editor, botón por botón</h3>
@@ -514,8 +515,16 @@
     <li>Todos los botones abren WhatsApp con un mensaje ya escrito (paquete o diseño elegido). <b>Si no pusiste tu WhatsApp, abren WhatsApp sin destinatario.</b></li>
     <li>El editor, Mis bodas y este manual <b>no</b> aparecen en la página pública. Tú entras directo con su dirección.</li>
     <li>Para agregar una pregunta frecuente, copia una línea de <code>preguntas</code> y cambia el texto.</li>
-    <li>El <a href="aviso-privacidad.html">aviso de privacidad</a> es una plantilla: revísalo antes de usarlo.</li>
+    <li>El <a href="aviso-privacidad.html">aviso de privacidad</a> y el <a href="terminos.html">aviso legal</a> son plantillas: revísalos (de preferencia con un abogado) y ajusta anticipo, cancelaciones y tiempos a como trabajas.</li>
   </ul>
+  <h4 id="google">Que te encuentren en Google</h4>
+  <p>La página ya tiene título, descripción, imagen para compartir, ícono, datos para Google (negocio, paquetes y preguntas), página 404 y mapa del sitio. Las invitaciones de tus clientes llevan “no indexar” para que no salgan en Google. Te faltan estos pasos (gratis):</p>
+  <ol class="pasos">
+    <li><b>Ficha de Google (Perfil de Empresa)</b>: entra a <a href="https://business.google.com" target="_blank" rel="noopener">business.google.com</a> → <b>Agregar empresa</b> → nombre de tu marca → categoría <i>Servicio de invitaciones</i> o <i>Diseñador gráfico</i> → elige “sin dirección física, atiendo en mi zona” (si trabajas desde casa) → tu ciudad → tu WhatsApp y tu página. Google te pedirá verificarla (video o código). Después sube fotos de tus diseños y pide a tus clientes que te dejen reseña.</li>
+    <li><b>Google Search Console</b>: entra a <a href="https://search.google.com/search-console" target="_blank" rel="noopener">search.google.com/search-console</a> → <b>Prefijo de URL</b> → pega <code>https://paucoxd.github.io/invitaciones/</code> → verifica con la opción <b>Etiqueta HTML</b> (mándame el código y lo agrego) → en <b>Sitemaps</b> escribe <code>sitemap.xml</code>.</li>
+    <li><b>Analítica</b> (cuántas personas visitan): la más sencilla es <a href="https://www.goatcounter.com" target="_blank" rel="noopener">GoatCounter</a> (gratis, sin cookies, no necesita aviso). Crea tu cuenta, elige un código (ej. <code>pauloinvitaciones</code>) y ponlo en <code>negocio.js</code> → <code>analitica: { goatcounter: 'pauloinvitaciones' }</code>. Si prefieres Google Analytics, pon tu ID en <code>ga4</code>; la página mostrará sola el aviso de cookies para aceptar o rechazar.</li>
+  </ol>
+  <div class="caja ojo"><b>Al cambiar a dominio propio</b>Cambia también la dirección en <code>sitemap.xml</code>, <code>robots.txt</code> y en las etiquetas <code>og:url</code>, <code>og:image</code> y <code>canonical</code> de <code>index.html</code> (busca <code>paucoxd.github.io</code>). <code>https</code> lo activas en GitHub → Settings → Pages → <b>Enforce HTTPS</b>; además la página se cambia sola a https si alguien entra con http.</div>
   <h4>Para mandar a un cliente</h4>
   <ul>
     <li>Tu página: <code>https://paucoxd.github.io/invitaciones/</code></li>

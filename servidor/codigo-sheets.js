@@ -20,7 +20,7 @@ window.CODIGO_SHEETS = String.raw`// ===== Confirmaciones de invitaciones — pe
 // Después: Implementar → Nueva implementación → App web → Ejecutar como: Yo → Acceso: Cualquier persona.
 // ¿Actualizando? Implementar → Administrar implementaciones → ✏️ → Versión: "Nueva versión" → Implementar (la URL no cambia).
 
-var VERSION = 12;
+var VERSION = 13;
 
 var ENC_CONF = ['Fecha', 'Boda', 'Tipo', 'Invitado', 'Asiste', 'Personas', 'Mensaje', 'Lugares', 'Mesa'];
 var ENC_INV = ['Boda', 'Invitado', 'Lugares', 'Mesa', 'Teléfono'];
@@ -98,6 +98,11 @@ function guardarPedido_(texto) {
   if (texto.length > 40 * 1024 * 1024) return { ok: false, error: 'El pedido es demasiado grande. Manda menos fotos.' };
   var p = JSON.parse(texto);
   if (!p || p.tipo !== 'pedido-invitacion' || !p.datos) return { ok: false, error: 'Pedido no válido' };
+  // Antispam: el campo invisible lo llenan los robots (se responde "ok" para no darles pistas)
+  if (p.trampa) return { ok: true, pedido: 'recibido' };
+  var cache = CacheService.getScriptCache(), cuenta = Number(cache.get('pedidos-hora') || 0);
+  if (cuenta >= 30) return { ok: false, error: 'Recibimos muchos pedidos en este momento. Intenta en una hora o escríbenos por WhatsApp.' };
+  cache.put('pedidos-hora', String(cuenta + 1), 3600);
   var c = p.cliente || {}, d = p.datos || {};
   if (!c.nombre || !c.tel) return { ok: false, error: 'Falta tu nombre o tu WhatsApp' };
   var id = Utilities.formatDate(new Date(), 'GMT', 'yyMMdd') + '-' + Utilities.getUuid().slice(0, 4);
@@ -223,6 +228,7 @@ function doPost(e) {
   try {
     if (e.postData.contents.indexOf('"tipo":"pedido-invitacion"') >= 0 && e.postData.contents.indexOf('"tipo":"pedido-invitacion"') < 40) return json_(guardarPedido_(e.postData.contents));
     var d = JSON.parse(e.postData.contents);
+    if (d.trampa) return json_({ ok: true }); // robot (campo invisible lleno)
     if (d.accion === 'comprobante') return json_(guardarComprobante_(d));
     if (d.accion === 'pago') {
       // Desde Mis bodas: marcar el anticipo como pagado (o regresarlo a pendiente)

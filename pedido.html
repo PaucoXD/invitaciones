@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#2b1a1e">
 <title>Datos para tu invitación</title>
@@ -15,6 +16,7 @@
   Enlaces útiles:  pedido.html            pedido.html?evento=xv (o bautizo, comunion, babyshower, cumple)            pedido.html?plantilla=gala&paquete=Premium
 -->
 <script src="negocio.js" onerror="window.NEGOCIO={}"></script>
+<script src="motor/sitio.js"></script>
 <script src="motor/invitacion.js"></script>
 <script src="plantillas/floral.js"></script>
 <script src="plantillas/rustica.js"></script>
@@ -117,6 +119,7 @@
 </style>
 </head>
 <body>
+<input type="text" id="sitio-web" name="sitio-web" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
 <header class="top"><div class="w"><b id="marca">Tu invitación</b><small id="paso-txt"></small></div></header>
 <div class="avance"><i id="barra" style="width:0"></i></div>
 <main id="app"></main>
@@ -416,7 +419,7 @@
       rsvp: { whatsapp: tel ? (tel.length === 10 ? '521' + tel : tel) : '', fechaLimite: E.fechaLimite, pases: 2, texto: '' },
       invitados: invitados(), hashtag: E.hashtag, nota: E.nota, musica: 'melodia'
     };
-    return { tipo: 'pedido-invitacion', version: 1, creado: new Date().toISOString(),
+    return { tipo: 'pedido-invitacion', version: 1, creado: new Date().toISOString(), trampa: (document.getElementById('sitio-web') || {}).value || '',
       titulo: ev === 'boda' ? `${datos.novia} & ${datos.novio}` : `${EVS[ev].nombre} de ${datos.festejada}`, eventoNombre: EVS[ev].nombre,
       cliente: { nombre: E.cliente.nombre.trim(), tel: E.cliente.tel, paquete: E.cliente.paquete, cancion: E.cliente.cancion, comentarios: E.cliente.comentarios },
       datos };

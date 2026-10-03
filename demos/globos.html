@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Baby shower de Emilia</title>
 <meta name="description" content="Sábado 13 de febrero de 2027 — Monterrey, Nuevo León">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#ffcfb8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23ffcfb8%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2241%22%20text-anchor%3D%22middle%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%2228%22%20fill%3D%22%23fff%22%3EE%3C%2Ftext%3E%3C%2Fsvg%3E">
 <meta property="og:title" content="¡Baby shower de Emilia!">
 <meta property="og:description" content="Sábado 13 de febrero de 2027 — Monterrey, Nuevo León">
 
@@ -143,7 +146,7 @@ main{position:relative;z-index:1}
 /* Itinerario */
 .linea{position:relative;max-width:580px;margin:40px auto 0}
 .linea::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(var(--linea),var(--linea) 88%,transparent)}
-.evento{display:grid;grid-template-columns:1fr 64px 1fr;align-items:center;margin-bottom:38px}
+.evento{display:grid;grid-template-columns:1fr 64px 1fr;column-gap:18px;align-items:center;margin-bottom:38px}
 .evento .hora{font-size:30px;font-weight:300;color:var(--titulo,var(--tinta));text-align:right}
 .evento .icono{width:54px;height:54px;margin:0 auto;border-radius:50%;position:relative;z-index:1;background:var(--fondo);border:1px solid var(--linea);color:var(--acento2);display:flex;align-items:center;justify-content:center}
 .evento .icono svg{width:24px;height:24px}
@@ -182,6 +185,44 @@ main{position:relative;z-index:1}
 .foto.vacia{cursor:default;display:flex;align-items:center;justify-content:center;border:1px dashed var(--linea)}
 .foto-hueco{width:40px;color:var(--suave);opacity:.6}
 .foto.vacia figcaption{background:none;color:var(--suave)}
+/* Galería en carrusel */
+.carrusel-caja{position:relative;margin:36px auto 0;max-width:900px}
+.galeria.carrusel{display:flex;gap:14px;margin:0;max-width:none;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 10%;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.galeria.carrusel::-webkit-scrollbar{display:none}
+.galeria.carrusel .foto{flex:0 0 80%;max-width:440px;scroll-snap-align:center;aspect-ratio:4/5;border-radius:10px}
+.car-btn{position:absolute;top:calc(50% - 30px);width:42px;height:42px;border-radius:50%;border:1px solid var(--linea);background:var(--fondo);color:var(--titulo,var(--tinta));font-size:26px;line-height:1;cursor:pointer;z-index:2;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.car-prev{left:4px}.car-next{right:4px}
+.car-puntos{display:flex;justify-content:center;gap:8px;margin-top:14px}
+.car-puntos span{width:8px;height:8px;border-radius:50%;background:var(--linea);transition:all .3s}
+.car-puntos span.on{background:var(--acento);width:22px;border-radius:4px}
+/* Galería en tira de película */
+.pelicula{position:relative;margin:36px auto 0;max-width:900px;background:#161311;padding:26px 0;overflow:hidden;border-radius:3px;box-shadow:0 14px 34px rgba(0,0,0,.25)}
+.pelicula::before,.pelicula::after{content:"";position:absolute;left:0;right:0;height:9px;background:repeating-linear-gradient(90deg,transparent 0 8px,rgba(255,250,240,.82) 8px 20px,transparent 20px 30px);z-index:1;pointer-events:none}
+.pelicula::before{top:8px}.pelicula::after{bottom:8px}
+.pel-pista{display:flex;gap:10px;width:max-content;animation:pel-corre var(--pel-dur,40s) linear infinite}
+.pelicula:hover .pel-pista,.pelicula:active .pel-pista,.pelicula:focus-within .pel-pista{animation-play-state:paused}
+.pelicula .pel-pista .foto{flex:0 0 auto;width:160px;aspect-ratio:3/4;margin:0;padding:0!important;border:none!important;border-radius:2px!important;box-shadow:none!important;transform:none!important;background:#000}
+.pelicula .pel-pista .foto img{filter:sepia(.12) contrast(1.04)}
+.pelicula .pel-pista .foto figcaption{position:absolute!important;left:0;right:0;bottom:0;font-size:15px;padding:20px 6px 8px;color:#fff!important;background:linear-gradient(transparent,rgba(0,0,0,.55))!important;text-align:center}
+@keyframes pel-corre{to{transform:translateX(calc(-50% - 5px))}}
+.pelicula .pel-pista .foto,.galeria.carrusel .foto,.galeria.collage .foto,.galeria.polaroid .foto{rotate:none!important}
+@media (prefers-reduced-motion:reduce){.pel-pista{animation:none}.pelicula{overflow-x:auto}.pel-pista .foto[aria-hidden]{display:none}}
+/* Galería en collage (mosaico) */
+.galeria.collage{grid-template-columns:repeat(3,1fr);grid-auto-rows:150px;grid-auto-flow:dense;gap:8px}
+.galeria.collage .foto{aspect-ratio:auto;border-radius:8px;height:100%}
+.galeria.collage .foto:nth-child(6n+1){grid-column:span 2;grid-row:span 2}
+.galeria.collage .foto:nth-child(6n+4){grid-row:span 2}
+.galeria.collage .foto:nth-child(6n+5){grid-column:span 2}
+.galeria.collage.g1 .foto{grid-column:1/-1;grid-row:span 3}
+.galeria.collage.g2 .foto{grid-row:span 2}
+/* Galería en polaroid */
+.galeria.polaroid{grid-template-columns:repeat(2,1fr);gap:26px 18px;max-width:640px;padding:6px}
+.galeria.polaroid .foto{aspect-ratio:auto;overflow:visible;background:#fff;padding:9px 9px 40px;border-radius:2px;border:none;box-shadow:0 10px 24px rgba(0,0,0,.18);transform:rotate(-2.5deg)}
+.galeria.polaroid .foto:nth-child(even){transform:rotate(2deg) translateY(14px)}
+.galeria.polaroid .foto:nth-child(3n){transform:rotate(1deg)}
+.galeria.polaroid .foto img{aspect-ratio:1;height:auto;border-radius:0}
+.galeria.polaroid .foto figcaption{position:absolute;left:0;right:0;bottom:6px;padding:0 8px;background:none;color:#4a4038;font-size:20px;text-align:center}
+.galeria.polaroid.g1{grid-template-columns:1fr;max-width:360px}
 .zoom{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
 .zoom img{max-height:92vh;max-width:96vw;object-fit:contain}
 
@@ -242,6 +283,9 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 
 /* Mesas */
 .sec-mesa.sin-mesa{display:none}
+.sec-aparta .lead{max-width:540px;margin-left:auto;margin-right:auto}.sec-aparta .btn{margin-top:20px}
+.aparta-pronto{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:26px;font-family:var(--f-etiqueta);font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--acento-texto,var(--acento))}
+.aparta-pronto svg{width:20px;height:20px;flex-shrink:0}
 .sec-acceso.sin-acceso{display:none}
 .acceso-tarjeta{max-width:360px;margin:6px auto 22px;padding:30px 24px 26px;background:var(--tarjeta,#fff);color:var(--tinta);border:1px solid var(--linea);border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.08);position:relative}
 .acceso-tarjeta::before,.acceso-tarjeta::after{content:"";position:absolute;top:52%;width:26px;height:26px;border-radius:50%;background:var(--fondo);border:1px solid var(--linea)}
@@ -301,9 +345,12 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
   .padres{grid-template-columns:1fr;gap:22px}
   .fecha-bloque{gap:12px}.fecha-bloque .lado{width:80px;font-size:10px;letter-spacing:.2em}
   .reloj small{font-size:10px;letter-spacing:.08em}
-  .evento{grid-template-columns:1fr 54px 1fr}.evento .hora{font-size:24px}.evento .que{font-size:17px}
+  .evento{grid-template-columns:1fr 58px 1fr;column-gap:12px}.evento .hora{font-size:24px}.evento .que{font-size:17px}
   .galeria{gap:6px}.foto figcaption{font-size:18px}
-  .galeria.g3{grid-template-columns:repeat(2,1fr)}.galeria.g3 .foto:first-child{grid-column:span 2;aspect-ratio:4/3}
+  .galeria.g3:not(.collage):not(.polaroid){grid-template-columns:repeat(2,1fr)}.galeria.g3:not(.collage):not(.polaroid) .foto:first-child{grid-column:span 2;aspect-ratio:4/3}
+  .galeria.collage{grid-auto-rows:110px;gap:6px}.galeria.polaroid{gap:20px 12px}.galeria.polaroid .foto{padding:7px 7px 32px}.galeria.polaroid .foto figcaption{font-size:16px}
+  .galeria.carrusel .foto{flex-basis:84%}.car-btn{display:none}
+  .pelicula{margin-left:-6px;margin-right:-6px}.pelicula .pel-pista .foto{width:124px}
   .figuras{gap:30px}
 }
 @media (prefers-reduced-motion:reduce){
@@ -409,9 +456,9 @@ body.plantilla-globos{font-size:18px}
 <button id="btn-musica" class="btn-musica" aria-label="Pausar o reproducir música"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></button>
 <main>
   <section class="portada">
-    <span class="orn orn-nube nb n1" aria-hidden="true"><img src="plantillas/adornos/globos-nube.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 160 70"><path d="M24 62c-14 0-22-8-22-18 0-11 9-18 20-17 3-14 14-22 28-20 7-10 26-12 36-2 6-4 18-4 24 4 12-1 24 8 24 22 0 18-12 31-28 31z" fill="#fff"/></svg></span></span><span class="orn orn-nube nb n2" aria-hidden="true"><img src="plantillas/adornos/globos-nube.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 160 70"><path d="M24 62c-14 0-22-8-22-18 0-11 9-18 20-17 3-14 14-22 28-20 7-10 26-12 36-2 6-4 18-4 24 4 12-1 24 8 24 22 0 18-12 31-28 31z" fill="#fff"/></svg></span></span><span class="orn orn-nube nb n3" aria-hidden="true"><img src="plantillas/adornos/globos-nube.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 160 70"><path d="M24 62c-14 0-22-8-22-18 0-11 9-18 20-17 3-14 14-22 28-20 7-10 26-12 36-2 6-4 18-4 24 4 12-1 24 8 24 22 0 18-12 31-28 31z" fill="#fff"/></svg></span></span>
+    <span class="orn orn-nube nb n1" aria-hidden="true"><span class="fb"><svg viewBox="0 0 160 70"><path d="M24 62c-14 0-22-8-22-18 0-11 9-18 20-17 3-14 14-22 28-20 7-10 26-12 36-2 6-4 18-4 24 4 12-1 24 8 24 22 0 18-12 31-28 31z" fill="#fff"/></svg></span></span><span class="orn orn-nube nb n2" aria-hidden="true"><span class="fb"><svg viewBox="0 0 160 70"><path d="M24 62c-14 0-22-8-22-18 0-11 9-18 20-17 3-14 14-22 28-20 7-10 26-12 36-2 6-4 18-4 24 4 12-1 24 8 24 22 0 18-12 31-28 31z" fill="#fff"/></svg></span></span><span class="orn orn-nube nb n3" aria-hidden="true"><span class="fb"><svg viewBox="0 0 160 70"><path d="M24 62c-14 0-22-8-22-18 0-11 9-18 20-17 3-14 14-22 28-20 7-10 26-12 36-2 6-4 18-4 24 4 12-1 24 8 24 22 0 18-12 31-28 31z" fill="#fff"/></svg></span></span>
     <div class="cielo-cont rv">
-      <span class="orn orn-globo globo-portada" aria-hidden="true"><img src="plantillas/adornos/globos-globo.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 260 330">
+      <span class="orn orn-globo globo-portada" aria-hidden="true"><span class="fb"><svg viewBox="0 0 260 330">
     <defs><clipPath id="gl-c-2"><path d="M130 14C70 14 30 58 30 112c0 52 46 94 74 122h52c28-28 74-70 74-122C230 58 190 14 130 14z"/></clipPath></defs>
     <g clip-path="url(#gl-c-2)">
       <rect x="0" y="0" width="260" height="260" fill="#ffcfb8"/>
@@ -439,7 +486,7 @@ body.plantilla-globos{font-size:18px}
     <a href="#frase" class="bajar" aria-label="Bajar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M6 9l6 6 6-6"/></svg></a>
   </section>
   <section id="frase" class="sec sec-frase c-menta"><div class="cont"><blockquote class="rv">“Un pedacito de cielo está por llegar.”</blockquote></div></section>
-  <section id="familia" class="sec sec-familia c-durazno"><span class="orn orn-globitos globitos-esq" aria-hidden="true"><img src="plantillas/adornos/globos-globitos.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 170"><g transform="translate(50 50) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffcfb8"/><path d="M-3 24L3 24L0 29z" fill="#ffcfb8"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(100 36) scale(1.1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#bfe6d6"/><path d="M-3 24L3 24L0 29z" fill="#bfe6d6"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(150 56) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#d9c8f2"/><path d="M-3 24L3 24L0 29z" fill="#d9c8f2"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(76 92) scale(0.8)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffe69a"/><path d="M-3 24L3 24L0 29z" fill="#ffe69a"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(128 98) scale(0.75)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#f6b8c4"/><path d="M-3 24L3 24L0 29z" fill="#f6b8c4"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g></svg></span></span><div class="cont"><h2 class="titulo rv">Con mucha ilusión</h2><p class="lead rv">te invitamos a celebrar la próxima llegada de nuestro bebé</p><div class="padres">
+  <section id="familia" class="sec sec-familia c-durazno"><span class="orn orn-globitos globitos-esq" aria-hidden="true"><span class="fb"><svg viewBox="0 0 200 170"><g transform="translate(50 50) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffcfb8"/><path d="M-3 24L3 24L0 29z" fill="#ffcfb8"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(100 36) scale(1.1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#bfe6d6"/><path d="M-3 24L3 24L0 29z" fill="#bfe6d6"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(150 56) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#d9c8f2"/><path d="M-3 24L3 24L0 29z" fill="#d9c8f2"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(76 92) scale(0.8)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffe69a"/><path d="M-3 24L3 24L0 29z" fill="#ffe69a"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(128 98) scale(0.75)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#f6b8c4"/><path d="M-3 24L3 24L0 29z" fill="#f6b8c4"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g></svg></span></span><div class="cont"><h2 class="titulo rv">Con mucha ilusión</h2><p class="lead rv">te invitamos a celebrar la próxima llegada de nuestro bebé</p><div class="padres">
         <div class="rv"><h3>Los papás</h3><p>Carla Rivera<br>Alejandro Núñez</p></div>
         
       </div></div></section>
@@ -478,7 +525,7 @@ body.plantilla-globos{font-size:18px}
   <section id="regalos" class="sec sec-regalos c-lila"><div class="cont"><p class="eyebrow rv">Mesa de regalos</p><h2 class="titulo rv">Tu presencia es nuestro mejor regalo</h2><p class="lead rv">pero si deseas obsequiarnos algo, aquí algunas opciones</p>
         <div class="regalos n2"><div class="regalo rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 7h16l-1 13H5zM9 7V5a3 3 0 016 0v2"/></svg><h4>Amazon</h4><p>Lista “Bebé Emilia”</p></div><div class="regalo rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 9h18v4H3zM5 13v8h14v-8M12 9v12M12 9c-2-4-7-4-6-1 1 2 6 1 6 1zm0 0c2-4 7-4 6-1-1 2-6 1-6 1z"/></svg><h4>Pañales</h4><p>Etapa 1 y 2</p></div></div>
         </div></section>
-  <section id="rsvp" class="sec sec-rsvp c-crema"><span class="orn orn-globitos globitos-esq d" aria-hidden="true"><img src="plantillas/adornos/globos-globitos.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 170"><g transform="translate(50 50) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffcfb8"/><path d="M-3 24L3 24L0 29z" fill="#ffcfb8"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(100 36) scale(1.1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#bfe6d6"/><path d="M-3 24L3 24L0 29z" fill="#bfe6d6"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(150 56) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#d9c8f2"/><path d="M-3 24L3 24L0 29z" fill="#d9c8f2"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(76 92) scale(0.8)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffe69a"/><path d="M-3 24L3 24L0 29z" fill="#ffe69a"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(128 98) scale(0.75)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#f6b8c4"/><path d="M-3 24L3 24L0 29z" fill="#f6b8c4"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g></svg></span></span><div class="cont"><p class="eyebrow rv">R.S.V.P.</p><h2 class="titulo rv">Confirma tu asistencia</h2>
+  <section id="rsvp" class="sec sec-rsvp c-crema"><span class="orn orn-globitos globitos-esq d" aria-hidden="true"><span class="fb"><svg viewBox="0 0 200 170"><g transform="translate(50 50) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffcfb8"/><path d="M-3 24L3 24L0 29z" fill="#ffcfb8"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(100 36) scale(1.1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#bfe6d6"/><path d="M-3 24L3 24L0 29z" fill="#bfe6d6"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(150 56) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#d9c8f2"/><path d="M-3 24L3 24L0 29z" fill="#d9c8f2"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(76 92) scale(0.8)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffe69a"/><path d="M-3 24L3 24L0 29z" fill="#ffe69a"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(128 98) scale(0.75)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#f6b8c4"/><path d="M-3 24L3 24L0 29z" fill="#f6b8c4"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g></svg></span></span><div class="cont"><p class="eyebrow rv">R.S.V.P.</p><h2 class="titulo rv">Confirma tu asistencia</h2>
         <div class="pase rv"><strong data-invitado-nombre>Querido invitado</strong>Hemos reservado <b data-pases>1</b> <span data-pases-palabra>lugares</span> en tu honor<em class="pase-mesa" data-mesa-pase hidden></em></div>
         <form id="form-rsvp" class="rv" novalidate>
           <label for="f-nombre">Nombre completo</label>
@@ -506,7 +553,7 @@ body.plantilla-globos{font-size:18px}
   <section id="compartir" class="sec sec-compartir "><div class="cont">
           <p class="eyebrow rv">Comparte tus fotos</p><p class="hashtag rv">#BabyEmilia</p>
           </div></section>
-        <footer class="pie "><span class="orn orn-globitos globitos-pie" aria-hidden="true"><img src="plantillas/adornos/globos-globitos.png" alt="" onerror="this.remove()"><span class="fb"><svg viewBox="0 0 200 170"><g transform="translate(50 50) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffcfb8"/><path d="M-3 24L3 24L0 29z" fill="#ffcfb8"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(100 36) scale(1.1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#bfe6d6"/><path d="M-3 24L3 24L0 29z" fill="#bfe6d6"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(150 56) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#d9c8f2"/><path d="M-3 24L3 24L0 29z" fill="#d9c8f2"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(76 92) scale(0.8)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffe69a"/><path d="M-3 24L3 24L0 29z" fill="#ffe69a"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(128 98) scale(0.75)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#f6b8c4"/><path d="M-3 24L3 24L0 29z" fill="#f6b8c4"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g></svg></span></span>
+        <footer class="pie "><span class="orn orn-globitos globitos-pie" aria-hidden="true"><span class="fb"><svg viewBox="0 0 200 170"><g transform="translate(50 50) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffcfb8"/><path d="M-3 24L3 24L0 29z" fill="#ffcfb8"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(100 36) scale(1.1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#bfe6d6"/><path d="M-3 24L3 24L0 29z" fill="#bfe6d6"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(150 56) scale(1)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#d9c8f2"/><path d="M-3 24L3 24L0 29z" fill="#d9c8f2"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(76 92) scale(0.8)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#ffe69a"/><path d="M-3 24L3 24L0 29z" fill="#ffe69a"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g><g transform="translate(128 98) scale(0.75)"><path d="M0 -26C-15 -26 -22 -14 -22 -4c0 14 14 24 22 28c8-4 22-14 22-28c0-10-7-22-22-22z" fill="#f6b8c4"/><path d="M-3 24L3 24L0 29z" fill="#f6b8c4"/><path d="M0 29q-6 18 4 34" stroke="#b9a08a" stroke-width="1.4" fill="none"/><ellipse cx="-8" cy="-12" rx="4" ry="7" fill="#fff" opacity=".45" transform="rotate(-20 -8 -12)"/></g></svg></span></span>
           <p class="rv">Gracias por celebrar con nosotros la llegada de nuestro bebé</p>
           <p class="nombres nombre-xv nombre-uno"><span class="n1">Emilia</span></p>
           <p class="pie-fecha rv">13 · 02 · 2027</p>
@@ -702,6 +749,25 @@ body.plantilla-globos{font-size:18px}
       });
     });
 
+    // Galería en carrusel: puntos, flechas y avance solo (se detiene si la persona la toca)
+    $$('.carrusel-caja').forEach(function (caja) {
+      var pista = $('.carrusel', caja), fotos = $$('.foto', pista), puntos = $$('.car-puntos span', caja), auto = null, i = 0;
+      if (fotos.length < 2) return;
+      function ir(n) { i = (n + fotos.length) % fotos.length; var f = fotos[i]; pista.scrollTo({ left: f.offsetLeft - (pista.clientWidth - f.clientWidth) / 2, behavior: 'smooth' }); }
+      pista.addEventListener('scroll', function () {
+        var c = pista.scrollLeft + pista.clientWidth / 2, mejor = 0, dist = Infinity;
+        fotos.forEach(function (f, k) { var x = Math.abs(f.offsetLeft + f.clientWidth / 2 - c); if (x < dist) { dist = x; mejor = k; } });
+        i = mejor; puntos.forEach(function (p, k) { p.classList.toggle('on', k === mejor); });
+      }, { passive: true });
+      var parar = function () { clearInterval(auto); auto = null; };
+      ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(function (t) { pista.addEventListener(t, parar, { passive: true }); });
+      var pr = $('.car-prev', caja), nx = $('.car-next', caja);
+      if (pr) pr.addEventListener('click', function () { parar(); ir(i - 1); });
+      if (nx) nx.addEventListener('click', function () { parar(); ir(i + 1); });
+      if (!(W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches)) auto = setInterval(function () { if (!document.hidden) ir(i + 1); }, 4500);
+      limpiar.push(parar);
+    });
+
     // Fotos en grande
     $$('[data-zoom]').forEach(function (f) {
       f.addEventListener('click', function () {
@@ -733,6 +799,13 @@ body.plantilla-globos{font-size:18px}
     var claveLocal = 'inv-rsvp:' + (C.boda || quien) + ':' + (invitado || '');
     function recordar(v) { try { localStorage.setItem(claveLocal, JSON.stringify(v)); } catch (e) {} }
     function recordado() { try { return JSON.parse(localStorage.getItem(claveLocal)); } catch (e) { return null; } }
+
+    // ¿Quién abrió su invitación? Se avisa a la hoja una vez por visita (no en vistas previas ni en "Aparta la fecha")
+    if (usarHoja && invitado && !d._aparta) {
+      var claveVista = 'inv-vista:' + C.boda + ':' + invitado, yaVista = false;
+      try { yaVista = !!sessionStorage.getItem(claveVista); sessionStorage.setItem(claveVista, '1'); } catch (e) {}
+      if (!yaVista) aHoja({ accion: 'vista', nombre: invitado });
+    }
 
     // Pase de entrada con QR (necesita la librería de QR incluida en la página)
     var acc = $('[data-acceso-qr]');
@@ -850,6 +923,6 @@ body.plantilla-globos{font-size:18px}
         form.parentNode.insertBefore(aviso2, form);
       }
     }
-  })({"zonaHoraria":"-06:00","iniciales":"","fotoPortada":"","fraseAutor":"","padresNovio":"","hospedaje":[],"musica":"melodia","adornos":{},"ocultar":{},"mesas":{"activo":false,"texto":"","lista":[],"elementos":[]},"invitados":[{"nombre":"Familia López","pases":4,"mesa":""},{"nombre":"Tía Carmen","pases":1,"mesa":""},{"nombre":"Familia Ortiz","pases":3,"mesa":""}],"evento":"babyshower","plantilla":"globos","festejada":"Emilia","fecha":"2027-02-13","hora":"16:00","ciudad":"Monterrey, Nuevo León","introPortada":"Baby shower","frase":"Un pedacito de cielo está por llegar.","tituloFamilia":"Con mucha ilusión","textoFamilia":"te invitamos a celebrar la próxima llegada de nuestro bebé","padresNovia":"Carla Rivera\nAlejandro Núñez","padrinos":[],"itinerario":[{"hora":"16:00","evento":"Bienvenida","detalle":"","icono":"copa"},{"hora":"17:00","evento":"Juegos","detalle":"","icono":"corazon"},{"hora":"18:00","evento":"Abrir regalos","detalle":"","icono":"regalo"},{"hora":"18:30","evento":"Pastel","detalle":"","icono":"pastel"}],"lugares":[{"tipo":"Lugar","hora":"16:00","nombre":"Casa de la familia Núñez","direccion":"Río Danubio 230, Del Valle\nSan Pedro Garza García, N.L.","mapa":"","icono":"hacienda"}],"vestimenta":{"tipo":"","texto":"","colores":[],"nota":""},"historia":{"titulo":"Esperándote","texto":"","fotos":[]},"regalos":{"titulo":"Tu presencia es nuestro mejor regalo","texto":"pero si deseas obsequiarnos algo, aquí algunas opciones","opciones":[{"nombre":"Amazon","detalle":"Lista “Bebé Emilia”","enlace":"","icono":"bolsa"},{"nombre":"Pañales","detalle":"Etapa 1 y 2","enlace":"","icono":"regalo"}],"banco":"","titular":"","clabe":""},"rsvp":{"whatsapp":"5218112345678","fechaLimite":"2027-02-06","pases":1,"texto":""},"contactos":{"novia":"5218112345678","novio":""},"hashtag":"#BabyEmilia","nota":"","despedida":"Gracias por celebrar con nosotros la llegada de nuestro bebé","novia":"","novio":"","confirmaciones":{"url":"","boda":"","whatsapp":false},"acceso":{"activo":false,"texto":""},"encuadres":{},"_rutaAdornos":"plantillas/adornos/","_efecto":"confeti","_efectoColores":["#ffcfb8","#bfe6d6","#d9c8f2","#ffe69a","#f6b8c4"],"_ev":{"uno":true,"quien":"Emilia","del":"el baby shower de Emilia","cabecera":"Baby shower de Emilia","emoji":"🍼","fiesta":"el baby shower","les":"les","msgRecibe":"Los papás recibirán tu mensaje."}});</script>
+  })({"zonaHoraria":"-06:00","iniciales":"","fotoPortada":"","fraseAutor":"","padresNovio":"","hospedaje":[],"musica":"melodia","adornos":{},"ocultar":{},"mesas":{"activo":false,"texto":"","lista":[],"elementos":[]},"invitados":[],"evento":"babyshower","plantilla":"globos","festejada":"Emilia","fecha":"2027-02-13","hora":"16:00","ciudad":"Monterrey, Nuevo León","introPortada":"Baby shower","frase":"Un pedacito de cielo está por llegar.","tituloFamilia":"Con mucha ilusión","textoFamilia":"te invitamos a celebrar la próxima llegada de nuestro bebé","padresNovia":"Carla Rivera\nAlejandro Núñez","padrinos":[],"itinerario":[{"hora":"16:00","evento":"Bienvenida","detalle":"","icono":"copa"},{"hora":"17:00","evento":"Juegos","detalle":"","icono":"corazon"},{"hora":"18:00","evento":"Abrir regalos","detalle":"","icono":"regalo"},{"hora":"18:30","evento":"Pastel","detalle":"","icono":"pastel"}],"lugares":[{"tipo":"Lugar","hora":"16:00","nombre":"Casa de la familia Núñez","direccion":"Río Danubio 230, Del Valle\nSan Pedro Garza García, N.L.","mapa":"","icono":"hacienda"}],"vestimenta":{"tipo":"","texto":"","colores":[],"nota":""},"historia":{"titulo":"Esperándote","texto":"","fotos":[],"estilo":"cuadricula"},"regalos":{"titulo":"Tu presencia es nuestro mejor regalo","texto":"pero si deseas obsequiarnos algo, aquí algunas opciones","opciones":[{"nombre":"Amazon","detalle":"Lista “Bebé Emilia”","enlace":"","icono":"bolsa"},{"nombre":"Pañales","detalle":"Etapa 1 y 2","enlace":"","icono":"regalo"}],"banco":"","titular":"","clabe":""},"rsvp":{"whatsapp":"5218112345678","fechaLimite":"2027-02-06","pases":1,"texto":""},"contactos":{"novia":"5218112345678","novio":""},"hashtag":"#BabyEmilia","nota":"","despedida":"Gracias por celebrar con nosotros la llegada de nuestro bebé","novia":"","novio":"","confirmaciones":{"url":"","boda":"","whatsapp":false},"acceso":{"activo":false,"texto":""},"aparta":{"texto":""},"_rutaAdornos":null,"_efecto":"confeti","_efectoColores":["#ffcfb8","#bfe6d6","#d9c8f2","#ffe69a","#f6b8c4"],"_ev":{"uno":true,"quien":"Emilia","del":"el baby shower de Emilia","cabecera":"Baby shower de Emilia","emoji":"🍼","fiesta":"el baby shower","les":"les","msgRecibe":"Los papás recibirán tu mensaje."}});</script>
 </body>
 </html>
