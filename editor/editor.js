@@ -136,7 +136,8 @@
     const c = datos.confirmaciones || {};
     const lista = (datos.invitados || []).filter(x => x.nombre).map(x => ({ nombre: x.nombre, pases: x.pases, mesa: datos.mesas && datos.mesas.activo ? x.mesa : '', tel: x.tel || '' }));
     try {
-      const r = await (await fetch(c.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'invitados', boda: c.boda, clave: c.clave, info: { nombres: quien(), fecha: datos.fecha }, invitados: lista }) })).json();
+      const r = await (await fetch(c.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'invitados', boda: c.boda, clave: c.clave, info: { nombres: quien(), fecha: datos.fecha }, invitados: lista,
+        plano: datos.mesas && datos.mesas.activo ? { lista: datos.mesas.lista || [], elementos: datos.mesas.elementos || [], honor: Invitacion.EVENTOS[datos.evento || 'boda'].honor } : null }) })).json();
       if (r.ok) return { ok: true, invitados: r.invitados };
       return { ok: false, error: /clave/i.test(r.error || '') ? 'Ese ID ya existe en tu hoja con otra clave. Abre los datos guardados de este evento (botón “Abrir”) o cambia el ID.' : 'Error: ' + (r.error || '') };
     } catch (e) { return { ok: false, error: 'No se pudo conectar con Google Sheets. Revisa la dirección y tu internet.' }; }
@@ -385,8 +386,15 @@
             const err = await asegurarEvento(); if (err) { avisar(err); return; }
             const msg = `Registro de entrada de ${quien()} 🚪\n\nAbre este enlace en el celular de quien esté en la puerta y toca “Escanear pase”:\n👉 ${enlace()}\n\nCódigo: ${c.boda}\nClave: ${c.clave}\n\nTambién puedes buscar a las familias por nombre si alguien no trae su pase.`;
             navigator.clipboard.writeText(msg).then(() => avisar('Acceso para la entrada copiado ✓ Mándalo a quien estará en la puerta'));
-          } }, '🔗 Copiar acceso para la entrada')),
-        el('p', { class: 'ayuda' }, 'Usa la misma clave del panel. Si cambias la lista de invitados, vuelve a “Sincronizar lista de invitados”.'));
+          } }, '🔗 Copiar acceso para la entrada'),
+          el('button', { class: 'b chico', type: 'button', onclick: async () => {
+            const err = await asegurarEvento(); if (err) { avisar(err); return; }
+            if (datos.mesas && datos.mesas.activo) await sincronizarHoja(); // lleva el plano del salón
+            const u = enlace() + '&modo=mesas';
+            const msg = `Acomodo en mesas de ${quien()} 🪑\n\nAbre este enlace en el celular de quien acomoda a los invitados. Busca a la familia (o escanea su pase), verás su mesa en el plano y toca “Ya los sentamos”:\n👉 ${u}\n\nCódigo: ${c.boda}\nClave: ${c.clave}`;
+            navigator.clipboard.writeText(msg).then(() => avisar('Acceso para el acomodo en mesas copiado ✓'));
+          } }, '🪑 Copiar acceso para acomodo en mesas')),
+        el('p', { class: 'ayuda' }, 'Usa la misma clave del panel. Si cambias la lista de invitados o el plano de mesas, vuelve a “Sincronizar lista de invitados”. El acomodo en mesas muestra el plano si el paquete de mesas está activado.'));
     } else if (t === 'confHerramientas') {
       const estado = el('p', { class: 'conf-estado' });
       const c = () => datos.confirmaciones || {};
