@@ -12,13 +12,15 @@
  *                    con fotos, se guarda en la carpeta "Pedidos de invitaciones" de tu Google Drive)
  *                    y el pago del anticipo (comprobante que sube el cliente, o "Pagado" desde Mis bodas)
  *   Vistas         → quién abrió su invitación personalizada, cuántas veces y cuándo
+ *   Sentados       → acomodo en mesas el día del evento (entrada.html?modo=mesas)
+ *   Planos         → el plano del salón de cada evento (se manda al sincronizar la lista)
  * La clave de "Mis bodas" (tu panel de administrador) se guarda en las propiedades del script, no en la hoja.
  */
 window.CODIGO_SHEETS = String.raw`// ===== Confirmaciones de invitaciones — pegar en Extensiones → Apps Script =====
 // Después: Implementar → Nueva implementación → App web → Ejecutar como: Yo → Acceso: Cualquier persona.
 // ¿Actualizando? Implementar → Administrar implementaciones → ✏️ → Versión: "Nueva versión" → Implementar (la URL no cambia).
 
-var VERSION = 11;
+var VERSION = 12;
 
 var ENC_CONF = ['Fecha', 'Boda', 'Tipo', 'Invitado', 'Asiste', 'Personas', 'Mensaje', 'Lugares', 'Mesa'];
 var ENC_INV = ['Boda', 'Invitado', 'Lugares', 'Mesa', 'Teléfono'];
@@ -26,6 +28,8 @@ var ENC_BODAS = ['Boda', 'Clave', 'Creada', 'Nombres', 'Fecha'];
 var ENC_ENT = ['Fecha', 'Boda', 'Invitado', 'Personas', 'Registró'];
 var ENC_PED = ['Recibido', 'Pedido', 'Cliente', 'WhatsApp', 'Evento', 'Nombres', 'Fecha del evento', 'Diseño', 'Paquete', 'Archivo', 'Estado', 'Pago', 'Comprobante'];
 var ENC_VIS = ['Boda', 'Invitado', 'Primera vez', 'Última vez', 'Veces'];
+var ENC_SEN = ['Fecha', 'Boda', 'Invitado', 'Mesa', 'Sentados', 'Registró'];
+var ENC_PLA = ['Boda', 'Plano', 'Actualizado'];
 var CARPETA_PEDIDOS = 'Pedidos de invitaciones';
 
 function hoja_(nombre, encabezados) {
@@ -193,6 +197,13 @@ function probarPedido() {
     Logger.log('✓ Pedido ' + p.pedido + ' (' + p.nombres + '): ' + Math.round(t.length / 1024) + ' KB. Versión del código: ' + VERSION);
   } catch (err) { Logger.log('✕ Error al leer el pedido ' + p.pedido + ': ' + err); }
 }
+function plano_(boda) {
+  var h = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Planos');
+  if (!h) return null;
+  var v = h.getDataRange().getValues();
+  for (var i = 1; i < v.length; i++) if (String(v[i][0]) === boda) { try { return JSON.parse(v[i][1]); } catch (e) { return null; } }
+  return null;
+}
 function filas_(nombre, boda, colBoda) {
   var h = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(nombre);
   if (!h) return [];
@@ -226,6 +237,13 @@ function doPost(e) {
 
     if (d.accion === 'vista') return json_(guardarVista_(boda, d.nombre));
 
+    if (d.accion === 'sentado') {
+      // Acomodo en mesas: la última fila de cada invitado es la que vale (0 = se deshizo)
+      if (!claveCorrecta_(boda, d.clave, false)) return json_({ ok: false, error: 'Clave incorrecta' });
+      hoja_('Sentados', ENC_SEN).appendRow([new Date(), boda, texto_(d.nombre, 120), texto_(d.mesa, 40), d.sentado === false ? 0 : 1, texto_(d.quien, 60)]);
+      return json_({ ok: true });
+    }
+
     if (d.accion === 'entrada') {
       // Registro en la puerta: la última fila de cada invitado es la que vale (0 = se deshizo)
       if (!claveCorrecta_(boda, d.clave, false)) return json_({ ok: false, error: 'Clave incorrecta' });
@@ -243,6 +261,12 @@ function doPost(e) {
         if (x && x.nombre) filas.push([boda, texto_(x.nombre, 120), Number(x.pases) || '', texto_(x.mesa, 40), texto_(x.tel, 30)]);
       }
       if (filas.length) h.getRange(h.getLastRow() + 1, 1, filas.length, ENC_INV.length).setValues(filas);
+      // Plano del salón (para el acomodo en mesas): una fila por evento
+      if (d.plano) {
+        var hp = hoja_('Planos', ENC_PLA), vp = hp.getDataRange().getValues(), txt = String(JSON.stringify(d.plano)).slice(0, 45000), puesto = false;
+        for (var j = 1; j < vp.length; j++) if (String(vp[j][0]) === boda) { hp.getRange(j + 1, 2, 1, 2).setValues([[txt, new Date()]]); puesto = true; break; }
+        if (!puesto) hp.appendRow([boda, txt, new Date()]);
+      }
       return json_({ ok: true, invitados: filas.length });
     }
 
@@ -287,6 +311,7 @@ function doGet_(e) {
   }
   var boda = texto_(p.boda, 80);
   if (!boda || !claveCorrecta_(boda, p.clave, false)) return json_({ ok: false, error: 'ID de boda o clave incorrectos' });
-  return json_({ ok: true, version: VERSION, confirmaciones: filas_('Confirmaciones', boda, 1), invitados: filas_('Invitados', boda, 0), entradas: filas_('Entradas', boda, 1), vistas: filas_('Vistas', boda, 0) });
+  return json_({ ok: true, version: VERSION, confirmaciones: filas_('Confirmaciones', boda, 1), invitados: filas_('Invitados', boda, 0), entradas: filas_('Entradas', boda, 1), vistas: filas_('Vistas', boda, 0),
+    sentados: filas_('Sentados', boda, 1), plano: plano_(boda) });
 }
 `;

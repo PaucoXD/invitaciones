@@ -59,7 +59,7 @@
   .cam-cerrar{position:absolute;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#fff;color:#111;border:none;border-radius:30px;padding:14px 28px;font-weight:700;font-size:16px;cursor:pointer;min-height:52px}
   /* Resultado */
   .velo{position:fixed;inset:0;background:rgba(20,14,12,.55);z-index:30;display:flex;align-items:flex-end;justify-content:center}
-  .hoja{background:var(--card);width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));animation:sube .25s ease}
+  .hoja{max-height:94vh;overflow-y:auto;background:var(--card);width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));animation:sube .25s ease}
   @keyframes sube{from{transform:translateY(40px);opacity:0}}
   .estado{display:flex;align-items:center;gap:10px;border-radius:14px;padding:12px 14px;font-weight:700;font-size:17px;margin-bottom:14px}
   .estado i{font-style:normal;font-size:24px}
@@ -85,6 +85,17 @@
   .demo{background:var(--pend-bg);color:var(--pend);border-radius:10px;padding:9px 12px;font-size:13.5px;margin-bottom:12px}
   .toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translate(-50%,-200px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:18px;transition:transform .3s;z-index:40;font-weight:600;max-width:90vw;text-align:center}
   .toast.ver{transform:translate(-50%,0)}
+  .plano{position:relative;width:100%;aspect-ratio:4/3;margin:14px auto 4px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .pl-el{position:absolute;display:flex;align-items:center;justify-content:center;border:1px dashed #d8cdbf;background:#f6f1ea;color:#8a7f73;font-size:9px;letter-spacing:.14em;text-transform:uppercase;border-radius:4px;text-align:center}
+  .pl-pista{background:repeating-linear-gradient(45deg,#f1eadf 0 8px,#fff 8px 16px)}
+  .pl-novios{border-style:solid;border-color:var(--accent);color:var(--accent)}
+  .pl-mesa{position:absolute;width:9%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:1px solid #d8cdbf;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;color:#8a7f73}
+  .pl-mesa.rect{width:15%;aspect-ratio:2.1;border-radius:4px}
+  .pl-mesa.tuya{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:800;z-index:2;transform:translate(-50%,-50%) scale(1.25);animation:latido 1.4s ease-in-out infinite}
+  @keyframes latido{0%{box-shadow:0 0 0 0 rgba(142,59,74,.55)}70%{box-shadow:0 0 0 16px rgba(142,59,74,0)}100%{box-shadow:0 0 0 0 rgba(142,59,74,0)}}
+  .mesa-tag{min-width:64px;text-align:center;padding:6px 10px;border-radius:10px;background:#fbf1dc;color:#7a5410;font-weight:800;font-size:15px}
+  .fila .sub-ok{color:var(--ok);font-weight:600}
+  .sel-mesa{width:100%;margin-top:10px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit}
   .toast .t-mesa{display:block;margin-top:6px;font-size:26px;font-weight:800;letter-spacing:.02em;color:#ffd98a}
   .mesa-grande{display:inline-block;margin:12px 0 2px;padding:8px 22px;border-radius:14px;background:#fbf1dc;color:#7a5410;font-size:30px;font-weight:800;letter-spacing:.02em}
 </style>
@@ -102,6 +113,9 @@
   const cfg = desdeEnlace ? { url: q.get('u') || N.hojaConfirmaciones || '', boda: q.get('b'), clave: q.get('k') }
     : { url: ses.url || N.hojaConfirmaciones || '', boda: ses.boda || '', clave: ses.clave || '' };
   cfg.demo = q.has('demo');
+  // ?modo=mesas → acomodo en mesas (para quien sienta a los invitados): mesa, plano y "ya los sentamos"
+  const MESAS = q.get('modo') === 'mesas';
+  if (MESAS) document.title = 'Acomodo en mesas';
 
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
@@ -116,7 +130,7 @@
   // ---------------------------------------------------------------------------
   // Datos: invitados (de la hoja), confirmaciones y entradas registradas
   // ---------------------------------------------------------------------------
-  let invitados = [], rsvp = new Map(), entradas = new Map(), filtro = 'faltan', busqueda = '';
+  let invitados = [], rsvp = new Map(), entradas = new Map(), sentados = new Map(), plano = null, filtro = MESAS ? 'porSentar' : 'faltan', busqueda = '', mesaFiltro = '';
   const CLAVE_PEND = () => 'entrada-pend:' + cfg.boda;
   let pendientes = []; const leerPend = () => { try { pendientes = JSON.parse(localStorage.getItem(CLAVE_PEND())) || []; } catch (e) { pendientes = []; } };
   const guardarPend = () => { try { localStorage.setItem(CLAVE_PEND(), JSON.stringify(pendientes)); } catch (e) {} };
@@ -127,7 +141,10 @@
     return {
       invitados: n.map((x, i) => ({ Invitado: x, Lugares: l[i], Mesa: m[i] })),
       confirmaciones: n.slice(0, 8).map((x, i) => ({ Tipo: 'rsvp', Invitado: x, Asiste: i === 5 ? 'No' : 'Sí', Personas: i === 5 ? '' : Math.max(1, l[i] - (i % 3 === 0 ? 1 : 0)), Fecha: new Date(Date.now() - (20 - i) * 864e5).toISOString() })),
-      entradas: [{ Invitado: 'Tía Carmen', Personas: 1, Fecha: new Date(Date.now() - 18 * 6e4).toISOString() }, { Invitado: 'Familia Gómez', Personas: 4, Fecha: new Date(Date.now() - 6 * 6e4).toISOString() }]
+      entradas: [{ Invitado: 'Tía Carmen', Personas: 1, Fecha: new Date(Date.now() - 18 * 6e4).toISOString() }, { Invitado: 'Familia Gómez', Personas: 4, Fecha: new Date(Date.now() - 6 * 6e4).toISOString() }, { Invitado: 'Familia López', Personas: 4, Fecha: new Date(Date.now() - 3 * 6e4).toISOString() }],
+      sentados: [{ Invitado: 'Tía Carmen', Mesa: '5', Sentados: 1, Fecha: new Date(Date.now() - 15 * 6e4).toISOString() }],
+      plano: { honor: 'Novios', elementos: [{ tipo: 'pista', x: 35, y: 34, w: 30, h: 30 }, { tipo: 'novios', x: 30, y: 4, w: 40, h: 12 }, { tipo: 'entrada', x: 40, y: 88, w: 20, h: 10 }],
+        lista: [['1', 14, 24], ['2', 14, 50], ['3', 14, 76], ['4', 86, 24], ['5', 86, 50], ['6', 86, 76], ['7', 30, 80], ['8', 70, 80], ['Honor', 50, 22]].map(([nombre, x, y]) => ({ nombre, x, y, forma: nombre === 'Honor' ? 'rectangular' : 'redonda' })) }
     };
   }
   function procesar(j) {
@@ -137,7 +154,13 @@
       .forEach(c => rsvp.set(norm(c.Invitado), { asiste: c.Asiste !== 'No', personas: +c.Personas || 0 }));
     entradas = new Map();
     (j.entradas || []).sort((a, b) => new Date(a.Fecha) - new Date(b.Fecha)).forEach(e => entradas.set(norm(e.Invitado), { personas: +e.Personas || 0, fecha: e.Fecha }));
-    pendientes.forEach(p => entradas.set(norm(p.nombre), { personas: p.personas, fecha: p.fecha, sinEnviar: true }));
+    sentados = new Map();
+    (j.sentados || []).sort((a, b) => new Date(a.Fecha) - new Date(b.Fecha)).forEach(x => sentados.set(norm(x.Invitado), { si: +x.Sentados > 0, fecha: x.Fecha }));
+    plano = j.plano || null;
+    pendientes.forEach(p => {
+      if (p.tipo === 'sentado') sentados.set(norm(p.nombre), { si: p.sentado, fecha: p.fecha, sinEnviar: true });
+      else entradas.set(norm(p.nombre), { personas: p.personas, fecha: p.fecha, sinEnviar: true });
+    });
   }
   const buscarInv = (nombre) => invitados.find(i => norm(i.nombre) === norm(nombre));
 
@@ -150,7 +173,7 @@
       if (!j.ok) return pantallaEntrada('No encontramos este evento con esa clave. Si tú hiciste la invitación: en el editor, sección “Confirmaciones automáticas”, toca “👥 Sincronizar lista de invitados” y vuelve a abrir este enlace.');
       if (!(j.version >= 4)) return pantallaEntrada('', true);
       try { localStorage.setItem(CLAVE, JSON.stringify({ url: cfg.url, boda: cfg.boda, clave: cfg.clave })); } catch (e) {}
-      if (location.search) history.replaceState(null, '', location.pathname);
+      if (location.search) history.replaceState(null, '', location.pathname + (MESAS ? '?modo=mesas' : ''));
       leerPend(); procesar(j);
       if (!document.querySelector('.velo') && !document.querySelector('.camara')) pintar();
     } catch (e) {
@@ -164,20 +187,43 @@
     const lista = pendientes.slice();
     for (const p of lista) {
       try {
-        const r = await (await fetch(cfg.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'entrada', boda: cfg.boda, clave: cfg.clave, nombre: p.nombre, personas: p.personas, quien: 'Entrada' }) })).json();
+        const cuerpo = p.tipo === 'sentado' ? { accion: 'sentado', boda: cfg.boda, clave: cfg.clave, nombre: p.nombre, mesa: p.mesa || '', sentado: p.sentado, quien: 'Mesas' }
+          : { accion: 'entrada', boda: cfg.boda, clave: cfg.clave, nombre: p.nombre, personas: p.personas, quien: 'Entrada' };
+        const r = await (await fetch(cfg.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(cuerpo) })).json();
         if (!r.ok) throw new Error(r.error);
         pendientes = pendientes.filter(x => x !== p); guardarPend();
-        const e = entradas.get(norm(p.nombre)); if (e) delete e.sinEnviar;
+        const e = (p.tipo === 'sentado' ? sentados : entradas).get(norm(p.nombre)); if (e) delete e.sinEnviar;
       } catch (e) { break; }
     }
     if (!document.querySelector('.velo') && !document.querySelector('.camara')) pintar();
   }
   function registrar(nombre, personas) {
     const p = { nombre, personas, fecha: new Date().toISOString() };
-    pendientes = pendientes.filter(x => norm(x.nombre) !== norm(nombre)).concat(p); guardarPend();
+    pendientes = pendientes.filter(x => x.tipo === 'sentado' || norm(x.nombre) !== norm(nombre)).concat(p); guardarPend();
     entradas.set(norm(nombre), { personas, fecha: p.fecha, sinEnviar: !cfg.demo });
     if (cfg.demo) { pendientes = []; guardarPend(); }
     enviarPendientes();
+  }
+
+  /** Acomodo: marcar que la familia ya se sentó (o deshacerlo). */
+  function sentar(inv, si) {
+    const p = { tipo: 'sentado', nombre: inv.nombre, mesa: inv.mesa, sentado: si, fecha: new Date().toISOString() };
+    pendientes = pendientes.filter(x => !(x.tipo === 'sentado' && norm(x.nombre) === norm(inv.nombre))).concat(p); guardarPend();
+    sentados.set(norm(inv.nombre), { si, fecha: p.fecha, sinEnviar: !cfg.demo });
+    if (cfg.demo) { pendientes = []; guardarPend(); }
+    enviarPendientes();
+  }
+  const sentado = (inv) => (sentados.get(norm(inv.nombre)) || {}).si;
+  const llego = (inv) => (entradas.get(norm(inv.nombre)) || {}).personas > 0;
+  /** Cuántas personas son: las que entraron, las que confirmaron o los lugares. */
+  const cuantos = (inv) => { const e = entradas.get(norm(inv.nombre)), r = rsvp.get(norm(inv.nombre)); return e && e.personas > 0 ? e.personas : r && r.asiste && r.personas ? r.personas : inv.lugares; };
+  function dibujarPlano(mesa) {
+    if (!plano || !(plano.lista || []).length) return '';
+    const ETQ = { pista: 'Pista', novios: plano.honor || 'Novios', entrada: 'Entrada', barra: 'Barra', dj: 'DJ', pastel: 'Pastel' };
+    return `<div class="plano" aria-label="Plano del salón">
+      ${(plano.elementos || []).map(x => `<div class="pl-el pl-${esc(x.tipo)}" style="left:${+x.x || 0}%;top:${+x.y || 0}%;width:${+x.w || 20}%;height:${+x.h || 15}%"><span>${esc(x.texto || ETQ[x.tipo] || '')}</span></div>`).join('')}
+      ${(plano.lista || []).map(x => `<div class="pl-mesa ${x.forma === 'rectangular' ? 'rect' : ''} ${norm(x.nombre) === norm(mesa) ? 'tuya' : ''}" style="left:${+x.x || 0}%;top:${+x.y || 0}%"><span>${esc(x.nombre)}</span></div>`).join('')}
+    </div>`;
   }
 
   // ---------------------------------------------------------------------------
@@ -185,7 +231,7 @@
   // ---------------------------------------------------------------------------
   function pantallaEntrada(error, viejo) {
     app.innerHTML = `<form class="entrada" id="f">
-      <h2>Registro de entrada</h2>
+      <h2>${MESAS ? 'Acomodo en mesas' : 'Registro de entrada'}</h2>
       <p>Escribe el código del evento y la clave del panel.</p>
       ${error ? `<p class="error">${esc(error)}</p>` : ''}
       ${viejo ? '<p class="error">El código de Google Sheets es de una versión anterior. Quien hizo la invitación debe actualizarlo (manual, sección "Pase de entrada").</p>' : ''}
@@ -193,7 +239,7 @@
       <label>Código del evento<input id="e-b" autocapitalize="none" value="${esc(cfg.boda)}" placeholder="sofia-xv-ab12"></label>
       <label>Clave<input id="e-k" autocapitalize="none" value="" placeholder="Clave del panel"></label>
       <button class="b pri" type="submit">Entrar</button>
-      <p style="text-align:center;margin-top:14px;font-size:14px"><a href="?demo=1" style="color:var(--accent)">Probar con un ejemplo</a></p>
+      <p style="text-align:center;margin-top:14px;font-size:14px"><a href="?demo=1${MESAS ? '&modo=mesas' : ''}" style="color:var(--accent)">Probar con un ejemplo</a></p>
     </form>`;
     const f = document.getElementById('f');
     f.onsubmit = (e) => {
@@ -214,6 +260,7 @@
     return { cls: '', txt: 'Sin confirmar' };
   }
   function pintar() {
+    if (MESAS) return pintarMesas();
     const llegaron = [...entradas.values()].reduce((a, e) => a + (e.personas || 0), 0);
     const famLlegaron = invitados.filter(i => (entradas.get(norm(i.nombre)) || {}).personas > 0).length;
     const esperadas = invitados.reduce((a, i) => { const r = rsvp.get(norm(i.nombre)); return a + (r ? (r.asiste ? r.personas : 0) : i.lugares); }, 0);
@@ -262,6 +309,7 @@
     resultado({ nombre }, true);
   }
   function resultado(r, desdeCamara) {
+    if (MESAS) return resultadoMesa(r, desdeCamara);
     if (navigator.vibrate) navigator.vibrate(r.error ? [80, 60, 80] : 60);
     const inv = r.nombre && buscarInv(r.nombre);
     const e = inv && entradas.get(norm(inv.nombre)), rs = inv && rsvp.get(norm(inv.nombre));
@@ -296,6 +344,83 @@
     v.querySelector('#cerrar').onclick = () => cerrar(true);
     const li = v.querySelector('#lista'); if (li) li.onclick = () => cerrar(false);
     (ok || v.querySelector('#cerrar')).focus();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Acomodo en mesas
+  // ---------------------------------------------------------------------------
+  function pintarMesas() {
+    const conMesa = invitados.filter(i => i.mesa);
+    const famSent = conMesa.filter(sentado).length, persSent = conMesa.filter(sentado).reduce((a, i) => a + cuantos(i), 0);
+    const esperando = conMesa.filter(i => llego(i) && !sentado(i)).length;
+    const mesas = [...new Set(conMesa.map(i => String(i.mesa)))].sort((a, b) => (+a || 1e9) - (+b || 1e9) || a.localeCompare(b, 'es'));
+    const lista = invitados
+      .filter(i => filtro === 'todos' || (filtro === 'sentados' ? sentado(i) : !sentado(i)))
+      .filter(i => !mesaFiltro || String(i.mesa) === mesaFiltro)
+      .filter(i => !busqueda || norm(i.nombre).includes(norm(busqueda)))
+      // Primero los que ya llegaron y esperan su mesa
+      .sort((a, b) => (filtro === 'porSentar' ? (llego(b) - llego(a)) : 0) || a.nombre.localeCompare(b.nombre, 'es'));
+    const sinEnviar = pendientes.length && !cfg.demo;
+    app.innerHTML = `
+      <div class="barra"><div class="w"><h1><small>Acomodo en mesas</small>${esc(cfg.demo ? 'Ejemplo' : cfg.boda)}</h1>
+        <button id="b-act" aria-label="Actualizar">⟳</button>${cfg.demo ? '' : '<button id="b-salir">Salir</button>'}</div></div>
+      <div class="wrap">
+        ${cfg.demo ? '<p class="demo">Ejemplo con datos ficticios. Busca una familia o toca “Probar con un pase”.</p>' : ''}
+        <div class="stats">
+          <div class="st ok"><b>${persSent}</b><span>personas sentadas</span></div>
+          <div class="st"><b>${esperando}</b><span>llegaron y esperan mesa</span></div>
+          <div class="st"><b>${famSent}/${conMesa.length}</b><span>familias sentadas</span></div>
+        </div>
+        <button class="escanear" id="b-esc" type="button">${ICO_QR}Escanear pase</button>
+        ${cfg.demo ? '<button class="b" id="b-prueba" type="button" style="width:100%;margin-top:10px">Probar con un pase (Familia López)</button>' : ''}
+        ${sinEnviar ? `<p class="pend-envio">⏳ ${pendientes.length} sin enviar (sin señal). Se envían solos cuando vuelva el internet.</p>` : ''}
+        <input class="buscar" id="buscar" type="search" placeholder="Buscar familia por nombre…" value="${esc(busqueda)}" aria-label="Buscar familia">
+        ${mesas.length ? `<select class="sel-mesa" id="sel-mesa" aria-label="Filtrar por mesa"><option value="">Todas las mesas</option>${mesas.map(m => `<option value="${esc(m)}" ${m === mesaFiltro ? 'selected' : ''}>${esc(etqMesa(m))}</option>`).join('')}</select>` : ''}
+        <div class="chips">${[['porSentar', 'Por sentar'], ['sentados', 'Ya sentados'], ['todos', 'Todas']].map(([k, t]) => `<button class="chip ${filtro === k ? 'on' : ''}" data-f="${k}" type="button">${t}</button>`).join('')}</div>
+        <div class="lista">${lista.length ? lista.map(i => `<button class="fila" type="button" data-inv="${esc(i.nombre)}">
+            <span class="n"><b>${esc(i.nombre)}</b><small>${cuantos(i)} ${cuantos(i) === 1 ? 'persona' : 'personas'} · ${sentado(i) ? '<span class="sub-ok">✓ Sentados</span>' : llego(i) ? '<span class="sub-ok">Ya llegaron</span>' : 'Aún no llegan'}</small></span>
+            <span class="mesa-tag">${i.mesa ? esc(etqMesa(i.mesa)) : '—'}</span></button>`).join('')
+          : `<p class="vacio">${invitados.length ? 'Nadie en esta lista.' : 'No hay lista de invitados. En el editor usa “Sincronizar lista de invitados”.'}</p>`}</div>
+        ${!plano && !cfg.demo ? '<p class="vacio" style="font-size:13px">Para ver el plano del salón: en el editor, con el paquete de mesas activado, toca “Sincronizar lista de invitados”.</p>' : ''}
+      </div>`;
+    document.getElementById('b-esc').onclick = abrirCamara;
+    const bp = document.getElementById('b-prueba'); if (bp) bp.onclick = () => leido('INV1:demo:' + encodeURIComponent('Familia López'));
+    document.getElementById('b-act').onclick = () => cargar().then(() => avisar('Actualizado ✓'));
+    const bs = document.getElementById('b-salir'); if (bs) bs.onclick = () => { if (confirm('¿Cerrar sesión en este celular?')) { try { localStorage.removeItem(CLAVE); } catch (e) {} location.href = location.pathname + '?modo=mesas'; } };
+    const bu = document.getElementById('buscar');
+    bu.oninput = (e) => { busqueda = e.target.value; const pos = e.target.selectionStart; pintar(); const x = document.getElementById('buscar'); x.focus(); x.setSelectionRange(pos, pos); };
+    const sm = document.getElementById('sel-mesa'); if (sm) sm.onchange = (e) => { mesaFiltro = e.target.value; pintar(); };
+    app.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { filtro = b.dataset.f; pintar(); });
+    app.querySelectorAll('[data-inv]').forEach(b => b.onclick = () => resultado({ nombre: b.dataset.inv }));
+  }
+  function resultadoMesa(r, desdeCamara) {
+    if (navigator.vibrate) navigator.vibrate(r.error ? [80, 60, 80] : 60);
+    const inv = r.nombre && buscarInv(r.nombre);
+    const s = inv && sentados.get(norm(inv.nombre));
+    let est;
+    if (r.error) est = { cls: 'no', ico: '✕', txt: r.error };
+    else if (!inv) est = { cls: 'no', ico: '!', txt: 'No está en la lista de invitados' };
+    else if (!inv.mesa) est = { cls: 'ya', ico: '!', txt: 'No tiene mesa asignada' };
+    else if (s && s.si) est = { cls: 'ya', ico: '✓', txt: `Ya están sentados (${hora(s.fecha)})` };
+    else est = { cls: 'ok', ico: '🪑', txt: llego(inv) ? 'Llegaron: llévalos a su mesa' : 'Todavía no registran su entrada' };
+    const v = document.createElement('div'); v.className = 'velo';
+    v.innerHTML = `<div class="hoja" role="dialog" aria-modal="true" aria-label="Mesa">
+      <div class="estado ${est.cls}"><i aria-hidden="true">${est.ico}</i>${esc(est.txt)}</div>
+      ${r.nombre ? `<h2>${esc(r.nombre)}</h2>` : ''}
+      ${inv ? `<p class="det">${cuantos(inv)} ${cuantos(inv) === 1 ? 'persona' : 'personas'}</p>` : ''}
+      ${inv && inv.mesa ? `<div class="mesa-grande">🪑 ${esc(etqMesa(inv.mesa))}</div>${dibujarPlano(inv.mesa)}` : ''}
+      <div class="botones">
+        ${inv && inv.mesa ? (s && s.si ? '<button class="b peligro" type="button" id="no-sentado">Deshacer “sentados”</button>' : '<button class="b pri" type="button" id="sentado">✓ Ya los sentamos</button>') : ''}
+        <button class="b" type="button" id="cerrar">${desdeCamara ? 'Escanear otro' : 'Cerrar'}</button>
+        ${desdeCamara ? '<button class="b suave" type="button" id="lista">Ir a la lista</button>' : ''}
+      </div></div>`;
+    document.body.appendChild(v);
+    const cerrar = (seguir) => { v.remove(); if (seguir && desdeCamara) abrirCamara(); else pintar(); };
+    const bs = v.querySelector('#sentado'); if (bs) bs.onclick = () => { sentar(inv, true); avisar(`✓ ${inv.nombre} sentados`, etqMesa(inv.mesa)); cerrar(true); };
+    const bn = v.querySelector('#no-sentado'); if (bn) bn.onclick = () => { sentar(inv, false); avisar('Se quitó “sentados”'); cerrar(false); };
+    v.querySelector('#cerrar').onclick = () => cerrar(true);
+    const li = v.querySelector('#lista'); if (li) li.onclick = () => cerrar(false);
+    (bs || v.querySelector('#cerrar')).focus();
   }
 
   // ---------------------------------------------------------------------------
