@@ -1,0 +1,14 @@
+# Solo funciona cuando el sitio está en la raíz de un dominio propio (ej. https://tudominio.com/robots.txt).
+# En paucoxd.github.io/invitaciones/ las páginas privadas ya llevan <meta name="robots" content="noindex">.
+User-agent: *
+Disallow: /i/
+Disallow: /editor.html
+Disallow: /mis-bodas.html
+Disallow: /panel.html
+Disallow: /entrada.html
+Disallow: /manual.html
+Disallow: /invitacion.html
+Disallow: /servidor/
+Allow: /
+
+Sitemap: https://paucoxd.github.io/invitaciones/sitemap.xml

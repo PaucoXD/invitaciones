@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aviso legal y términos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<meta name="description" content="Términos del servicio de invitaciones digitales: pedidos, anticipo, entrega, cambios y cancelaciones.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script src="negocio.js"></script>
+<script src="motor/sitio.js"></script>
+<!--
+  PLANTILLA de aviso legal / términos del servicio.
+  Es un punto de partida: revísalo y ajústalo con un profesional antes de usarlo.
+  Los datos del negocio se toman de negocio.js.
+-->
+<style>
+  body{font-family:Inter,system-ui,sans-serif;background:#faf6f1;color:#2e2721;line-height:1.7;margin:0}
+  main{max-width:760px;margin:0 auto;padding:40px 20px 70px}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:44px;line-height:1.1;margin-bottom:6px}
+  h2{font-size:17px;margin:26px 0 6px}
+  p,li{color:#4a4038;font-size:15px}
+  ul{padding-left:22px}
+  a{color:#8e3b4a}
+  .fecha{color:#675d53;font-size:13px}
+  .volver{display:inline-block;margin-bottom:24px;font-size:14px}
+</style>
+</head>
+<body>
+<main>
+  <a class="volver" href="index.html">← Volver</a> · <a class="volver" href="aviso-privacidad.html">Aviso de privacidad</a>
+  <h1>Aviso legal y términos del servicio</h1>
+  <p class="fecha">Última actualización: <span id="fecha"></span></p>
+
+  <h2>Quiénes somos</h2>
+  <p><b class="n-marca">Tu Marca Invitaciones</b>, con domicilio en <span class="n-ciudad">México</span>. Contacto: <span class="n-contacto">nuestro WhatsApp o correo</span>.</p>
+
+  <h2>El servicio</h2>
+  <p>Diseñamos invitaciones digitales (página web con enlace propio) y, según el paquete, versiones en PDF, enlaces personalizados por invitado, confirmaciones de asistencia, plano de mesas, pase de entrada con QR y otros extras descritos en nuestra página.</p>
+
+  <h2>Pedidos y pagos</h2>
+  <ul>
+    <li>Para apartar la fecha y empezar el diseño se paga un anticipo de <b class="n-anticipo">50%</b>. El resto se paga antes de la entrega final.</li>
+    <li>Los precios están en <span class="n-moneda">MXN</span> y pueden cambiar sin aviso; respetamos el precio acordado de cada pedido con anticipo pagado.</li>
+  </ul>
+
+  <h2>Entrega y cambios</h2>
+  <ul>
+    <li>Tiempo de entrega aproximado: <b class="n-entrega">48 horas</b> después de recibir los datos completos y el anticipo.</li>
+    <li>Los cambios incluidos dependen del paquete contratado. Los cambios de diseño mayores o extras no contratados pueden tener costo.</li>
+    <li>El cliente revisa nombres, fechas, horarios y direcciones antes de enviar la invitación; no somos responsables de errores en datos aprobados por el cliente.</li>
+  </ul>
+
+  <h2>Cancelaciones</h2>
+  <p>Si cancelas antes de que empecemos el diseño, te devolvemos el anticipo. Una vez iniciado el diseño, el anticipo no es reembolsable porque cubre el trabajo realizado.</p>
+
+  <h2>Contenido que nos envías</h2>
+  <p>Al enviarnos fotos, música, textos o logotipos confirmas que tienes derecho a usarlos. Nos autorizas a usarlos únicamente para hacer tu invitación. No publicamos tu invitación como ejemplo sin tu permiso.</p>
+
+  <h2>Disponibilidad</h2>
+  <p>La invitación permanece en línea al menos hasta 6 meses después del evento. Las confirmaciones automáticas dependen de servicios de terceros (como Google); hacemos lo posible por mantenerlos funcionando, pero no garantizamos que nunca fallen. Recomendamos tener también un contacto por WhatsApp para confirmar.</p>
+
+  <h2>Propiedad intelectual</h2>
+  <p>Los diseños, ilustraciones y el código de las invitaciones son nuestros. La invitación es para uso personal del evento contratado; no puede revenderse ni copiarse para otros eventos.</p>
+
+  <h2>Ley aplicable</h2>
+  <p>Este acuerdo se rige por las leyes de los Estados Unidos Mexicanos. Para cualquier controversia, primero buscaremos resolverla de común acuerdo.</p>
+</main>
+<script>
+  const N = window.NEGOCIO || {};
+  document.querySelectorAll('.n-marca').forEach(e => { if (N.marca) e.textContent = N.marca; });
+  document.querySelectorAll('.n-ciudad').forEach(e => { if (N.ciudad) e.textContent = N.ciudad; });
+  const contacto = [N.correo, N.whatsapp && ('WhatsApp ' + N.whatsapp)].filter(Boolean).join(' o ');
+  document.querySelectorAll('.n-contacto').forEach(e => { if (contacto) e.textContent = contacto; });
+  document.getElementById('fecha').textContent = new Date(document.lastModified).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+  if (N.marca) document.title = 'Aviso legal · ' + N.marca;
+  [['n-anticipo', N.anticipo], ['n-entrega', N.entrega], ['n-moneda', N.moneda]].forEach(([c, v]) => { if (v) document.querySelectorAll('.' + c).forEach(e => { e.textContent = v; }); });
+</script>
+</body>
+</html>

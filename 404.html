@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>No encontramos esta página</title>
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#faf6f1;color:#2e2721;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;padding:20px;box-sizing:border-box;text-align:center}
+  main{max-width:440px}
+  .sobre{width:96px;height:70px;margin:0 auto 22px;position:relative;background:#fff;border:2px solid #e6dccf;border-radius:8px}
+  .sobre::before{content:"";position:absolute;left:10px;right:10px;top:4px;height:34px;border-left:2px solid #e6dccf;border-bottom:2px solid #e6dccf;transform:skewY(0);clip-path:polygon(0 0,50% 100%,100% 0)}
+  .sobre::after{content:"?";position:absolute;left:50%;top:50%;transform:translate(-50%,-30%);font:600 26px Georgia,serif;color:#8e3b4a}
+  h1{font:500 34px/1.15 Georgia,serif;margin:0 0 10px}
+  p{color:#6f655b;line-height:1.55;margin:0 0 22px}
+  a{display:inline-block;margin:4px;padding:12px 20px;border-radius:30px;text-decoration:none;font-weight:600}
+  .pri{background:#8e3b4a;color:#fff}.wa{background:#198644;color:#fff}
+</style>
+</head>
+<body>
+<main>
+  <div class="sobre" aria-hidden="true"></div>
+  <h1>No encontramos esta página</h1>
+  <p>Si buscabas una invitación, revisa que el enlace esté completo (a veces WhatsApp lo corta) o pídele a quien te la mandó que te la envíe otra vez.</p>
+  <a class="pri" id="inicio" href="/">Ir al inicio</a>
+  <a class="wa" id="wa" hidden target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+</main>
+<script>
+  // Funciona en paucoxd.github.io/invitaciones/… y con dominio propio
+  var base = location.pathname.indexOf('/invitaciones/') === 0 ? '/invitaciones/' : '/';
+  document.getElementById('inicio').href = base;
+  var s = document.createElement('script'); s.src = base + 'negocio.js';
+  s.onload = function () { var w = String((window.NEGOCIO || {}).whatsapp || '').replace(/\D/g, ''); if (w) { var a = document.getElementById('wa'); a.href = 'https://wa.me/' + w; a.hidden = false; } };
+  document.head.appendChild(s);
+  var t = document.createElement('script'); t.src = base + 'motor/sitio.js'; document.head.appendChild(t);
+  var ic = document.createElement('link'); ic.rel = 'icon'; ic.type = 'image/svg+xml'; ic.href = base + 'favicon.svg'; document.head.appendChild(ic);
+</script>
+</body>
+</html>

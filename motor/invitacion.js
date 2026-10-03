@@ -1038,6 +1038,7 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
     function aHoja(obj) {
       if (!usarHoja || d._prueba || /[?&]preview/.test(location.search)) return Promise.resolve(!usarHoja ? false : true);
       obj.boda = C.boda;
+      var tr = document.getElementById('inv-trampa'); if (tr && tr.value) obj.trampa = tr.value; // antispam
       return fetch(C.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(obj) })
         .then(function () { return true; }, function () { return false; });
     }
@@ -1195,7 +1196,8 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
     }
     const p = Plantillas[d.plantilla] || Plantillas[Object.keys(Plantillas)[0]];
     d.plantilla = p.id;
-    d._rutaAdornos = opciones.rutaAdornos != null ? opciones.rutaAdornos : 'plantillas/adornos/';
+    // null = no buscar PNG de adornos (archivo publicado: se usan los dibujos incluidos)
+    d._rutaAdornos = 'rutaAdornos' in opciones ? opciones.rutaAdornos : 'plantillas/adornos/';
     d._efecto = p.efecto || null;
     d._efectoColores = p.efectoColores || null;
     // Textos del tipo de evento que usa la página ya publicada (runtime no puede leer EVENTOS)
@@ -1244,6 +1246,15 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
     return r;
   }
 
+  /** Color principal del diseño (para el ícono y la barra del navegador). */
+  function colorTema(p) { return (p.colores && p.colores[1]) || '#8e3b4a'; }
+  /** Ícono de la pestaña con las iniciales del evento, en el color del diseño. */
+  function iconoIniciales(d, p) {
+    const ini = String(iniciales(d) || '').replace(/\s+/g, '').replace(/&amp;|&/g, '&').slice(0, 3);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="${colorTema(p)}"/><text x="32" y="41" text-anchor="middle" font-family="Georgia,serif" font-size="${ini.length > 2 ? 22 : 28}" fill="#fff">${esc(ini)}</text></svg>`;
+    return 'data:image/svg+xml,' + encodeURIComponent(svg);
+  }
+
   /** HTML final de un solo archivo, listo para subir a cualquier hosting. */
   function exportarHTML(datos, opciones = {}) {
     const r = construir(datos, Object.assign({ rutaAdornos: null }, opciones));
@@ -1258,6 +1269,9 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(r.titulo)}</title>
 <meta name="description" content="${esc(r.descripcion)}">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="${esc(colorTema(r.p))}">
+<link rel="icon" href="${iconoIniciales(r.d, r.p)}">
 <meta property="og:title" content="${esc(r.aparta ? `${ev(r.d).emoji} ¡Aparta la fecha! · ${titular(r.d)}` : conNombre(ev(r.d).og, r.d))}">
 <meta property="og:description" content="${esc(r.descripcion)}">
 ${r.d.fotoPortada && !/^data:/.test(r.d.fotoPortada) ? `<meta property="og:image" content="${esc(r.d.fotoPortada)}">` : ''}
@@ -1266,6 +1280,7 @@ ${r.fuentes ? `<link rel="stylesheet" href="${esc(r.fuentes)}">` : ''}
 <style>${r.css}</style>
 </head>
 <body class="plantilla-${r.p.id}${r.aparta ? ' aparta' : ''}">
+<input type="text" id="inv-trampa" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
 ${r.html}
 ${r.d.acceso && r.d.acceso.activo && window.QR_FUENTE ? `<script>${window.QR_FUENTE.replace(/<\//g, '<\\/')}<\/script>` : ''}
 <script>(${runtime.toString()})(${dJson});<\/script>

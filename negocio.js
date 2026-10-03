@@ -30,6 +30,10 @@ window.NEGOCIO = {
   // Dirección pública de tu sitio (termina en /). Cuando tengas dominio propio cámbiala, por ejemplo:
   // sitio: 'https://tudominio.com/',   (manual, sección 4.5)
   sitio: 'https://paucoxd.github.io/invitaciones/',
+  // Analítica (opcional): cuántas personas visitan tu página (manual, sección 7).
+  //   goatcounter: tu código de goatcounter.com (gratis, sin cookies, no necesita aviso)
+  //   ga4: tu ID de Google Analytics, ej. 'G-AB12CD34' (usa cookies: aparece un aviso para aceptar)
+  analitica: { goatcounter: '', ga4: '' },
   // Repositorio donde el botón "🌐 Publicar" del editor sube las invitaciones (carpeta i/)
   github: { usuario: 'PaucoXD', repo: 'invitaciones', rama: 'main', carpeta: 'i' },
 
