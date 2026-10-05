@@ -16,6 +16,7 @@
   Enlaces útiles:  pedido.html            pedido.html?evento=xv (o bautizo, comunion, babyshower, cumple)            pedido.html?plantilla=gala&paquete=Premium
 -->
 <script src="negocio.js" onerror="window.NEGOCIO={}"></script>
+<script src="motor/fotos.js"></script>
 <script src="motor/sitio.js"></script>
 <script src="motor/invitacion.js"></script>
 <script src="plantillas/floral.js"></script>
@@ -315,11 +316,11 @@
           ${campo('historia', xv() ? 'Unas palabras' : 'Su historia en pocas palabras', { area: true, opc: true, ph: esXV() ? 'Quince años de risas, sueños…' : xv() ? 'Un mensaje corto para tus invitados' : 'Cómo se conocieron…' })}
         </div>`;
     }, montar() {
-      const sp = $('#subir-portada'); if (sp) sp.onchange = async () => { if (!sp.files[0]) return; $('#estado-fotos').textContent = 'Preparando foto…'; E.portada = await reducir(sp.files[0]); guardar(); pintar(); };
+      const sp = $('#subir-portada'); if (sp) sp.onchange = async () => { if (!sp.files[0]) return; $('#estado-fotos').textContent = 'Preparando foto…'; E.portada = await alAlmacen(await reducir(sp.files[0]), 'Subiendo foto…'); guardar(); pintar(); };
       const qp = $('#quitar-portada'); if (qp) qp.onclick = () => { E.portada = ''; guardar(); pintar(); };
       const sf = $('#subir-fotos'); if (sf) sf.onchange = async () => {
         const fs = [...sf.files].slice(0, 12 - E.fotos.length);
-        for (let i = 0; i < fs.length; i++) { $('#estado-fotos').textContent = `Preparando foto ${i + 1} de ${fs.length}…`; try { E.fotos.push({ src: await reducir(fs[i]), pie: '' }); } catch (e) {} }
+        for (let i = 0; i < fs.length; i++) { $('#estado-fotos').textContent = `Preparando foto ${i + 1} de ${fs.length}…`; try { E.fotos.push({ src: await alAlmacen(await reducir(fs[i]), `Subiendo foto ${i + 1} de ${fs.length}…`), pie: '' }); } catch (e) {} }
         guardar(); pintar();
       };
       $$('.subir').forEach(l => l.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); l.querySelector('input').click(); } });
@@ -481,6 +482,14 @@
     };
   }
 
+  /** Sube la foto al almacén (si está configurado) y regresa su enlace; si falla, se queda la foto tal cual. */
+  const idFotos = () => { if (!E.idFotos) { E.idFotos = Date.now().toString(36) + Math.random().toString(36).slice(2, 7); guardar(); } return E.idFotos; };
+  async function alAlmacen(dato, txt) {
+    if (!window.Fotos || !Fotos.activo()) return dato;
+    const est = $('#estado-fotos'); if (est && txt) est.textContent = txt;
+    try { return await Fotos.subir(dato, 'pedidos/' + idFotos()); } catch (e) { console.warn(e); return dato; }
+  }
+
   /** Reduce la foto para que el envío sea rápido. */
   function reducir(file) {
     return new Promise((ok, mal) => {
@@ -521,9 +530,15 @@
   const url = N.hojaConfirmaciones || '';
   async function enviar() {
     for (let i = 0; i < PASOS.length - 1; i++) { const e = PASOS[i].validar && PASOS[i].validar(); if (e) { E.paso = i; error = e; pintar(); window.scrollTo({ top: 0 }); return; } }
-    const p = armar();
-    if (!url) { enviado = { sinHoja: true, p }; return pintar(); }
     const b = $('#sig'); b.disabled = true; b.textContent = 'Enviando…';
+    // Fotos que no se alcanzaron a subir (sin señal o borrador anterior): se intenta otra vez
+    if (window.Fotos && Fotos.activo()) {
+      if (/^data:/.test(E.portada || '')) E.portada = await alAlmacen(E.portada);
+      for (const f of E.fotos) if (/^data:/.test(f.src || '')) f.src = await alAlmacen(f.src);
+      guardar();
+    }
+    const p = armar();
+    if (!url) { b.disabled = false; b.textContent = 'Enviar mis datos'; enviado = { sinHoja: true, p }; return pintar(); }
     try {
       const r = await (await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p) })).json();
       if (!r.ok) throw new Error(r.error || 'error');
