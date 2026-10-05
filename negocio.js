@@ -32,7 +32,7 @@ window.NEGOCIO = {
   sitio: 'https://paucoxd.github.io/invitaciones/',
   // Almacén de fotos (opcional, recomendado): las fotos de los pedidos y de las invitaciones se suben a un
   // servidor de fotos y los pedidos abren al instante. Usa Cloudinary (recomendado) o Supabase. Manual, sección 2.4.
-  fotos: { cloudinaryCloud: 'zmmwt2zw', cloudinaryPreset: 'invitaciones', supabaseUrl: '', supabaseKey: '', bucket: 'fotos' },
+  fotos: { cloudinaryCloud: 'zmmwt2zw', cloudinaryPreset: 'yp8lispy', supabaseUrl: '', supabaseKey: '', bucket: 'fotos' },
 
   // Analítica (opcional): cuántas personas visitan tu página (manual, sección 7).
   //   goatcounter: tu código de goatcounter.com (gratis, sin cookies, no necesita aviso)
