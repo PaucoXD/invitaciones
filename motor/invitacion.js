@@ -1248,10 +1248,22 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 
   /** Color principal del diseño (para el ícono y la barra del navegador). */
   function colorTema(p) { return (p.colores && p.colores[1]) || '#8e3b4a'; }
-  /** Ícono de la pestaña con las iniciales del evento, en el color del diseño. */
+  /** Ícono de la pestaña: la foto de portada en círculo (si está en Cloudinary, recortada a las caras)
+   *  o, si no hay, un monograma con las iniciales en el color del diseño. */
+  function iconoPestana(d, p) {
+    const f = String(d.fotoPortada || '');
+    if (/^https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//.test(f)) return f.replace('/image/upload/', '/image/upload/c_thumb,g_faces,w_128,h_128,r_max,f_png/').replace('/f_auto,q_auto/', '/');
+    return iconoIniciales(d, p);
+  }
   function iconoIniciales(d, p) {
     const ini = String(iniciales(d) || '').replace(/\s+/g, '').replace(/&amp;|&/g, '&').slice(0, 3);
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="${colorTema(p)}"/><text x="32" y="41" text-anchor="middle" font-family="Georgia,serif" font-size="${ini.length > 2 ? 22 : 28}" fill="#fff">${esc(ini)}</text></svg>`;
+    // Diseños oscuros (Dorada, Confeti…): círculo oscuro con letras del color del diseño
+    const f0 = (p.colores && p.colores[0]) || '', n = parseInt(f0.slice(1), 16), oscuro = /^#[0-9a-f]{6}$/i.test(f0) && ((n >> 16) * 299 + ((n >> 8) & 255) * 587 + (n & 255) * 114) / 1000 < 60;
+    const c = oscuro ? f0 : colorTema(p), tinta = oscuro ? colorTema(p) : '#fff', [a, y, b] = ini.length === 3 && ini[1] === '&' ? ini : [ini, '', ''];
+    const letras = y ? `<tspan>${esc(a)}</tspan><tspan font-size="16" dy="-2" dx="1">&amp;</tspan><tspan dy="2" dx="1">${esc(b)}</tspan>` : esc(ini);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c}"/><stop offset="1" stop-color="${c}" stop-opacity=".78"/></linearGradient></defs>`
+      + `<circle cx="32" cy="32" r="31" fill="url(#g)"/><circle cx="32" cy="32" r="27" fill="none" stroke="${tinta}" stroke-opacity=".7" stroke-width="1.2"/>`
+      + `<text x="32" y="40.5" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-style="italic" font-size="${y || ini.length < 3 ? 25 : 20}" fill="${tinta}">${letras}</text></svg>`;
     return 'data:image/svg+xml,' + encodeURIComponent(svg);
   }
 
@@ -1271,7 +1283,8 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 <meta name="description" content="${esc(r.descripcion)}">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="${esc(colorTema(r.p))}">
-<link rel="icon" href="${iconoIniciales(r.d, r.p)}">
+<link rel="icon" href="${esc(iconoPestana(r.d, r.p))}">
+<link rel="apple-touch-icon" href="${esc(iconoPestana(r.d, r.p))}">
 <meta property="og:title" content="${esc(r.aparta ? `${ev(r.d).emoji} ¡Aparta la fecha! · ${titular(r.d)}` : conNombre(ev(r.d).og, r.d))}">
 <meta property="og:description" content="${esc(r.descripcion)}">
 ${r.d.fotoPortada && !/^data:/.test(r.d.fotoPortada) ? `<meta property="og:image" content="${esc(r.d.fotoPortada)}">` : ''}
