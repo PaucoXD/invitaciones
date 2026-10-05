@@ -75,10 +75,10 @@ body.plantilla-dorada{--fondo:#0f0e0c;--fondo2:#16140f;--tinta:#efe6d2;--suave:#
 .plantilla-dorada .sobre-carta{background:#14120e;color:var(--acento)}
 .plantilla-dorada .eyebrow{font-size:12px;letter-spacing:.35em}
 .plantilla-dorada .titulo,.plantilla-dorada .nombres,.plantilla-dorada .sobre-para strong,.plantilla-dorada .pase strong,.plantilla-dorada .lugar h3,.plantilla-dorada .fecha-deco b{
-  background:linear-gradient(100deg,#a8802f 0%,#f3d98f 22%,#c9a14a 40%,#fff1c4 50%,#c9a14a 60%,#f3d98f 78%,#a8802f 100%);background-size:250% 100%;
+  background:linear-gradient(100deg,#c39a48 0%,#f3d98f 22%,#d2ab57 40%,#fff1c4 50%,#d2ab57 60%,#f3d98f 78%,#c39a48 100%);background-size:250% 100%;
   -webkit-background-clip:text;background-clip:text;color:transparent;animation:foil 6s ease-in-out infinite}
 /* el dorado solo se pinta dentro de la caja: margen extra para que no se corten los trazos de la letra manuscrita */
-.plantilla-dorada .titulo,.plantilla-dorada .nombres{padding:.08em .45em .22em;margin-left:-.45em;margin-right:-.45em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.plantilla-dorada .titulo,.plantilla-dorada .nombres{-webkit-text-stroke:.6px rgba(232,200,120,.85);padding:.08em .45em .22em;margin-left:-.45em;margin-right:-.45em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 @keyframes foil{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
 .plantilla-dorada .alt{background:var(--fondo2)}
 .plantilla-dorada .sec{border-top:1px solid rgba(212,175,106,.12)}
