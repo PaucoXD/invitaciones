@@ -203,7 +203,7 @@
       control = el('div', { class: 'img-campo' }, prev, el('div', { class: 'img-btns' },
         el('button', { class: 'b chico', type: 'button', onclick: async () => {
           const f = await elegirArchivo('image/*'); if (!f) return;
-          try { set(await leerImagen(f, def.png ? 1400 : 1600, def.png)); pintar(); } catch (e) { avisar('No se pudo leer la imagen'); }
+          try { set(await alAlmacen(await leerImagen(f, def.png ? 1400 : 1600, def.png))); pintar(); } catch (e) { avisar('No se pudo leer la imagen'); }
         } }, 'Subir imagen'),
         el('button', { class: 'b chico peligro', type: 'button', onclick: () => { quitarEncuadre(obtener(ruta)); set(''); pintar(); } }, 'Quitar'),
         def.png ? null : el('button', { class: 'b chico', type: 'button', onclick: () => { if (obtener(ruta)) abrirEncuadre(obtener(ruta)); else avisar('Primero sube una imagen'); } }, '✥ Ajustar posición')));
@@ -243,7 +243,7 @@
       const subir = el('button', { class: 'b chico', type: 'button', onclick: async () => {
         const f = await elegirArchivo('audio/*'); if (!f) return;
         if (f.size > 6e6) avisar('El archivo pesa más de 6 MB; la invitación tardará en abrir');
-        const r = new FileReader(); r.onload = () => { set(r.result); nota.textContent = `✓ ${f.name} (${(f.size / 1e6).toFixed(1)} MB) incluida en la invitación`; }; r.readAsDataURL(f);
+        const r = new FileReader(); r.onload = async () => { nota.textContent = 'Subiendo canción…'; set(await alAlmacen(r.result, 'musica')); nota.textContent = `✓ ${f.name} (${(f.size / 1e6).toFixed(1)} MB) ${window.Fotos && Fotos.activo() ? 'subida' : 'incluida en la invitación'}`; }; r.readAsDataURL(f);
       } }, 'Subir MP3');
       const extra = el('div', {}, el('div', { class: 'campo' }, el('label', {}, 'Enlace al MP3'), url), el('div', { class: 'campo' }, subir, nota));
       sel.value = tipo; extra.style.display = tipo === 'archivo' ? '' : 'none';
@@ -452,6 +452,37 @@
   // ---------------------------------------------------------------------------
   // Ajustar posición y zoom de una foto (arrastrar + control de zoom)
   // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // Almacén de fotos (Supabase): las fotos van como enlace, no dentro de los datos
+  // ---------------------------------------------------------------------------
+  const carpetaFotos = () => 'eventos/' + ((datos.confirmaciones && datos.confirmaciones.boda) || slug());
+  async function alAlmacen(dato, sub) {
+    if (!window.Fotos || !Fotos.activo() || !/^data:/.test(String(dato || ''))) return dato;
+    avisar(sub === 'musica' ? 'Subiendo canción…' : 'Subiendo foto…');
+    try { return await Fotos.subir(dato, carpetaFotos() + (sub ? '/' + sub : '')); } catch (e) { avisar('No se pudo subir al almacén; queda dentro de la invitación'); return dato; }
+  }
+  /** Sube las fotos que todavía estén dentro de los datos (pedidos o invitaciones anteriores). Conserva su encuadre. */
+  async function subirPendientes() {
+    if (!window.Fotos || !Fotos.activo()) return 0;
+    let n = 0;
+    const cambiar = async (viejo, sub) => {
+      if (!/^data:/.test(String(viejo || ''))) return viejo;
+      const nuevo = await alAlmacen(viejo, sub);
+      if (nuevo !== viejo) {
+        n++;
+        const enc = datos.encuadres || {}, kv = Invitacion.huella(viejo);
+        if (enc[kv]) { const e = Object.assign({}, enc); e[Invitacion.huella(nuevo)] = e[kv]; delete e[kv]; datos.encuadres = e; }
+      }
+      return nuevo;
+    };
+    datos.fotoPortada = await cambiar(datos.fotoPortada);
+    for (const f of (datos.historia && datos.historia.fotos) || []) f.src = await cambiar(f.src);
+    for (const k of Object.keys(datos.adornos || {})) datos.adornos[k] = await cambiar(datos.adornos[k], 'adornos');
+    if (/^data:/.test(String(datos.musica || ''))) datos.musica = await cambiar(datos.musica, 'musica');
+    if (n) { cambio(); avisar(`✓ ${n} ${n === 1 ? 'archivo subido' : 'archivos subidos'} al almacén`); }
+    return n;
+  }
+
   function quitarEncuadre(src) {
     if (!src || !datos.encuadres) return;
     const e = Object.assign({}, datos.encuadres); delete e[Invitacion.huella(src)]; datos.encuadres = e;
@@ -881,6 +912,7 @@
   }
   /** Copia de los datos con los adornos de plantillas/adornos/ dentro del archivo (si existen). */
   async function conAdornos() {
+    await subirPendientes();
     const d = JSON.parse(JSON.stringify(datos));
     d.adornos = Object.assign({}, d.adornos);
     for (const a of (PL[d.plantilla].adornos || [])) {

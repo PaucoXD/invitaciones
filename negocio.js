@@ -30,6 +30,10 @@ window.NEGOCIO = {
   // Dirección pública de tu sitio (termina en /). Cuando tengas dominio propio cámbiala, por ejemplo:
   // sitio: 'https://tudominio.com/',   (manual, sección 4.5)
   sitio: 'https://paucoxd.github.io/invitaciones/',
+  // Almacén de fotos (opcional, recomendado): las fotos de los pedidos y de las invitaciones se suben a un
+  // servidor de fotos y los pedidos abren al instante. Usa Cloudinary (recomendado) o Supabase. Manual, sección 2.4.
+  fotos: { cloudinaryCloud: '', cloudinaryPreset: '', supabaseUrl: '', supabaseKey: '', bucket: 'fotos' },
+
   // Analítica (opcional): cuántas personas visitan tu página (manual, sección 7).
   //   goatcounter: tu código de goatcounter.com (gratis, sin cookies, no necesita aviso)
   //   ga4: tu ID de Google Analytics, ej. 'G-AB12CD34' (usa cookies: aparece un aviso para aceptar)

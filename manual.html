@@ -111,6 +111,7 @@
   <a class="sub" href="#negocio">Datos de tu negocio</a>
   <a class="sub" href="#google">Google Sheets</a>
   <a class="sub" href="#clave-admin">Tu clave de Mis bodas</a>
+  <a class="sub" href="#almacen-fotos">Almacén de fotos</a>
   <a href="#cliente">3. Hacer la invitación de un cliente</a>
   <a class="sub" href="#formulario">Formulario para tu cliente</a>
   <a class="sub" href="#editor">El editor, botón por botón</a>
@@ -214,6 +215,25 @@
     <li>Anótala en un lugar seguro. Tu navegador la recordará, pero si cambias de celular o computadora la vas a necesitar.</li>
   </ol>
   <div class="caja imp"><b>¿Olvidaste la clave?</b>En Apps Script: ⚙️ <b>Configuración del proyecto → Propiedades del script</b> → borra <code>CLAVE_ADMIN</code>. La próxima clave que escribas en Mis bodas será la nueva.</div>
+
+  <h3 id="almacen-fotos">2.4 Almacén de fotos (para que todo cargue rápido)</h3>
+  <p>Sin almacén, las fotos viajan dentro de los datos: un pedido con fotos pesa varios MB y tarda en abrir, y las invitaciones pesan más. Con almacén, las fotos se suben a un servidor de fotos y solo se guarda su enlace: <b>los pedidos abren al instante</b> y las invitaciones cargan más rápido (las fotos se entregan optimizadas para cada celular). Es opcional y gratis.</p>
+  <h4>Cloudinary (recomendado)</h4>
+  <ol class="pasos">
+    <li>Crea tu cuenta gratis en <a href="https://cloudinary.com/users/register_free" target="_blank" rel="noopener">cloudinary.com</a>.</li>
+    <li>En el <b>Dashboard</b> (inicio) copia tu <b>Cloud name</b> (ej. <code>dxyz123ab</code>).</li>
+    <li>Ve a <b>Settings (⚙️) → Upload → Upload presets → Add upload preset</b>.</li>
+    <li><b>Signing mode: Unsigned</b>. Nombre del preset: <code>invitaciones</code>. En <i>Upload Control</i> (si aparece) limita los formatos a <code>jpg, png, webp, mp3, m4a</code>. Guarda.</li>
+    <li>En <code>negocio.js</code> → <code>fotos</code>: <code>cloudinaryCloud: 'dxyz123ab'</code> y <code>cloudinaryPreset: 'invitaciones'</code>.</li>
+  </ol>
+  <div class="caja tip"><b>¿Cómo sé que funciona?</b>En el editor sube una foto: debe salir “Subiendo foto…” y después la foto. En Cloudinary → <b>Media Library</b> verás la carpeta <code>invitaciones</code>. Los pedidos que lleguen desde ahí ya traen solo enlaces.</div>
+  <ul>
+    <li>Al publicar, el editor sube solo las fotos que todavía estén dentro de los datos (por ejemplo, de pedidos anteriores) y conserva su encuadre.</li>
+    <li>Si un día falla la subida (sin internet), la foto se queda dentro de la invitación como antes: nada se pierde.</li>
+    <li>Los comprobantes de pago <b>no</b> van al almacén: siguen en tu Google Drive (son privados).</li>
+  </ul>
+  <h4>Alternativa: Supabase</h4>
+  <p>También funciona con Supabase Storage (<code>supabaseUrl</code>, <code>supabaseKey</code> “publishable/anon”, cubeta pública <code>fotos</code> con permiso de subir para <i>anon</i>). Ojo: en el plan gratis, los proyectos sin uso por una semana se pausan y las fotos dejarían de verse hasta reactivarlo; por eso recomendamos Cloudinary.</p>
 </section>
 
 <!-- 3 -->
@@ -517,7 +537,7 @@
     <li>Para agregar una pregunta frecuente, copia una línea de <code>preguntas</code> y cambia el texto.</li>
     <li>El <a href="aviso-privacidad.html">aviso de privacidad</a> y el <a href="terminos.html">aviso legal</a> son plantillas: revísalos (de preferencia con un abogado) y ajusta anticipo, cancelaciones y tiempos a como trabajas.</li>
   </ul>
-  <h4 id="google">Que te encuentren en Google</h4>
+  <h4 id="en-google">Que te encuentren en Google</h4>
   <p>La página ya tiene título, descripción, imagen para compartir, ícono, datos para Google (negocio, paquetes y preguntas), página 404 y mapa del sitio. Las invitaciones de tus clientes llevan “no indexar” para que no salgan en Google. Te faltan estos pasos (gratis):</p>
   <ol class="pasos">
     <li><b>Ficha de Google (Perfil de Empresa)</b>: entra a <a href="https://business.google.com" target="_blank" rel="noopener">business.google.com</a> → <b>Agregar empresa</b> → nombre de tu marca → categoría <i>Servicio de invitaciones</i> o <i>Diseñador gráfico</i> → elige “sin dirección física, atiendo en mi zona” (si trabajas desde casa) → tu ciudad → tu WhatsApp y tu página. Google te pedirá verificarla (video o código). Después sube fotos de tus diseños y pide a tus clientes que te dejen reseña.</li>
