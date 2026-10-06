@@ -47,7 +47,7 @@ window.NEGOCIO = {
 
   paquetes: [
     {
-      nombre: 'Esencial', precio: 790, nota: 'Ideal para bodas sencillas',
+      nombre: 'Esencial', precio: 590, nota: 'Ideal para bodas sencillas',
       incluye: ['1 diseño a elegir', 'Sobre animado y música', 'Cuenta regresiva y calendario', 'Ubicaciones con mapa', 'Itinerario, vestimenta y mesa de regalos', 'Confirmación por WhatsApp', '2 rondas de cambios']
     },
     {
@@ -55,8 +55,8 @@ window.NEGOCIO = {
       incluye: ['Todo lo del paquete Esencial', 'Enlace con el nombre de cada familia', 'Lugares reservados por invitación', 'Fotos de la pareja y galería', 'Invitación en PDF para imprimir o enviar', 'Código QR', 'Hospedaje, buenos deseos y canciones', 'Cambios ilimitados hasta la boda']
     },
     {
-      nombre: 'Premium', precio: 1990, nota: 'Para no preocuparte de nada',
-      incluye: ['Todo lo del paquete Personalizada', 'Confirmaciones automáticas', 'Panel de los novios con quién confirmó y quién falta', 'Recordatorios por WhatsApp', 'Plano de mesas y mesa de cada invitado', 'Lista por mesa para el salón', 'Un PDF personalizado por familia']
+      nombre: 'Premium', precio: 2490, nota: 'Para no preocuparte de nada',
+      incluye: ['Todo lo del paquete Personalizada', 'Confirmaciones automáticas', 'Panel de los novios con quién confirmó y quién falta', 'Recordatorios por WhatsApp', 'Plano de mesas y mesa de cada invitado', 'Lista por mesa para el salón', 'Un PDF personalizado por familia', 'Pase de entrada con QR y registro en la puerta']
     }
   ],
 
@@ -67,8 +67,8 @@ window.NEGOCIO = {
     { nombre: 'Pase de entrada con QR y registro en la puerta', precio: 400 },
     { nombre: 'Libro de recuerdos en PDF (buenos deseos, canciones y asistentes)', precio: 350 },
     { nombre: 'Aparta la fecha (página + imagen para estados)', precio: 250 },
-    { nombre: 'Video para estados (15 segundos con música)', precio: 300 },
-    { nombre: 'Entrega exprés en 24 horas', precio: 300 },
+    { nombre: 'Video para estados (15 segundos con música)', precio: 250 },
+    { nombre: 'Entrega exprés en 24 horas', precio: 200 },
     { nombre: 'Diseño con tus colores', precio: 300 }
   ],
 
