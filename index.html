@@ -46,6 +46,10 @@
   .btn svg{width:18px;height:18px}
 
   /* Navegación */
+  .promo{background:var(--dark);color:#f6eeea;text-align:center;font-size:14px;padding:9px 16px;line-height:1.45}
+  .promo b{font-weight:600}.promo small{display:block;opacity:.75;font-size:12.5px}
+  .precio s{display:block;font-size:17px;font-weight:500;color:var(--muted);letter-spacing:0;margin-bottom:2px}
+  .ahorro{display:inline-block;margin-top:6px;background:var(--bg2);color:var(--accent);font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:20px}
   nav{position:sticky;top:0;z-index:20;background:rgba(250,246,241,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
   nav .cont{display:flex;align-items:center;gap:22px;height:64px}
   .marca{font-family:var(--serif);font-size:25px;font-weight:500;text-decoration:none;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -190,6 +194,7 @@
 </head>
 <body>
 
+<div class="promo" id="promo" hidden></div>
 <nav><div class="cont">
   <a class="marca" href="#"><img src="marca/tufecha-marca.svg" alt="" width="34" height="34"><span data-n="marca">Tu Fecha</span></a>
   <a class="ln" href="#disenos">Diseños</a>
@@ -407,15 +412,20 @@
     document.getElementById('opiniones').hidden = false;
   }
 
+  // Promoción de lanzamiento
+  const PROMO = N.promo && N.promo.activa ? N.promo : null;
+  const final = (n) => (N.conPromo ? N.conPromo(n) : n);
+  if (PROMO) { const el = document.getElementById('promo'); el.innerHTML = `🎉 <b>${esc(PROMO.texto)}</b>${PROMO.nota ? `<small>${esc(PROMO.nota)}</small>` : ''}`; el.hidden = false; }
+
   // Paquetes y extras
   document.getElementById('grid-paquetes').innerHTML = (N.paquetes || []).map(p => `
     <div class="paq rv ${p.destacado ? 'dest' : ''}" style="text-align:left">
       ${p.destacado ? `<span class="etq">${esc(p.nota || 'Recomendado')}</span>` : ''}
       <h3>${esc(p.nombre)}</h3>
       ${!p.destacado && p.nota ? `<p class="nota">${esc(p.nota)}</p>` : '<p class="nota">&nbsp;</p>'}
-      <p class="precio">${precio(p.precio)} <small>${esc(N.moneda || 'MXN')}</small></p>
+      <p class="precio">${PROMO ? `<s>${precio(p.precio)}</s>` : ''}${precio(final(p.precio))} <small>${esc(N.moneda || 'MXN')}</small>${PROMO ? `<br><span class="ahorro">Ahorras ${precio(p.precio - final(p.precio))}</span>` : ''}</p>
       <ul>${(p.incluye || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul>
-      <a class="btn ${p.destacado ? 'pri' : ''}" data-wa="Hola 👋 Me interesa el paquete ${esc(p.nombre)} (${precio(p.precio)}) para mi boda. Fecha: ___" target="_blank" rel="noopener">Quiero el ${esc(p.nombre)}</a>
+      <a class="btn ${p.destacado ? 'pri' : ''}" data-wa="Hola 👋 Me interesa el paquete ${esc(p.nombre)} (${precio(final(p.precio))}${PROMO ? ' con la promoción de lanzamiento' : ''}). Fecha de mi evento: ___" target="_blank" rel="noopener">Quiero el ${esc(p.nombre)}</a>
     </div>`).join('');
   document.getElementById('lista-extras').innerHTML = (N.extras || []).map(x => `<div><span>${esc(x.nombre)}</span><b>+ ${precio(x.precio)}</b></div>`).join('');
 
