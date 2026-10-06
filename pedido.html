@@ -434,8 +434,9 @@
   function anticipoDe(paquete) {
     const p = (N.paquetes || []).find(x => x.nombre === paquete), a = String(N.anticipo || '');
     if (!p || !p.precio) return null;
+    const total = N.conPromo ? N.conPromo(p.precio) : p.precio;
     const pct = /^(\d+(?:\.\d+)?)\s*%$/.exec(a.trim()), fijo = /^\$?\s*([\d,]+)/.exec(a.trim());
-    return { paquete: p, monto: pct ? p.precio * +pct[1] / 100 : fijo ? +fijo[1].replace(/,/g, '') : p.precio, texto: pct ? `${a} de ${p.nombre} (${dinero(p.precio)})` : `paquete ${p.nombre}` };
+    return { paquete: p, monto: pct ? total * +pct[1] / 100 : fijo ? +fijo[1].replace(/,/g, '') : total, texto: pct ? `${a} de ${p.nombre} (${dinero(total)}${total < p.precio ? ' con promoción' : ''})` : `paquete ${p.nombre}` };
   }
   const hayPago = (paquete) => { const p = (N.paquetes || []).find(x => x.nombre === paquete) || {}; return !!(p.linkPago || PAGO.mercadoPago || PAGO.clabe); };
   function vistaPago(folio, paquete) {

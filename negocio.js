@@ -16,6 +16,14 @@ window.NEGOCIO = {
   entrega: '48 horas',                        // tiempo de entrega promedio
   anticipo: '50%',                            // anticipo para apartar
 
+  // Promoción (aparece arriba de la página y en los precios). Para quitarla: activa: false
+  promo: {
+    activa: true,
+    descuento: 15,                            // % de descuento en los paquetes
+    texto: 'Lanzamiento: 15% de descuento a nuestros primeros 10 clientes',
+    nota: 'A cambio de tu opinión en Google cuando recibas tu invitación.'
+  },
+
   // Pago del anticipo: aparece al cliente cuando envía el formulario (y en el "Enlace de pago" de Mis bodas).
   // Deja vacío lo que no uses. El enlace de Mercado Pago se crea en tu cuenta: Cobrar → Link de pago.
   // Si quieres un link distinto por paquete, agrega linkPago: 'https://mpago.la/…' a cada paquete de abajo.
@@ -89,4 +97,10 @@ window.NEGOCIO = {
     ['¿También hacen XV años?', 'Sí. Tenemos diseños especiales para XV años (Princesa Rosa, Mariposas Lila y Noche de Gala) con las mismas funciones: sobre animado, nombre de cada familia, confirmaciones, mesas y PDF.'],
     ['¿Hacen bautizos, primera comunión, baby shower o cumpleaños?', 'Sí. Tenemos diseños para cada evento con su propio estilo: Paloma y Cáliz para bautizo y primera comunión, Globos y Cielo Tierno para baby shower, Confeti para cumpleaños con las mismas funciones: sobre, nombre de cada familia, confirmaciones y PDF.']
   ]
+};
+
+/** Precio con la promoción (redondeado a decenas). Sin promoción activa, el mismo precio. */
+window.NEGOCIO.conPromo = function (n) {
+  const p = this.promo || {};
+  return p.activa && p.descuento ? Math.round(n * (1 - p.descuento / 100) / 10) * 10 : n;
 };
