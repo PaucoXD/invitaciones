@@ -7,7 +7,7 @@
 window.NEGOCIO = {
   marca: 'Tu Marca Invitaciones',            // nombre de tu negocio
   lema: 'Invitaciones digitales de boda',
-  whatsapp: '',                               // con código de país, sin espacios: 5215512345678
+  whatsapp: '528123412206',                             // con código de país, sin espacios: 5215512345678
   correo: '',                                 // opcional: hola@tumarca.com
   instagram: '',                              // opcional: usuario sin @
   tiktok: '',                                 // opcional: usuario sin @
@@ -21,9 +21,9 @@ window.NEGOCIO = {
   // Si quieres un link distinto por paquete, agrega linkPago: 'https://mpago.la/…' a cada paquete de abajo.
   pago: {
     mercadoPago: '',                          // link de pago general (opcional)
-    banco: '',                                // ej. BBVA
-    clabe: '',                                // 18 dígitos
-    titular: '',                              // nombre de quien recibe
+    banco: 'Mercado Pago W',                          // ej. BBVA
+    clabe: '722969010533654785',                          // 18 dígitos
+    titular: 'Paulo Carlo Castañeda Cortez',                          // nombre de quien recibe
     nota: 'Escribe tu folio en el concepto de la transferencia.'
   },
 
