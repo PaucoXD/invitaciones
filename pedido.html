@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#2b1a1e">
+<meta name="theme-color" content="#262423">
 <title>Datos para tu invitación</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +34,7 @@
 <script src="plantillas/globos.js"></script>
 <script src="plantillas/confeti.js"></script>
 <style>
-  :root{--bg:#faf6f1;--card:#fff;--ink:#2e2721;--muted:#6f655b;--line:#e6dccf;--accent:#8e3b4a;--accent-bg:#f6eaec;--ok:#3f7a52;--ok-bg:#e8f3eb;--no:#a9473e;--no-bg:#f8e9e7;--dark:#2b1a1e;--serif:'Cormorant Garamond',Georgia,serif}
+  :root{--bg:#faf6f1;--card:#fff;--ink:#2e2721;--muted:#6f655b;--line:#e6dccf;--accent:#8a5d53;--accent-bg:#f5ece8;--ok:#3f7a52;--ok-bg:#e8f3eb;--no:#a9473e;--no-bg:#f8e9e7;--dark:#262423;--serif:'Cormorant Garamond',Georgia,serif}
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
   button,input,select,textarea{font:inherit;color:inherit}
@@ -56,7 +56,7 @@
   label.c small{font-weight:400;color:var(--muted)}
   .req{color:var(--no)}
   input[type=text],input[type=tel],input[type=date],input[type=time],input[type=url],input[type=number],select,textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fdfbf8;font-size:16px;min-height:48px}
-  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(142,59,74,.15);outline:none}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(138,93,83,.15);outline:none}
   textarea{min-height:110px;resize:vertical}
   .ayuda{font-size:13.5px;color:var(--muted);margin-top:6px}
   .fila{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -70,7 +70,7 @@
   .dis{position:relative}
   .dis input{position:absolute;opacity:0;pointer-events:none}
   .dis label{display:block;border:2px solid var(--line);border-radius:12px;padding:10px;background:var(--card);cursor:pointer;height:100%}
-  .dis input:checked+label{border-color:var(--accent);box-shadow:0 0 0 3px rgba(142,59,74,.15)}
+  .dis input:checked+label{border-color:var(--accent);box-shadow:0 0 0 3px rgba(138,93,83,.15)}
   .dis input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
   .dis .sw{display:flex;height:28px;border-radius:7px;overflow:hidden;margin-bottom:8px}.dis .sw span{flex:1}
   .dis b{display:block;font-size:14px}
@@ -108,7 +108,7 @@
   .pago h2{margin-bottom:4px}
   .pago .monto{font-size:28px;font-weight:700;color:var(--accent);margin:4px 0 2px}
   .pago dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:10px 0;font-size:15px}
-  .pago dt{color:var(--muted)}.pago dd{font-weight:600;word-break:break-all}
+  .pago dt{color:var(--muted)}.pago dd{font-weight:600;overflow-wrap:anywhere}
   .pago .opcion{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
   .pago .btn{width:100%;margin-top:8px}
   .pago .estado{margin-top:10px;font-size:14px}.pago .estado.ok{color:var(--ok)}.pago .estado.mal{color:var(--no)}
