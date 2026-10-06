@@ -1248,22 +1248,30 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 
   /** Color principal del diseño (para el ícono y la barra del navegador). */
   function colorTema(p) { return (p.colores && p.colores[1]) || '#8e3b4a'; }
-  /** Ícono de la pestaña: la foto de portada en círculo (si está en Cloudinary, recortada a las caras)
-   *  o, si no hay, un monograma con las iniciales en el color del diseño. */
-  function iconoPestana(d, p) {
-    const f = String(d.fotoPortada || '');
-    if (/^https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//.test(f)) return f.replace('/image/upload/', '/image/upload/c_thumb,g_faces,w_128,h_128,r_max,f_png/').replace('/f_auto,q_auto/', '/');
-    return iconoIniciales(d, p);
-  }
-  function iconoIniciales(d, p) {
+  /** Dibujos del ícono de la pestaña según lo que se festeja (trazos sobre un círculo de 64×64). */
+  const DIBUJOS_PESTANA = {
+    boda: '<circle cx="25.5" cy="37" r="11"/><circle cx="38.5" cy="37" r="11"/><path d="M21 19.5l4.5-5 4.5 5-4.5 6z" fill="currentColor" stroke-width="1.6"/>',
+    xv: '<path d="M16 43l2-19 8.5 9.5L32 19l5.5 14.5L46 24l2 19z" stroke-linejoin="round"/><path d="M17 48.5h30"/><circle cx="32" cy="15.5" r="2.2" fill="currentColor" stroke="none"/><circle cx="17.8" cy="21" r="1.8" fill="currentColor" stroke="none"/><circle cx="46.2" cy="21" r="1.8" fill="currentColor" stroke="none"/>',
+    bautizo: '<path d="M32 13s-14 16-14 25a14 14 0 0 0 28 0c0-9-14-25-14-25z" stroke-linejoin="round"/><path d="M32 30v15M26.5 35.5h11"/>',
+    comunion: '<circle cx="32" cy="12.5" r="4.5"/><path d="M21 21h22c0 11-4.5 15.5-11 15.5S21 32 21 21zM32 36.5V46M24 48.5h16" stroke-linejoin="round"/>',
+    babyshower: '<path d="M25 27h14v18.5a4.5 4.5 0 0 1-4.5 4.5h-5a4.5 4.5 0 0 1-4.5-4.5zM27.5 27v-4h9v4M29.5 23c0-6 5-6 5 0M25 34h6M25 40h6" stroke-linejoin="round"/>',
+    cumple: '<path d="M17 47h30V35H17zM20 35v-6h24v6M17 41c4 2.5 7.5 2.5 10 0s7.5-2.5 10 0 7.5 2.5 10 0M32 29v-7" stroke-linejoin="round"/><path d="M32 12.5c-3 3.2-2.4 6.5 0 6.5s3-3.3 0-6.5z" fill="currentColor" stroke="none"/>'
+  };
+  /** Ícono de la pestaña (y del acceso directo): dibujo de lo que se festeja en los colores del diseño;
+   *  si el tipo de evento no tiene dibujo, las iniciales. */
+  function iconoPestana(d, p) { return iconoIniciales(d, p, DIBUJOS_PESTANA[EVENTOS[d.evento] ? d.evento : 'boda']); }
+  function iconoIniciales(d, p, dibujo) {
     const ini = String(iniciales(d) || '').replace(/\s+/g, '').replace(/&amp;|&/g, '&').slice(0, 3);
     // Diseños oscuros (Dorada, Confeti…): círculo oscuro con letras del color del diseño
-    const f0 = (p.colores && p.colores[0]) || '', n = parseInt(f0.slice(1), 16), oscuro = /^#[0-9a-f]{6}$/i.test(f0) && ((n >> 16) * 299 + ((n >> 8) & 255) * 587 + (n & 255) * 114) / 1000 < 60;
-    const c = oscuro ? f0 : colorTema(p), tinta = oscuro ? colorTema(p) : '#fff', [a, y, b] = ini.length === 3 && ini[1] === '&' ? ini : [ini, '', ''];
+    // Diseños claros (Nube, Globos…): letras/dibujo en el tono más oscuro del diseño para que se lean
+    const luz = (h) => { if (!/^#[0-9a-f]{6}$/i.test(h || '')) return 128; const n = parseInt(h.slice(1), 16); return ((n >> 16) * 299 + ((n >> 8) & 255) * 587 + (n & 255) * 114) / 1000; };
+    const cols = (p.colores || []).filter(h => /^#[0-9a-f]{6}$/i.test(h)), f0 = cols[0] || '', oscuro = f0 && luz(f0) < 60;
+    const fuerte = cols.slice().sort((x, z) => luz(x) - luz(z))[0];
+    const c = oscuro ? f0 : colorTema(p), tinta = oscuro ? colorTema(p) : luz(c) > 165 ? (fuerte && luz(fuerte) < 125 ? fuerte : '#4a4a4a') : '#fff', [a, y, b] = ini.length === 3 && ini[1] === '&' ? ini : [ini, '', ''];
     const letras = y ? `<tspan>${esc(a)}</tspan><tspan font-size="16" dy="-2" dx="1">&amp;</tspan><tspan dy="2" dx="1">${esc(b)}</tspan>` : esc(ini);
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c}"/><stop offset="1" stop-color="${c}" stop-opacity=".78"/></linearGradient></defs>`
       + `<circle cx="32" cy="32" r="31" fill="url(#g)"/><circle cx="32" cy="32" r="27" fill="none" stroke="${tinta}" stroke-opacity=".7" stroke-width="1.2"/>`
-      + `<text x="32" y="40.5" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-style="italic" font-size="${y || ini.length < 3 ? 25 : 20}" fill="${tinta}">${letras}</text></svg>`;
+      + (dibujo ? `<g fill="none" stroke="${tinta}" stroke-width="2.6" stroke-linecap="round" color="${tinta}">${dibujo}</g></svg>` : `<text x="32" y="40.5" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-style="italic" font-size="${y || ini.length < 3 ? 25 : 20}" fill="${tinta}">${letras}</text></svg>`);
     return 'data:image/svg+xml,' + encodeURIComponent(svg);
   }
 
