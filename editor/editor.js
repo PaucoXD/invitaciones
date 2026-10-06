@@ -1093,6 +1093,8 @@
   $('#b-invitados').addEventListener('click', () => {
     const m = $('#inv-msg');
     if (MSGS.includes(m.value)) m.value = msgDe(datos.evento || 'boda');
+    // Si ya se publicó con 🌐 Publicar, la dirección se pone sola (la de esta invitación, no la de otra)
+    if (datos.publicado && datos.publicado.url) $('#inv-base').value = datos.publicado.url;
     modal.classList.add('ver'); generar();
   });
   $('#inv-cerrar').addEventListener('click', () => modal.classList.remove('ver'));
