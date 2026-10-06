@@ -5,8 +5,8 @@
  * Los precios son EJEMPLOS: ajústalos a tu mercado.
  */
 window.NEGOCIO = {
-  marca: 'Tu Marca Invitaciones',            // nombre de tu negocio
-  lema: 'Invitaciones digitales de boda',
+  marca: 'Tu Fecha',                          // nombre de tu negocio
+  lema: 'Invitaciones digitales para tu gran día',
   whatsapp: '528123412206',                             // con código de país, sin espacios: 5215512345678
   correo: '',                                 // opcional: hola@tumarca.com
   instagram: '',                              // opcional: usuario sin @
