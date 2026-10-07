@@ -771,7 +771,8 @@
     { sec: 'Contactos', campos: [
       { fila: [{ k: 'contactos.novia', l: 'WhatsApp de la novia', lxv: () => 'WhatsApp · ' + EV().contactos[0], ph: '5215512345678' }, { k: 'contactos.novio', l: 'WhatsApp del novio', lxv: () => 'WhatsApp · ' + EV().contactos[1] }] },
       { t: 'nota', texto: 'Los “Buenos deseos” y “Sugerencia de canciones” llegan al WhatsApp de confirmaciones.' }] },
-    { sec: 'Cierre', campos: [{ k: 'hashtag', l: 'Hashtag', ph: '#ValeYSanti', phxv: () => (window.ejemploDe(datos.evento) || {}).hashtag || '#MiFiesta' }, { k: 'nota', t: 'area', l: 'Nota', ph: 'Evento solo para adultos' }, { k: 'despedida', l: 'Frase de despedida' }] },
+    { sec: 'Cierre', campos: [{ k: 'hashtag', l: 'Hashtag', ph: '#ValeYSanti', phxv: () => (window.ejemploDe(datos.evento) || {}).hashtag || '#MiFiesta' }, { k: 'nota', t: 'area', l: 'Nota', ph: 'Evento solo para adultos' }, { k: 'despedida', l: 'Frase de despedida' },
+      { k: 'sinFirma', t: 'check', texto: 'Quitar la firma “Invitación hecha por Tu Fecha”', ayuda: 'Al final de cada invitación aparece tu marca con un enlace a tu página. Quítala solo si el cliente lo pide (puedes cobrarlo como extra).' }] },
     { sec: 'Música', campos: [{ k: 'musica', t: 'musica' }] },
     { sec: 'Adornos de la plantilla', id: 'sec-adornos', campos: [{ t: 'adornos' }] },
     { sec: 'Mostrar / ocultar secciones', campos: [{ t: 'ocultar' }] }
