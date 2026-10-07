@@ -702,6 +702,8 @@
       { k: 'ciudad', l: 'Ciudad', ph: 'San Miguel de Allende, Guanajuato' }] },
     { sec: 'Portada', campos: [
       { k: 'introPortada', l: 'Texto de arriba', ph: 'Nos casamos', phxv: () => EV().intro },
+      { fila: [{ k: 'selloEmblema', t: 'select', l: 'Sello de cera', ops: [['iniciales', 'Iniciales'], ['olivo', 'Ramita de olivo'], ['paloma', 'Paloma'], ['flor', 'Flor'], ['corona', 'Corona'], ['corazon', 'Corazón'], ['argollas', 'Argollas']] },
+        { k: 'letraSobre', t: 'select', l: 'Nombre del invitado en el sobre', ops: [['manuscrita', 'Letra manuscrita'], ['diseno', 'Letra del diseño']] }] },
       { k: 'fotoPortada', t: 'imagen', l: 'Foto de portada (opcional)', ayuda: 'Una foto vertical de la pareja se ve mejor.', ayudaxv: () => datos.evento === 'xv' ? 'Una foto vertical de la quinceañera se ve mejor.' : 'Una foto vertical de quien celebra se ve mejor.' }] },
     { sec: 'Frase', campos: [{ k: 'frase', t: 'area', l: 'Frase o cita' }, { k: 'fraseAutor', l: 'Autor' }] },
     { sec: 'Padres y padrinos', campos: [
