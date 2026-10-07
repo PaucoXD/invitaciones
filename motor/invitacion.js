@@ -792,6 +792,11 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
 
 /* Cierre */
 .hashtag{font-family:var(--f-etiqueta);font-size:clamp(15px,4.4vw,22px);letter-spacing:.18em;color:var(--acento2);word-break:break-word}
+.firma-tf{position:relative;z-index:3;color:var(--sobre-oscuro);text-align:center;padding:0 20px 26px;margin-top:-84px;min-height:84px;box-sizing:border-box;font-family:var(--f-etiqueta);font-size:11px;letter-spacing:.12em;line-height:1.7}
+.firma-tf a,.firma-tf span{color:inherit;text-decoration:none;opacity:.62;transition:opacity .2s ease;display:inline-block}
+.firma-tf a:hover{opacity:1}
+.firma-tf b{font-weight:600}
+.firma-tf em{display:block;font-style:normal;letter-spacing:.08em;text-decoration:underline;text-underline-offset:3px}
 .pie{padding:90px 24px 110px;text-align:center;background:var(--oscuro);color:var(--sobre-oscuro);position:relative;overflow:hidden}
 .pie>p{font-style:italic;opacity:.85;position:relative;z-index:2}
 .pie .nombres{color:var(--sobre-oscuro);font-size:clamp(40px,11.5vw,80px);margin:12px 0;position:relative;z-index:2}
@@ -1241,6 +1246,13 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
         const x = +e.x || 50, y = +e.y || 50, z = Math.min(Math.max(+e.z || 1, 1), 4);
         return `<span class="encuadre">${tag.replace('<img', `<img style="object-position:${x}% ${y}%;transform:scale(${z});transform-origin:${x}% ${y}%"`)}</span>`;
       });
+    }
+    // Firma del negocio al final ("Invitación hecha por Tu Fecha"): publicidad en cada invitación; se quita con d.sinFirma
+    const N = (typeof window !== 'undefined' && window.NEGOCIO) || {};
+    if (N.marca && !d.sinFirma) {
+      const sitio = String(N.sitio || '').replace(/\/?$/, '/');
+      const a = N.sitio ? `<a href="${esc(sitio)}?de=invitacion" target="_blank" rel="noopener">` : '<span>';
+      html += `<div class="firma-tf">${a}Invitación hecha por <b>${esc(N.marca)}</b>${N.sitio ? '<em>¿Quieres una así? →</em></a>' : '</span>'}</div>`;
     }
     const titulo = aparta ? `${titular(d)} · Aparta la fecha` : conNombre(ev(d).titulo, d);
     return { d, p, html, aparta, css: CSS_BASE + '\n' + (p.css || ''), fuentes: p.fuentes || '', titulo, descripcion: `${fechaInfo(d).larga}${d.ciudad ? ' — ' + d.ciudad : ''}` };
