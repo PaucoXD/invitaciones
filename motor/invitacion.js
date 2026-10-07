@@ -160,6 +160,17 @@
     vestido: '<svg viewBox="0 0 70 110" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M28 6c0 8 2 14 7 18 5-4 7-10 7-18"/><path d="M28 6l-4 2 3 26-4 6-13 66h50L47 40l-4-6 3-26-4-2"/><path d="M24 40h22"/></svg>'
   };
   const ICONOS_EVENTO = ['iglesia', 'anillos', 'copa', 'brindis', 'cena', 'musica', 'pastel', 'foto', 'auto', 'corazon', 'luna', 'corona', 'zapatilla', 'mariposa', 'estrella'];
+  /** Emblemas del sello de cera (en vez de las iniciales). Se dibujan en el color de las letras del sello, en relieve. */
+  const EMBLEMAS = {
+    olivo: '<path d="M11 32C16 25 22 16 30 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>'
+      + [[14.5, 27.5, -1], [17.5, 23.2, 1], [20.4, 19.2, -1], [23.4, 15.2, 1], [26.4, 11.6, -1]].map(([x, y, s]) => `<ellipse cx="${x + s * 3.2}" cy="${y + s * 1.4}" rx="4.4" ry="1.7" transform="rotate(${s > 0 ? 10 : -95} ${x + s * 3.2} ${y + s * 1.4})" fill="currentColor"/>`).join('')
+      + '<ellipse cx="30.6" cy="7.4" rx="3.4" ry="1.5" transform="rotate(-50 30.6 7.4)" fill="currentColor"/><circle cx="12.6" cy="23.6" r="1.6" fill="currentColor"/><circle cx="26.6" cy="19.6" r="1.6" fill="currentColor"/>',
+    paloma: '<g transform="translate(-1.2 0.6) scale(.66)"><path d="M14 31.5l4.6-2.6c1.9-3 6-3.4 8.4-.8 2.8-5.6 7.4-11.6 15.5-15.6-1.4 6.2-2.6 11.3-5.6 16.4 4.6.4 9-.6 13.6-3.4l-2.6 6.4 4.2 4.4c-7 1.8-12.6 4.4-19.6 3.8-6-.5-10.6-3.4-12.8-7.4z" fill="currentColor"/><path d="M15.6 33c-1.8 3-2.2 6.4-.8 10" fill="none" stroke="currentColor" stroke-width="1.8"/><ellipse cx="11.6" cy="37.2" rx="2.9" ry="1.3" transform="rotate(25 11.6 37.2)" fill="currentColor"/><ellipse cx="17.8" cy="39.6" rx="2.9" ry="1.3" transform="rotate(-30 17.8 39.6)" fill="currentColor"/></g>',
+    flor: [0, 60, 120, 180, 240, 300].map(a => `<ellipse cx="20" cy="11.5" rx="4.2" ry="7.6" transform="rotate(${a} 20 20)" fill="currentColor" opacity=".9"/>`).join('') + '<circle cx="20" cy="20" r="3.6" fill="currentColor"/><circle cx="20" cy="20" r="2" fill="none" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>',
+    corona: '<path d="M8 28l2-14 6 6.5L20 9l4 11.5 6-6.5 2 14z" fill="currentColor"/><rect x="8" y="29.5" width="24" height="2.6" rx="1" fill="currentColor"/><circle cx="20" cy="7.4" r="1.9" fill="currentColor"/><circle cx="9.6" cy="12.6" r="1.5" fill="currentColor"/><circle cx="30.4" cy="12.6" r="1.5" fill="currentColor"/>',
+    corazon: '<path d="M20 33s-12-7.4-12-15.2A6.6 6.6 0 0 1 20 13.6a6.6 6.6 0 0 1 12 4.2C32 25.6 20 33 20 33z" fill="currentColor"/>',
+    argollas: '<circle cx="16" cy="22" r="7.6" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="24" cy="22" r="7.6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M13.2 10.6l2.8-3.2 2.8 3.2-2.8 3.8z" fill="currentColor"/>'
+  };
   const ICONOS_REGALO = ['regalo', 'bolsa', 'banco', 'sobre', 'corazon'];
 
   // ---------------------------------------------------------------------------
@@ -172,7 +183,7 @@
     const def = {
       evento: 'boda', plantilla: E.plantilla, novia: uno ? '' : 'Novia', novio: uno ? '' : 'Novio', festejada: uno ? 'Nombre' : '', iniciales: '',
       fecha: '2027-03-20', hora: '17:00', zonaHoraria: '-06:00', ciudad: '',
-      introPortada: E.intro, fotoPortada: '',
+      introPortada: E.intro, fotoPortada: '', selloEmblema: 'iniciales', letraSobre: 'manuscrita',
       frase: '', fraseAutor: '',
       tituloFamilia: E.familia[0],
       textoFamilia: E.familia[1],
@@ -222,10 +233,12 @@
     esc, br, lineas, hay, fechaInfo, iniciales, esXV, unNombre, ev, voz, titular, delEvento, cabecera, apartaTexto, ICONOS, adorno, seccion, encabezado,
 
     sobre(d, o = {}) {
+      const emb = EMBLEMAS[d.selloEmblema];
+      const contenido = emb ? `<svg class="sello-emblema" viewBox="0 0 40 40" aria-hidden="true">${emb}</svg>` : (o.sello || esc(iniciales(d)).replace(/&amp;/, '<i>&amp;</i>'));
       return `
 <div id="sobre" class="sobre-pantalla${o.portada ? ' en-portada' : ''}" ${o.portada ? '' : 'role="dialog"'} aria-label="Abrir invitación">
   ${o.fondo || ''}
-  <p class="sobre-para">${esc(o.textoPara || 'Una invitación especial para')}<strong data-invitado-nombre>ti</strong><span class="sobre-reserva" data-sobre-reserva hidden>Hemos reservado <b data-pases>2</b> <span data-pases-palabra>lugares</span> para ti</span></p>
+  <p class="sobre-para">${esc(o.textoPara || 'Una invitación especial para')}<strong data-invitado-nombre${d.letraSobre === 'manuscrita' ? ' class="manuscrita"' : ''}>ti</strong><span class="sobre-reserva" data-sobre-reserva hidden>Hemos reservado <b data-pases>2</b> <span data-pases-palabra>lugares</span> para ti</span></p>
   <div class="sobre" tabindex="0" role="button" aria-label="Abrir sobre">
     <svg class="sobre-formas" width="0" height="0" aria-hidden="true" focusable="false"><defs><clipPath id="sb-solapa" clipPathUnits="objectBoundingBox"><path d="M0 0H1V.03C.86 .25 .67 .6 .565 .86C.535 .945 .465 .945 .435 .86C.33 .6 .14 .25 0 .03Z"/></clipPath><clipPath id="sb-abajo" clipPathUnits="objectBoundingBox"><path d="M0 1V.96C.17 .72 .35 .4 .455 .14C.48 .07 .52 .07 .545 .14C.65 .4 .83 .72 1 .96V1Z"/></clipPath></defs></svg>
     <div class="sobre-atras"></div>
@@ -234,7 +247,7 @@
     <div class="sobre-sombra"></div>
     <div class="sobre-solapa"><div class="solapa-fuera"></div><div class="solapa-dentro">${o.forro || ''}</div></div>
     <div class="sobre-luz"></div>
-    <div class="sello">${o.selloExtra || ''}${[1, 2].map(n => `<span class="mitad mitad-${n}">${o.sello || esc(iniciales(d)).replace(/&amp;/, '<i>&amp;</i>')}</span>`).join('')}</div>
+    <div class="sello${emb ? ' con-emblema' : ''}">${o.selloExtra || ''}${[1, 2].map(n => `<span class="mitad mitad-${n}">${contenido}</span>`).join('')}</div>
   </div>
   <p class="sobre-pista">${esc(o.pista || 'Toca el sello para abrir')}</p>
 </div>
@@ -554,6 +567,9 @@ main{position:relative;z-index:1}
 .mitad::before,.mitad::after{content:"";position:absolute;inset:4%;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='37' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cellipse cx='13.6' cy='56.4' rx='2.6' ry='6' transform='rotate%28-135 13.6 56.4%29'/%3E%3Cellipse cx='18.6' cy='69.6' rx='2.6' ry='6' transform='rotate%28-157 18.6 69.6%29'/%3E%3Cellipse cx='28.3' cy='79.9' rx='2.6' ry='6' transform='rotate%28-179 28.3 79.9%29'/%3E%3Cellipse cx='41.0' cy='85.9' rx='2.6' ry='6' transform='rotate%28-201 41.0 85.9%29'/%3E%3Cellipse cx='55.1' cy='86.6' rx='2.6' ry='6' transform='rotate%28-223 55.1 86.6%29'/%3E%3Cellipse cx='68.5' cy='82.0' rx='2.6' ry='6' transform='rotate%28-245 68.5 82.0%29'/%3E%3Cellipse cx='79.2' cy='72.8' rx='2.6' ry='6' transform='rotate%28-267 79.2 72.8%29'/%3E%3Cellipse cx='86.4' cy='56.4' rx='2.6' ry='6' transform='rotate%28135 86.4 56.4%29'/%3E%3Cellipse cx='81.4' cy='69.6' rx='2.6' ry='6' transform='rotate%28157 81.4 69.6%29'/%3E%3Cellipse cx='71.7' cy='79.9' rx='2.6' ry='6' transform='rotate%28179 71.7 79.9%29'/%3E%3Cellipse cx='59.0' cy='85.9' rx='2.6' ry='6' transform='rotate%28201 59.0 85.9%29'/%3E%3Cellipse cx='44.9' cy='86.6' rx='2.6' ry='6' transform='rotate%28223 44.9 86.6%29'/%3E%3Cellipse cx='31.5' cy='82.0' rx='2.6' ry='6' transform='rotate%28245 31.5 82.0%29'/%3E%3Cellipse cx='20.8' cy='72.8' rx='2.6' ry='6' transform='rotate%28267 20.8 72.8%29'/%3E%3C/svg%3E") center/100% 100% no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='37' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cellipse cx='13.6' cy='56.4' rx='2.6' ry='6' transform='rotate%28-135 13.6 56.4%29'/%3E%3Cellipse cx='18.6' cy='69.6' rx='2.6' ry='6' transform='rotate%28-157 18.6 69.6%29'/%3E%3Cellipse cx='28.3' cy='79.9' rx='2.6' ry='6' transform='rotate%28-179 28.3 79.9%29'/%3E%3Cellipse cx='41.0' cy='85.9' rx='2.6' ry='6' transform='rotate%28-201 41.0 85.9%29'/%3E%3Cellipse cx='55.1' cy='86.6' rx='2.6' ry='6' transform='rotate%28-223 55.1 86.6%29'/%3E%3Cellipse cx='68.5' cy='82.0' rx='2.6' ry='6' transform='rotate%28-245 68.5 82.0%29'/%3E%3Cellipse cx='79.2' cy='72.8' rx='2.6' ry='6' transform='rotate%28-267 79.2 72.8%29'/%3E%3Cellipse cx='86.4' cy='56.4' rx='2.6' ry='6' transform='rotate%28135 86.4 56.4%29'/%3E%3Cellipse cx='81.4' cy='69.6' rx='2.6' ry='6' transform='rotate%28157 81.4 69.6%29'/%3E%3Cellipse cx='71.7' cy='79.9' rx='2.6' ry='6' transform='rotate%28179 71.7 79.9%29'/%3E%3Cellipse cx='59.0' cy='85.9' rx='2.6' ry='6' transform='rotate%28201 59.0 85.9%29'/%3E%3Cellipse cx='44.9' cy='86.6' rx='2.6' ry='6' transform='rotate%28223 44.9 86.6%29'/%3E%3Cellipse cx='31.5' cy='82.0' rx='2.6' ry='6' transform='rotate%28245 31.5 82.0%29'/%3E%3Cellipse cx='20.8' cy='72.8' rx='2.6' ry='6' transform='rotate%28267 20.8 72.8%29'/%3E%3C/svg%3E") center/100% 100% no-repeat;pointer-events:none}
 .mitad::before{background:rgba(255,255,255,.30);transform:translate(-.6px,-.6px)}
 .mitad::after{background:rgba(0,0,0,.24);transform:translate(.6px,.8px)}
+.sello-emblema{width:74%;height:74%;display:block;overflow:visible;filter:drop-shadow(0 .8px 0 rgba(255,255,255,.38)) drop-shadow(0 -.8px .4px rgba(0,0,0,.42))}
+.con-emblema .mitad::before,.con-emblema .mitad::after{display:none}
+.sobre-para strong.manuscrita{font-family:'Great Vibes',var(--f-titulo),cursive;font-size:52px;line-height:1.15;letter-spacing:0;padding:0 .15em}
 .abierto .sello{animation:temblar .28s ease}
 .abierto .sello::before{opacity:0}
 .abierto .sello::after{animation:none;opacity:0}
@@ -1255,7 +1271,10 @@ a.regalo:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.08)
       html += `<div class="firma-tf">${a}Invitación hecha por <b>${esc(N.marca)}</b>${N.sitio ? '<em>¿Quieres una así? →</em></a>' : '</span>'}</div>`;
     }
     const titulo = aparta ? `${titular(d)} · Aparta la fecha` : conNombre(ev(d).titulo, d);
-    return { d, p, html, aparta, css: CSS_BASE + '\n' + (p.css || ''), fuentes: p.fuentes || '', titulo, descripcion: `${fechaInfo(d).larga}${d.ciudad ? ' — ' + d.ciudad : ''}` };
+    // Letra manuscrita del nombre en el sobre: se agrega Great Vibes a las fuentes del diseño
+    let fuentes = p.fuentes || '';
+    if (d.letraSobre === 'manuscrita' && !/Great\+Vibes/.test(fuentes)) fuentes = /fonts\.googleapis\.com\/css2\?/.test(fuentes) ? fuentes.replace('css2?', 'css2?family=Great+Vibes&') : 'https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap';
+    return { d, p, html, aparta, css: CSS_BASE + '\n' + (p.css || ''), fuentes, titulo, descripcion: `${fechaInfo(d).larga}${d.ciudad ? ' — ' + d.ciudad : ''}` };
   }
 
   function montar(datos, opciones = {}) {
