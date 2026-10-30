@@ -146,14 +146,14 @@
         ${V.sello ? `<span class="hs-sello" aria-hidden="true">${e(ini1)}${e(ini2)}</span>` : ''}
         <p class="hs-fecha">${String(f.dia).padStart(2, '0')}.${f.mesNum}.${f.anio}</p>
       </header>
-      <div class="ed-tira">${flores('t-izq')}${flores('t-der')}</div>
+      <div class="ed-tira">${flores('t-centro')}</div>
       <section class="ed-sec ed-intro">
         ${S.hay(d.textoFamilia) && false ? '' : ''}${frase}${mono}
         <div class="ed-portada-caja">${fotoPortada.replace('<img', `<p class="ed-sobre-foto">${e(d.introPortada)}</p><img`).replace('<span>', `<p class="ed-sobre-foto">${e(d.introPortada)}</p><span>`)}</div>
       </section>`;
     } else if (E === 'acuarela') {
       portada = `<header class="ed-hero hero-acuarela">
-        ${flores('esq-izq')}${flores('esq-der')}
+        ${flores('arriba')}
         ${frase}${mono}
         <p class="ed-eyebrow rv">${e(d.introPortada)}</p>
       </header>
@@ -224,7 +224,7 @@ ${S.sobre(d)}
   ${S.regalos(d, { clase: cls('regalos') })}
   ${S.rsvp(d, { clase: cls('rsvp') })}
   ${S.extras(d, { hospedaje: { clase: cls('hospedaje') }, deseos: { clase: 'ed-sec' }, canciones: { clase: 'ed-sec' }, contactos: { clase: 'ed-sec' }, mesa: { clase: 'ed-sec' }, acceso: { clase: 'ed-sec' } })}
-  <div class="ed-tira">${flores('t-izq')}${flores('t-der')}</div>
+  <div class="ed-divisor">${flores('t-centro')}</div>
   ${S.cierre(d, { clase: 'ed-pie', antes: gal[2] ? foto(gal[2].src, 'f-cierre', `<span class="ed-mono-foto">${e(ini1)} | ${e(ini2)}</span>`) : '' })}
 </main>`;
   }
@@ -280,9 +280,11 @@ ${E === 'artesanal' ? `body.plantilla-${id}{background:${c.papel} ${PAPEL_ALGODO
 
 /* Flores */
 .ed-flores{display:block;pointer-events:none}
-.ed-tira{display:flex;justify-content:space-between;align-items:flex-start;height:0;position:relative;z-index:3}
-.ed-tira .ed-flores{width:190px;margin-top:-50px}
-.ed-tira .t-der{transform:scaleX(-1)}
+.ed-tira{display:flex;justify-content:center;align-items:flex-start;height:0;position:relative;z-index:3}
+.ed-tira .ed-flores{width:270px;margin-top:-64px}
+.ed-divisor{padding:0}
+.ed-divisor+.ed-pie{padding-top:24px}
+.ed-divisor .ed-flores{width:230px;margin:0 auto}
 .ed-tira.grande{justify-content:center;height:auto}
 .ed-tira.grande .ed-flores{width:min(420px,108%);margin:-70px auto -30px}
 
@@ -378,14 +380,12 @@ body.plantilla-${id} .firma-tf{color:var(--tinta)}
 .ed-nombres i{font-style:normal;font-size:.55em;opacity:.85}
 .hs-sello{position:relative;width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e3c677,#b28d3f 60%,#86662a);color:#6d511e;display:flex;align-items:center;justify-content:center;font-family:var(--f-script);font-size:22px;box-shadow:inset 0 0 0 4px rgba(255,255,255,.18),0 4px 10px rgba(0,0,0,.35)}
 .hs-fecha{position:relative;z-index:1;font-size:14px;letter-spacing:.2em}
-.e-sobre .ed-intro{padding-top:96px}
+.e-sobre .ed-intro{padding-top:124px}
 .e-sobre .ed-fecha{padding-bottom:50px}
 
 /* ---- Estilo: acuarela ---- */
-.hero-acuarela{position:relative;padding:150px 24px 26px;text-align:center}
-.hero-acuarela .ed-flores{position:absolute;top:-18px;width:250px}
-.hero-acuarela .esq-izq{left:-36px;transform:rotate(-14deg)}
-.hero-acuarela .esq-der{right:-36px;transform:scaleX(-1) rotate(-14deg)}
+.hero-acuarela{position:relative;padding:28px 24px 26px;text-align:center}
+.hero-acuarela .ed-flores{width:290px;margin:0 auto 8px}
 .e-acuarela .ed-portada-foto{max-width:none;margin:0 -0px}
 .e-acuarela .ed-portada-foto img{aspect-ratio:4/4.6}
 .e-acuarela .lavado{background:radial-gradient(ellipse 60% 40% at 30% 30%,color-mix(in srgb,var(--acento) 14%,transparent),transparent 70%),radial-gradient(ellipse 70% 45% at 75% 70%,color-mix(in srgb,var(--acento) 12%,transparent),transparent 70%),color-mix(in srgb,var(--acento) 6%,var(--fondo));-webkit-mask:${RASGADOS.ambos} center/100% 100%;mask:${RASGADOS.ambos} center/100% 100%;color:var(--tinta)}
