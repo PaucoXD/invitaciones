@@ -133,7 +133,7 @@
     if (!pedidos.length) return '';
     const nuevos = pedidos.filter(p => p.estado === 'Nuevo').length;
     const lista = verPedidos ? pedidos : pedidos.slice(0, 3);
-    const PL = { floral: 'Floral Romántica', rustica: 'Rústica Campestre', boho: 'Boho Terracota', dorada: 'Elegante Negro y Dorado', vino: 'Vino y Olivo', botanica: 'Jardín Botánico', princesa: 'Princesa Rosa', mariposas: 'Mariposas Lila', gala: 'Noche de Gala', nube: 'Cielo Tierno', paloma: 'Paloma', caliz: 'Cáliz', globos: 'Globos', confeti: 'Confeti' };
+    const PL = { floral: 'Floral Romántica', rustica: 'Rústica Campestre', boho: 'Boho Terracota', dorada: 'Elegante Negro y Dorado', vino: 'Vino y Olivo', botanica: 'Jardín Botánico', princesa: 'Princesa Rosa', mariposas: 'Mariposas Lila', gala: 'Noche de Gala', nube: 'Cielo Tierno', paloma: 'Paloma', caliz: 'Cáliz', globos: 'Globos', confeti: 'Confeti', 'ed-cafe': 'Editorial Café', 'ed-navy': 'Editorial Navy', 'ed-vino': 'Editorial Vino', 'ed-terracota': 'Editorial Terracota', 'ed-salvia': 'Editorial Salvia', 'ed-esmeralda': 'Editorial Esmeralda', 'ed-artesanal': 'Editorial Artesanal' };
     const PAGO = { 'Pagado': ['ok', '✓ Anticipo pagado'], 'Comprobante recibido': ['pend', '📎 Comprobante recibido · revisa tu banco'], 'Pendiente': ['', '💳 Anticipo pendiente'] };
     return `<section class="pedidos"><div class="ped-cab"><h2>📝 Pedidos de clientes ${nuevos ? `<span class="nuevo">${nuevos} ${nuevos === 1 ? 'nuevo' : 'nuevos'}</span>` : ''}</h2>
         ${pedidos.length > 3 ? `<button class="b" id="ver-ped">${verPedidos ? 'Ver menos' : `Ver los ${pedidos.length}`}</button>` : ''}</div>

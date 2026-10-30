@@ -35,6 +35,7 @@
 <script src="plantillas/caliz.js"></script>
 <script src="plantillas/globos.js"></script>
 <script src="plantillas/confeti.js"></script>
+<script src="plantillas/editorial.js"></script>
 <script src="bodas/ejemplo.js"></script>
 <script src="bodas/ejemplo-xv.js"></script>
 <script src="bodas/ejemplos-eventos.js"></script>
@@ -89,7 +90,10 @@
     var pl = Invitacion.plantillas[q.get('plantilla')];
     var ev = q.get('evento') || (pl && pl.eventos && pl.eventos[0]) || 'boda';
     if (pl && pl.eventos && pl.eventos.indexOf(ev) < 0) ev = pl.eventos[0];
-    mostrar(window.ejemploDe ? window.ejemploDe(ev) || window.INVITACION : window.INVITACION);
+    var ej = window.ejemploDe ? window.ejemploDe(ev) || window.INVITACION : window.INVITACION;
+    // Diseños de fotos (Editorial): el ejemplo lleva fotos de muestra para que la demo se vea completa
+    if (pl && pl.fotosEjemplo && !ej.fotoPortada) ej = Object.assign({}, ej, pl.fotosEjemplo(ej, ''));
+    mostrar(ej);
   }
 })();
 </script>
