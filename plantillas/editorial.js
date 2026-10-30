@@ -420,7 +420,14 @@ body.plantilla-${id} .firma-tf{color:var(--tinta)}
 .e-artesanal .corona{width:200px;margin:18px auto 0;color:var(--tinta)}
 .e-artesanal .btn,.e-artesanal .ed-pill,.e-artesanal .rep-play{border-radius:2px;background:var(--banda);color:#fff}
 .e-artesanal .titulo{font-size:clamp(34px,9vw,42px)}
-@media (min-width:700px){.ed .ed-portada-foto{max-width:520px}.e-acuarela .ed-portada-foto{max-width:560px}}`;
+/* Pantallas anchas (laptop): la invitación se ve como una hoja vertical al centro, como en el celular */
+@media (min-width:700px){
+  body.plantilla-${id}{background:${E === 'esmeralda' ? '#08130f' : `color-mix(in srgb,${c.banda} 22%,${c.papel})`} fixed}
+  .ed{max-width:500px;margin:0 auto;background:${c.papel} ${E === 'artesanal' ? PAPEL_ALGODON : PAPEL};box-shadow:0 30px 70px -20px rgba(0,0,0,.35),0 0 0 1px rgba(0,0,0,.04)}
+  .ed .ed-portada-foto{max-width:none}
+  .hero-esmeralda{min-height:760px}
+  body.plantilla-${id} .firma-tf{max-width:500px;margin-left:auto;margin-right:auto}
+}`;
   }
 
   VARIANTES.forEach(V => {

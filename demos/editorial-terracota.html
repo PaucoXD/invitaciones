@@ -566,7 +566,14 @@ body.plantilla-ed-terracota .firma-tf{color:var(--tinta)}
 .e-artesanal .corona{width:200px;margin:18px auto 0;color:var(--tinta)}
 .e-artesanal .btn,.e-artesanal .ed-pill,.e-artesanal .rep-play{border-radius:2px;background:var(--banda);color:#fff}
 .e-artesanal .titulo{font-size:clamp(34px,9vw,42px)}
-@media (min-width:700px){.ed .ed-portada-foto{max-width:520px}.e-acuarela .ed-portada-foto{max-width:560px}}</style>
+/* Pantallas anchas (laptop): la invitación se ve como una hoja vertical al centro, como en el celular */
+@media (min-width:700px){
+  body.plantilla-ed-terracota{background:color-mix(in srgb,#c06a3d 22%,#f7f3ed) fixed}
+  .ed{max-width:500px;margin:0 auto;background:#f7f3ed url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22260%22%20height%3D%22260%22%3E%3Cfilter%20id%3D%22p%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%22.8%22%20numOctaves%3D%224%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20values%3D%220%200%200%200%20.45%20%200%200%200%200%20.4%20%200%200%200%200%20.35%20%200%200%200%20.22%200%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22260%22%20height%3D%22260%22%20filter%3D%22url(%23p)%22%2F%3E%3C%2Fsvg%3E");box-shadow:0 30px 70px -20px rgba(0,0,0,.35),0 0 0 1px rgba(0,0,0,.04)}
+  .ed .ed-portada-foto{max-width:none}
+  .hero-esmeralda{min-height:760px}
+  body.plantilla-ed-terracota .firma-tf{max-width:500px;margin-left:auto;margin-right:auto}
+}</style>
 </head>
 <body class="plantilla-ed-terracota">
 <input type="text" id="inv-trampa" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
