@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<!-- Plantilla de las imágenes publicitarias. Uso: pieza.html?c=papel|disenos|panel&f=1x1|4x5|9x16
+     render.js la abre en Chromium y toma la captura al tamaño exacto. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@500;600;700;800&display=swap" />
+<style>
+  /* Marca Tu Fecha (la misma del video "El papel ya fue") */
+  :root {
+    --bg: #faf6f1; --bg2: #f3ece3; --ink: #2e2721; --muted: #72685e;
+    --accent: #8a5d53; --accent2: #c4968a; --dark: #262423; --wa: #1f9d55;
+    --serif: 'Cormorant Garamond', Georgia, serif; --sans: Inter, system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: var(--w); height: var(--h); overflow: hidden; }
+  body { font-family: var(--sans); color: var(--ink); }
+  #pieza { position: relative; width: var(--w); height: var(--h); overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: var(--pad) 70px; gap: var(--gap); }
+  .oscuro { background: radial-gradient(120% 80% at 50% 30%, #3a3532 0%, var(--dark) 70%); color: #f3ece3; }
+  .claro { background: radial-gradient(110% 70% at 50% 35%, #fffaf4 0%, var(--bg) 55%, var(--bg2) 100%); }
+
+  /* Logo */
+  .logo { display: flex; align-items: center; gap: 22px; flex: none; }
+  .logo svg { width: 84px; height: 84px; }
+  .logo b { display: block; font-family: var(--serif); font-weight: 500; font-size: 62px; line-height: .95; }
+  .logo small { display: block; font-size: 15px; letter-spacing: .42em; color: var(--accent2); font-weight: 600; margin-top: 6px; }
+  .claro .logo small { color: var(--accent); }
+
+  /* Textos */
+  .titulo { text-align: center; flex: none; }
+  .titulo h1 { font-family: var(--serif); font-weight: 600; font-size: var(--t1); line-height: 1; letter-spacing: -0.01em; }
+  .titulo h1 i { color: var(--accent2); }
+  .claro .titulo h1 i { color: var(--accent); }
+  .titulo p { font-weight: 700; font-size: var(--t2); line-height: 1.2; letter-spacing: -0.02em; margin-top: 18px; }
+  .titulo p.eventos { font-size: calc(var(--t2) * .78); color: var(--muted); font-weight: 600; letter-spacing: 0; line-height: 1.35; }
+  .titulo p b { color: var(--accent2); }
+  .claro .titulo p b { color: var(--accent); }
+  .eti { display: inline-block; background: var(--accent); color: #fff; border-radius: 999px; padding: 10px 26px; font-size: 24px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 20px; }
+
+  /* Zona visual (ocupa lo que sobra) */
+  .visual { position: relative; flex: 1 1 0; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: center; }
+
+  /* Celular */
+  .tel { position: relative; height: 100%; aspect-ratio: 1170 / 2532; border-radius: 9% / 4.2%; background: #1b1918; padding: 2.6%; box-shadow: 0 50px 90px -30px rgba(0,0,0,.6), 0 0 0 3px #3b3633 inset; flex: none; }
+  .claro .tel { box-shadow: 0 50px 90px -30px rgba(60,35,20,.55), 0 0 0 3px #3b3633 inset; }
+  .tel img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 7.5% / 3.5%; display: block; }
+  .tel::after { content: ''; position: absolute; top: 2.4%; left: 50%; width: 26%; height: 2.6%; margin-left: -13%; background: #1b1918; border-radius: 99px; }
+  .tel.atras { position: absolute; transform: rotate(-9deg) translate(-62%, 3%); opacity: .95; height: 88%; }
+  .tel.adelante { transform: rotate(5deg) translateX(18%); z-index: 2; }
+
+  /* Etiquetas de funciones */
+  .chips { position: absolute; inset: 0; z-index: 5; }
+  .chip { position: absolute; display: flex; align-items: center; gap: 14px; background: #fff; color: var(--ink); border-radius: 999px; padding: 14px 30px 14px 16px; font-weight: 700; font-size: var(--chip); white-space: nowrap; box-shadow: 0 18px 40px -12px rgba(60,35,20,.45); }
+  .chip .ic { width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; flex: none; }
+  .chip .ic svg { width: 58%; height: 58%; stroke: #fff; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Panel: celular a la izquierda y funciones en columna */
+  .visual.fila { gap: 40px; }
+  .lista { display: flex; flex-direction: column; justify-content: center; gap: calc(var(--chip) * .8); flex: 0 1 auto; }
+  .lista .chip { position: static; white-space: normal; border-radius: 28px; line-height: 1.15; max-width: 470px; }
+
+  /* Mosaico de diseños */
+  .mosaico { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 20px; height: 100%; width: 100%; }
+  .carta { position: relative; border-radius: 22px; overflow: hidden; background: #fff; box-shadow: 0 20px 40px -22px rgba(60,35,20,.55); min-height: 0; }
+  .carta img { width: 100%; height: 100%; object-fit: cover; object-position: 50% var(--y, 30%); display: block; }
+  .carta span { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); background: rgba(255,255,255,.94); color: var(--ink); border-radius: 999px; padding: 6px 16px; font-size: 19px; font-weight: 700; white-space: nowrap; }
+
+  /* Llamado a la acción */
+  .cta { flex: none; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .wa-btn { display: flex; align-items: center; gap: 20px; background: var(--wa); color: #fff; border-radius: 999px; padding: 24px 54px; font-size: var(--wa-t); font-weight: 800; box-shadow: 0 26px 50px -20px rgba(31,157,85,.75); }
+  .wa-btn svg { width: 1.25em; height: 1.25em; fill: #fff; }
+  .wa-btn small { display: block; font-size: .5em; font-weight: 600; opacity: .9; letter-spacing: .02em; }
+  .sitio { font-size: var(--sitio); font-weight: 600; color: var(--muted); }
+  .oscuro .sitio { color: #cfc3b6; }
+  .lema { font-family: var(--serif); font-style: italic; font-size: var(--sitio); color: var(--muted); }
+</style>
+</head>
+<body>
+<div id="pieza"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const C = q.get('c') || 'papel', F = q.get('f') || '1x1';
+
+// Tamaños por formato
+const FORMATOS = {
+  '1x1':  { w: 1080, h: 1080, pad: 50, gap: 26, t1: 84, t2: 36, chip: 26, wa: 40, sitio: 26, cols: 4 },
+  '4x5':  { w: 1080, h: 1350, pad: 64, gap: 36, t1: 96, t2: 40, chip: 30, wa: 44, sitio: 28, cols: 4 },
+  '9x16': { w: 1080, h: 1920, pad: 130, gap: 48, t1: 118, t2: 50, chip: 34, wa: 50, sitio: 32, cols: 4 }
+};
+const f = FORMATOS[F], r = document.documentElement.style;
+for (const [k, v] of Object.entries({ w: f.w + 'px', h: f.h + 'px', pad: f.pad + 'px', gap: f.gap + 'px', t1: f.t1 + 'px', t2: f.t2 + 'px', chip: f.chip + 'px', 'wa-t': f.wa + 'px', sitio: f.sitio + 'px', cols: f.cols })) r.setProperty('--' + k, v);
+
+// Datos tomados de negocio.js
+const WHATS = '+52 81 2341 2206', SITIO = 'paucoxd.github.io/invitaciones';
+const ICONOS = {
+  musica: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  reloj: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>',
+  mapa: '<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  ok: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  persona: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+  mesa: '<path d="M5 11V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5M3 11h18v5H3zM6 16v4M18 16v4"/>',
+  qr: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/>',
+  campana: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/>'
+};
+const chip = (ic, txt, css) => `<div class="chip" style="${css}"><span class="ic"><svg viewBox="0 0 24 24">${ICONOS[ic]}</svg></span>${txt}</div>`;
+const LOGO_TRAZO = C === 'papel' ? '#f6eeea' : '#262423';
+const logo = `<div class="logo"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="none" stroke="${LOGO_TRAZO}" stroke-width="1.6"/><text x="30" y="41" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-style="italic" font-size="26" fill="${LOGO_TRAZO}">tf</text><path d="M44 21.5c-1.6-2.2-4.6-.8-3.6 1.6.6 1.4 3.6 3.6 3.6 3.6s3-2.2 3.6-3.6c1-2.4-2-3.8-3.6-1.6z" fill="#c4968a"/></svg><div><b>Tu Fecha</b><small>INVITACIONES DIGITALES</small></div></div>`;
+const wa = `<div class="wa-btn"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2.1 1-2.4c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.7-.1l.9-1.1c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.5.3.1.2.1.7-.1 1.2z"/></svg><div>${WHATS}<small>Escríbenos por WhatsApp</small></div></div>`;
+const cta = (extra = '') => `<div class="cta">${wa}<div class="sitio">${SITIO}</div>${extra}</div>`;
+const cap = n => `capturas/${n}.jpg`;
+
+const pieza = document.getElementById('pieza');
+const vertical = F === '9x16';
+
+if (C === 'papel') {
+  pieza.className = 'oscuro';
+  const ch = F === '1x1'
+    ? [['musica', 'Tu música', 'left:0;top:6%'], ['reloj', 'Cuenta regresiva', 'right:0;top:24%'], ['mapa', 'Mapa', 'left:3%;top:62%'], ['ok', 'Confirmación', 'right:2%;top:72%']]
+    : [['musica', 'Tu música', 'left:0;top:8%'], ['reloj', 'Cuenta regresiva', 'right:0;top:26%'], ['mapa', 'Mapa', 'left:2%;top:50%'], ['persona', 'Su nombre', 'right:2%;top:62%'], ['ok', 'Confirmación', 'left:4%;top:80%']];
+  pieza.innerHTML = `${logo}
+    <div class="titulo"><h1>El papel <i>ya fue.</i></h1>
+      <p>Tu invitación llega por <b>WhatsApp</b><br>y se abre como un sobre.</p></div>
+    <div class="visual">
+      <div class="tel atras"><img src="${cap('vino-sobre-cerrado')}"></div>
+      <div class="tel adelante"><img src="${cap('vino-portada')}"></div>
+      <div class="chips">${ch.map(c => chip(...c)).join('')}</div>
+    </div>
+    ${cta()}`;
+}
+
+if (C === 'disenos') {
+  pieza.className = 'claro';
+  // [captura, evento que muestra la demo, foco vertical]
+  const todos = [
+    ['vino-portada', 'Boda', '72%'], ['princesa-portada', 'XV años', '52%'], ['paloma-portada', 'Bautizo', '45%'], ['confeti-portada', 'Cumpleaños', '22%'],
+    ['floral-portada', 'Boda', '28%'], ['gala-portada', 'XV años', '30%'], ['caliz-portada', 'Primera comunión', '22%'], ['globos-portada', 'Baby shower', '58%'],
+    ['dorada-portada', 'Boda', '28%'], ['mariposas-portada', 'XV años', '72%'], ['nube-portada', 'Bautizo', '62%'], ['boho-portada', 'Boda', '45%']
+  ];
+  const n = F === '1x1' ? 8 : 12;
+  pieza.innerHTML = `${logo}
+    <div class="titulo"><h1><i>14</i> diseños</h1>
+      <p class="eventos">Boda · XV años · Bautizo · Primera comunión<br>Baby shower · Cumpleaños</p></div>
+    <div class="visual"><div class="mosaico" style="grid-template-rows:repeat(${Math.ceil(n / f.cols)},1fr)">
+      ${todos.slice(0, n).map(([img, ev, y]) => `<div class="carta" style="--y:${y}"><img src="${cap(img)}"><span>${ev}</span></div>`).join('')}
+    </div></div>
+    ${cta(vertical ? '<div class="lema">Mira todos los diseños en nuestra página</div>' : '')}`;
+}
+
+if (C === 'panel') {
+  pieza.className = 'claro';
+  const ch = [['ok', 'Confirmaciones automáticas'], ['persona', 'Quién confirmó y quién falta'], ['campana', 'Recordatorios por WhatsApp'], ['mesa', 'Plano de mesas y mesa de cada invitado'], ['qr', 'Pase de entrada con QR']];
+  pieza.innerHTML = `${logo}
+    <div class="titulo"><span class="eti">Paquete Premium</span><h1>¿Quién va <i>a ir?</i></h1>
+      <p>Las confirmaciones llegan solas${vertical ? '<br>' : ' '}a tu panel.</p></div>
+    <div class="visual fila">
+      <div class="tel"><img src="${cap('panel')}"></div>
+      <div class="lista">${ch.map(([ic, t]) => chip(ic, t, '')).join('')}</div>
+    </div>
+    ${cta()}`;
+}
+</script>
+</body>
+</html>
