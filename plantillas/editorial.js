@@ -142,7 +142,6 @@
     let portada;
     if (E === 'sobre') {
       portada = `<header class="ed-hero hero-sobre">
-        <svg class="hs-solapa" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0H100V20C78 36 60 48 53.5 52.5Q50 55 46.5 52.5C40 48 22 36 0 20Z"/></svg>
         ${nombresScript}
         ${V.sello ? `<span class="hs-sello" aria-hidden="true">${e(ini1)}${e(ini2)}</span>` : ''}
         <p class="hs-fecha">${String(f.dia).padStart(2, '0')}.${f.mesNum}.${f.anio}</p>
@@ -374,13 +373,11 @@ body.plantilla-${id} .firma-tf{color:var(--tinta)}
 .ed .pie .ed-foto{margin-top:6px}
 
 /* ---- Estilo: sobre ---- */
-.hero-sobre{position:relative;background:var(--banda);color:var(--sobre-banda);padding:60px 20px 74px;text-align:center;min-height:330px;display:flex;flex-direction:column;align-items:center;justify-content:space-between}
-.hs-solapa{position:absolute;left:0;right:0;top:0;width:100%;height:78%;fill:var(--banda-osc);filter:drop-shadow(0 8px 10px rgba(0,0,0,.28))}
+.hero-sobre{position:relative;background:var(--banda);color:var(--sobre-banda);padding:64px 20px 78px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:22px}
 .hero-sobre .ed-nombres{position:relative;z-index:1;font-family:var(--f-script);font-weight:400;font-size:clamp(44px,13vw,60px);line-height:1.08;display:flex;flex-direction:column;align-items:center}
 .ed-nombres i{font-style:normal;font-size:.55em;opacity:.85}
-.hs-sello{position:absolute;left:50%;top:70%;transform:translate(-50%,-62%);width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e3c677,#b28d3f 60%,#86662a);color:#6d511e;display:flex;align-items:center;justify-content:center;font-family:var(--f-script);font-size:22px;box-shadow:inset 0 0 0 4px rgba(255,255,255,.18),0 4px 10px rgba(0,0,0,.35)}
-.hs-fecha{position:relative;z-index:1;font-size:14px;letter-spacing:.2em;margin-top:96px}
-.hs-sello+.hs-fecha{margin-top:150px}
+.hs-sello{position:relative;width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e3c677,#b28d3f 60%,#86662a);color:#6d511e;display:flex;align-items:center;justify-content:center;font-family:var(--f-script);font-size:22px;box-shadow:inset 0 0 0 4px rgba(255,255,255,.18),0 4px 10px rgba(0,0,0,.35)}
+.hs-fecha{position:relative;z-index:1;font-size:14px;letter-spacing:.2em}
 .e-sobre .ed-intro{padding-top:96px}
 .e-sobre .ed-fecha{padding-bottom:50px}
 
