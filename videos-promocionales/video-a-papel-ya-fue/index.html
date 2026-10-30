@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@500;600;700;800&display=swap" />
+    <!-- GSAP local (vendor/) para no depender del CDN -->
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      /* Marca Tu Fecha (index.html del repo) */
+      :root {
+        --bg: #faf6f1;
+        --bg2: #f3ece3;
+        --ink: #2e2721;
+        --muted: #72685e;
+        --accent: #8a5d53;
+        --accent2: #c4968a;
+        --dark: #262423;
+        --wa: #1f9d55;
+        --serif: 'Cormorant Garamond', Georgia, serif;
+        --sans: Inter, system-ui, sans-serif;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--dark); }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: var(--sans); }
+      .clip { position: absolute; inset: 0; }
+
+      /* ---------- Escena 1: gancho ---------- */
+      #s1 { background: radial-gradient(120% 80% at 50% 30%, #3a3532 0%, var(--dark) 70%); overflow: hidden; }
+      .s1-top { position: absolute; top: 250px; left: 0; right: 0; text-align: center; color: #f3ece3; font-family: var(--sans); font-weight: 700; font-size: 64px; letter-spacing: -0.02em; }
+      .s1-num { position: absolute; top: 340px; left: 0; right: 0; text-align: center; font-family: var(--serif); font-weight: 600; font-size: 330px; line-height: 1; color: var(--accent2); }
+      .s1-sub { position: absolute; top: 690px; left: 0; right: 0; text-align: center; color: #f3ece3; font-weight: 700; font-size: 72px; letter-spacing: -0.02em; }
+      .s1-q { position: absolute; z-index: 5; text-shadow: 0 6px 24px rgba(0,0,0,.7); top: 1520px; left: 60px; right: 60px; text-align: center; color: #fff; font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 92px; line-height: 1.05; }
+      .s1-q b { color: var(--accent2); font-style: normal; }
+      .pila { position: absolute; left: 340px; top: 900px; width: 400px; height: 560px; }
+      .papel { position: absolute; left: 0; top: 0; width: 400px; height: 540px; background: #fbf8f2; border-radius: 6px; box-shadow: 0 18px 40px rgba(0,0,0,.45); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; outline: 2px solid #e8dfd3; outline-offset: -18px; }
+      .papel small { font-size: 18px; letter-spacing: .4em; color: #8a7f74; text-transform: uppercase; }
+      .papel span { font-family: var(--serif); font-size: 64px; color: #6b5a4c; line-height: 1; }
+      .papel i { width: 120px; height: 2px; background: #d9cbbb; }
+
+      /* ---------- Escena 2: el teléfono ---------- */
+      #s2 { background: radial-gradient(110% 70% at 50% 35%, #fffaf4 0%, var(--bg) 55%, var(--bg2) 100%); overflow: hidden; }
+      .marca-top { position: absolute; top: 46px; left: 0; right: 0; display: flex; justify-content: center; }
+      .marca-top img { height: 92px; }
+      .tel { position: absolute; left: 252px; top: 168px; width: 576px; height: 1220px; border-radius: 74px; background: #1b1918; padding: 16px; box-shadow: 0 50px 90px -30px rgba(60,35,20,.55), 0 0 0 3px #3b3633 inset; }
+      .pantalla { position: relative; width: 544px; height: 1188px; border-radius: 60px; overflow: hidden; background: #f1ebe4; }
+      .pantalla > .capa { position: absolute; inset: 0; }
+      .pantalla img.full { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .notch { position: absolute; top: 14px; left: 50%; width: 150px; height: 38px; margin-left: -75px; background: #1b1918; border-radius: 22px; z-index: 20; }
+      /* WhatsApp */
+      .wa { background: #efe7de; }
+      .wa-head { height: 170px; background: #075e54; display: flex; align-items: flex-end; gap: 18px; padding: 0 28px 22px; color: #fff; }
+      .wa-av { width: 70px; height: 70px; border-radius: 50%; background: var(--accent2) url(assets/tufecha-icono.png) center/80% no-repeat; background-color: #fff; }
+      .wa-head b { display: block; font-size: 30px; font-weight: 600; }
+      .wa-head small { font-size: 21px; opacity: .8; }
+      .wa-msg { position: absolute; right: 22px; top: 240px; width: 410px; background: #d9fdd3; border-radius: 22px 6px 22px 22px; padding: 12px; box-shadow: 0 2px 4px rgba(0,0,0,.12); }
+      .wa-msg img { width: 100%; height: 300px; object-fit: cover; object-position: 50% 64%; border-radius: 14px; display: block; }
+      .wa-msg p { font-size: 25px; color: #1d2b26; padding: 12px 6px 2px; line-height: 1.3; }
+      .wa-msg p u { color: #027eb5; text-decoration: none; }
+      .wa-msg em { display: block; text-align: right; font-style: normal; font-size: 19px; color: #6f7d77; padding-right: 6px; }
+      .wa-msg2 { position: absolute; left: 22px; top: 760px; background: #fff; border-radius: 6px 22px 22px 22px; padding: 16px 22px; font-size: 26px; color: #1d2b26; box-shadow: 0 2px 4px rgba(0,0,0,.12); }
+      .toque { position: absolute; width: 110px; height: 110px; margin: -55px 0 0 -55px; border-radius: 50%; background: rgba(255,255,255,.55); border: 4px solid rgba(255,255,255,.95); box-shadow: 0 0 0 10px rgba(196,150,138,.35); z-index: 30; opacity: 0; }
+      /* etiquetas de funciones */
+      .chip { position: absolute; display: flex; align-items: center; gap: 16px; background: #fff; color: var(--ink); border-radius: 999px; padding: 18px 34px 18px 20px; font-weight: 700; font-size: 38px; box-shadow: 0 18px 40px -12px rgba(60,35,20,.4); opacity: 0; white-space: nowrap; z-index: 40; }
+      .chip .ic { width: 62px; height: 62px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+      .chip .ic svg { width: 34px; height: 34px; stroke: #fff; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+      .chip.izq { left: 40px; }
+      .chip.der { right: 40px; }
+      /* cambio de hora */
+      .hora { position: absolute; left: 140px; right: 140px; top: 520px; background: #fff; border-radius: 40px; padding: 56px 40px 50px; text-align: center; box-shadow: 0 40px 90px -30px rgba(60,35,20,.6); opacity: 0; z-index: 50; }
+      .hora small { font-size: 28px; letter-spacing: .35em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+      .hora h3 { font-family: var(--serif); font-size: 76px; color: var(--ink); font-weight: 600; margin: 8px 0 20px; }
+      .reloj { position: relative; height: 170px; overflow: hidden; }
+      .reloj div { position: absolute; left: 0; right: 0; font-family: var(--sans); font-weight: 800; font-size: 150px; line-height: 170px; letter-spacing: -0.04em; color: var(--accent); }
+      .ok { display: inline-flex; align-items: center; gap: 12px; margin-top: 26px; background: #e6f6ec; color: #17733f; border-radius: 999px; padding: 14px 30px; font-weight: 700; font-size: 32px; opacity: 0; }
+      .noenvio { margin-top: 22px; font-size: 32px; font-weight: 600; color: var(--muted); opacity: 0; }
+      .velo { position: absolute; left: 0; right: 0; top: 0; height: 1500px; background: linear-gradient(to bottom, rgba(38,36,35,.55) 78%, rgba(38,36,35,0) 100%); opacity: 0; z-index: 45; }
+      /* subtítulos */
+      .subs { position: absolute; left: 50px; right: 50px; top: 1440px; height: 260px; z-index: 60; }
+      .sub { position: absolute; left: 0; right: 0; top: 0; text-align: center; font-weight: 800; font-size: 66px; line-height: 1.12; letter-spacing: -0.02em; color: var(--ink); opacity: 0; }
+      .sub b { color: var(--accent); }
+
+      /* ---------- Escena 3: cierre ---------- */
+      #s3 { background: radial-gradient(120% 80% at 50% 25%, #3a3532 0%, var(--dark) 70%); overflow: hidden; }
+      .evs { position: absolute; top: 210px; left: 60px; right: 60px; display: flex; flex-wrap: wrap; justify-content: center; gap: 26px; }
+      .ev { background: rgba(255,255,255,.08); border: 2px solid rgba(196,150,138,.6); color: #f3ece3; border-radius: 999px; padding: 22px 44px; font-size: 52px; font-weight: 700; opacity: 0; }
+      .s3-logo { position: absolute; top: 640px; left: 0; right: 0; display: flex; justify-content: center; opacity: 0; }
+      .s3-logo span { background: #faf6f1; border-radius: 36px; padding: 34px 54px; box-shadow: 0 30px 60px -25px rgba(0,0,0,.6); }
+      .s3-logo img { width: 620px; display: block; }
+      .s3-lema { position: absolute; top: 900px; left: 0; right: 0; text-align: center; font-family: var(--serif); font-style: italic; font-size: 56px; color: #e9ded2; opacity: 0; }
+      .wa-btn { position: absolute; left: 110px; right: 110px; top: 1080px; height: 170px; border-radius: 999px; background: var(--wa); color: #fff; display: flex; align-items: center; justify-content: center; gap: 24px; font-size: 52px; font-weight: 800; box-shadow: 0 30px 60px -20px rgba(31,157,85,.7); opacity: 0; }
+      .wa-btn svg { width: 72px; height: 72px; fill: #fff; }
+      .tel-num { position: absolute; top: 1290px; left: 0; right: 0; text-align: center; color: #fff; font-size: 58px; font-weight: 700; letter-spacing: .02em; opacity: 0; }
+      .aparta { position: absolute; top: 1420px; left: 0; right: 0; text-align: center; font-family: var(--serif); font-weight: 600; font-size: 110px; color: var(--accent2); opacity: 0; }
+      .sitio { position: absolute; top: 1600px; left: 0; right: 0; text-align: center; color: #cfc3b6; font-size: 38px; font-weight: 600; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+
+      <!-- ===== Escena 1: gancho (0 – 5.45 s) ===== -->
+      <div id="s1" class="clip" data-start="0" data-duration="5.45" data-track-index="0">
+        <div class="s1-top" id="s1-top">¿Todavía vas a imprimir</div>
+        <div class="s1-num" id="s1-num">0</div>
+        <div class="s1-sub" id="s1-sub">invitaciones?</div>
+        <div class="pila" id="pila">
+          <div class="papel"><small>Nos casamos</small><span>A &amp; M</span><i></i></div>
+          <div class="papel"><small>Nos casamos</small><span>A &amp; M</span><i></i></div>
+          <div class="papel"><small>Nos casamos</small><span>A &amp; M</span><i></i></div>
+          <div class="papel"><small>Nos casamos</small><span>A &amp; M</span><i></i></div>
+          <div class="papel"><small>Nos casamos</small><span>A &amp; M</span><i></i></div>
+          <div class="papel"><small>Nos casamos</small><span>A &amp; M</span><i></i></div>
+        </div>
+        <div class="s1-q" id="s1-q">…que <b>nadie</b> va a guardar</div>
+      </div>
+
+      <!-- ===== Escena 2: la invitación digital (5.45 – 21.75 s) ===== -->
+      <div id="s2" class="clip" data-start="5.45" data-duration="16.3" data-track-index="1">
+        <div class="marca-top" id="marca-top"><img src="assets/tufecha-logo.png" alt="Tu Fecha" /></div>
+        <div class="tel" id="tel">
+          <div class="notch"></div>
+          <div class="pantalla" id="pantalla">
+            <div class="capa wa" id="c-wa">
+              <div class="wa-head"><div class="wa-av"></div><div><b>Valeria y Santiago</b><small>en línea</small></div></div>
+              <div class="wa-msg" id="wa-msg">
+                <img src="assets/sobre-cerrado.jpg" alt="" />
+                <p>¡Nos casamos! 💌 Abre tu invitación: <u>paucoxd.github.io/invitaciones</u></p>
+                <em>12:04 ✓✓</em>
+              </div>
+            </div>
+            <div class="capa" id="c-sobre"><img class="full" src="assets/sobre-cerrado.jpg" alt="" /></div>
+            <div class="capa" id="c-abre"><img class="full" src="assets/sobre-abriendo.jpg" alt="" /></div>
+            <div class="capa" id="c-portada"><img class="full" src="assets/portada.jpg" alt="" /></div>
+            <div class="capa" id="c-cuenta"><img class="full" src="assets/pant-cuenta.jpg" alt="" /></div>
+            <div class="capa" id="c-mapa"><img class="full" src="assets/pant-ubicacion.jpg" alt="" /></div>
+            <div class="capa" id="c-rsvp"><img class="full" id="img-rsvp" src="assets/pant-rsvp.jpg" alt="" /></div>
+            <div class="toque" id="toque1" style="left:272px;top:676px"></div>
+            <div class="toque" id="toque2" style="left:404px;top:470px"></div>
+          </div>
+        </div>
+
+        <div class="chip izq" id="ch-musica" style="top:330px"><span class="ic"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>Tu música</div>
+        <div class="chip der" id="ch-cuenta" style="top:560px"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg></span>Cuenta regresiva</div>
+        <div class="chip izq" id="ch-mapa" style="top:800px"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>Mapa</div>
+        <div class="chip der" id="ch-conf" style="top:1040px"><span class="ic"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>Confirmación</div>
+        <div class="chip izq" id="ch-nombre" style="top:430px"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span>Su nombre</div>
+        <div class="chip der" id="ch-lugares" style="top:1110px"><span class="ic"><svg viewBox="0 0 24 24"><path d="M5 11V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5M3 11h18v5H3zM6 16v4M18 16v4"/></svg></span>4 lugares</div>
+
+        <div class="velo" id="velo"></div>
+        <div class="hora" id="hora">
+          <small>Recepción</small>
+          <h3>Hacienda</h3>
+          <div class="reloj"><div id="h1">7:00 PM</div><div id="h2">8:00 PM</div></div>
+          <div class="ok" id="ok">✓ Se actualiza sola</div>
+          <div class="noenvio" id="noenvio">Mismo enlace · sin reenviar</div>
+        </div>
+
+        <div class="subs">
+          <div class="sub" id="sb1">Con <b>Tu Fecha</b>, tu invitación</div>
+          <div class="sub" id="sb2">llega por <b>WhatsApp</b></div>
+          <div class="sub" id="sb3">y se abre como un <b>sobre</b></div>
+          <div class="sub" id="sb4">con tu <b>música</b>, cuenta regresiva,</div>
+          <div class="sub" id="sb5">mapa y <b>confirmación</b> en un toque</div>
+          <div class="sub" id="sb6">Cada familia ve <b>su nombre</b></div>
+          <div class="sub" id="sb7">y sus <b>lugares reservados</b></div>
+          <div class="sub" id="sb8">Y si cambia la <b>hora</b>…</div>
+          <div class="sub" id="sb9">se <b>actualiza sola</b></div>
+          <div class="sub" id="sb10">sin volver a <b>enviarla</b></div>
+        </div>
+      </div>
+
+      <!-- ===== Escena 3: cierre (21.75 – 30 s) ===== -->
+      <div id="s3" class="clip" data-start="21.75" data-duration="8.25" data-track-index="2">
+        <div class="evs">
+          <div class="ev" id="ev1">💍 Boda</div>
+          <div class="ev" id="ev2">👑 XV años</div>
+          <div class="ev" id="ev3">🕊️ Bautizo</div>
+          <div class="ev" id="ev4">🎂 Cumpleaños</div>
+        </div>
+        <div class="s3-logo" id="s3-logo"><span><img src="assets/tufecha-logo.png" alt="Tu Fecha" /></span></div>
+        <div class="s3-lema" id="s3-lema">Invitaciones digitales para tu gran día</div>
+        <div class="wa-btn" id="wa-btn"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3a.5.5 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3z"/></svg>Escríbenos por WhatsApp</div>
+        <div class="tel-num" id="tel-num">+52 81 2341 2206</div>
+        <div class="aparta" id="aparta">Aparta tu fecha hoy</div>
+        <div class="sitio" id="sitio">paucoxd.github.io/invitaciones</div>
+      </div>
+
+      <!-- ===== Audio ===== -->
+      <audio id="voz" src="assets/voz.mp3" data-start="0" data-duration="28.4" data-volume="1.6"></audio>
+      <audio id="musica" src="assets/musica.mp3" data-start="0" data-duration="30" data-volume="0.2" data-fade-in="0.4" data-fade-out="1.6"></audio>
+      <audio id="fx-papel1" src="sfx/papel.wav" data-start="0.15" data-duration="0.9" data-volume="0.5"></audio>
+      <audio id="fx-papel2" src="sfx/papel.wav" data-start="1.3" data-duration="0.9" data-volume="0.45"></audio>
+      <audio id="fx-whoosh0" src="sfx/whoosh.wav" data-start="4.3" data-duration="0.6" data-volume="0.6"></audio>
+      <audio id="fx-whoosh1" src="sfx/whoosh.wav" data-start="5.3" data-duration="0.6" data-volume="0.6"></audio>
+      <audio id="fx-pop1" src="sfx/pop.wav" data-start="7.6" data-duration="0.12" data-volume="0.7"></audio>
+      <audio id="fx-tap1" src="sfx/tap.wav" data-start="9.0" data-duration="0.05" data-volume="0.8"></audio>
+      <audio id="fx-campana" src="sfx/campana.wav" data-start="9.1" data-duration="1.2" data-volume="0.45"></audio>
+      <audio id="fx-pop2" src="sfx/pop.wav" data-start="10.32" data-duration="0.12" data-volume="0.55"></audio>
+      <audio id="fx-pop3" src="sfx/pop.wav" data-start="11.04" data-duration="0.12" data-volume="0.55"></audio>
+      <audio id="fx-pop4" src="sfx/pop.wav" data-start="12.28" data-duration="0.12" data-volume="0.55"></audio>
+      <audio id="fx-pop5" src="sfx/pop.wav" data-start="12.72" data-duration="0.12" data-volume="0.55"></audio>
+      <audio id="fx-tap2" src="sfx/tap.wav" data-start="13.9" data-duration="0.05" data-volume="0.8"></audio>
+      <audio id="fx-pop6" src="sfx/pop.wav" data-start="15.9" data-duration="0.12" data-volume="0.55"></audio>
+      <audio id="fx-pop7" src="sfx/pop.wav" data-start="16.56" data-duration="0.12" data-volume="0.55"></audio>
+      <audio id="fx-whoosh2" src="sfx/whoosh.wav" data-start="17.9" data-duration="0.6" data-volume="0.5"></audio>
+      <audio id="fx-campana2" src="sfx/campana.wav" data-start="19.2" data-duration="1.2" data-volume="0.4"></audio>
+      <audio id="fx-whoosh3" src="sfx/whoosh.wav" data-start="21.55" data-duration="0.6" data-volume="0.6"></audio>
+      <audio id="fx-pop8" src="sfx/pop.wav" data-start="21.92" data-duration="0.12" data-volume="0.5"></audio>
+      <audio id="fx-pop9" src="sfx/pop.wav" data-start="22.48" data-duration="0.12" data-volume="0.5"></audio>
+      <audio id="fx-pop10" src="sfx/pop.wav" data-start="23.55" data-duration="0.12" data-volume="0.5"></audio>
+      <audio id="fx-pop11" src="sfx/pop.wav" data-start="24.16" data-duration="0.12" data-volume="0.5"></audio>
+      <audio id="fx-campana3" src="sfx/campana.wav" data-start="25.28" data-duration="1.2" data-volume="0.45"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const pop = { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(2.2)' };
+
+      /* ---- Escena 1 (tiempos de la voz) ---- */
+      tl.fromTo('#s1-top', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }, 0.05);
+      tl.fromTo('#s1-num', { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(2)' }, 1.45);
+      const cnt = { v: 0 };
+      tl.to(cnt, { v: 200, duration: 0.75, ease: 'power2.out', onUpdate: () => { document.getElementById('s1-num').textContent = Math.round(cnt.v); } }, 1.5);
+      tl.fromTo('#s1-sub', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }, 2.2);
+      const papeles = gsap.utils.toArray('#pila .papel');
+      papeles.forEach((p, i) => {
+        const rot = [-8, 6, -3, 9, -6, 2][i];
+        tl.fromTo(p, { y: -1400, rotation: rot * 3, opacity: 1 }, { y: -i * 10, x: (i % 2 ? 1 : -1) * i * 6, rotation: rot, duration: 0.55, ease: 'power3.out' }, 0.2 + i * 0.32);
+      });
+      tl.fromTo('#s1-q', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }, 3.5);
+      papeles.forEach((p, i) => {
+        tl.to(p, { y: -1700, x: (i - 2.5) * 220, rotation: (i % 2 ? 1 : -1) * (40 + i * 12), scale: 0.7, duration: 0.7, ease: 'power2.in' }, 4.3 + i * 0.04);
+      });
+      tl.to(['#s1-top', '#s1-num', '#s1-sub'], { opacity: 0.25, duration: 0.4 }, 4.5);
+
+      /* ---- Escena 2 ---- */
+      tl.fromTo('#tel', { y: 1400, rotation: 6 }, { y: 0, rotation: 0, duration: 0.6, ease: 'power3.out' }, 5.45);
+      tl.fromTo('#marca-top', { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.4 }, 5.65);
+      tl.fromTo('#wa-msg', { opacity: 0, scale: 0.6, transformOrigin: '100% 0%' }, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.8)' }, 7.6);
+      // capas de la pantalla
+      ['#c-sobre', '#c-abre', '#c-portada', '#c-cuenta', '#c-mapa', '#c-rsvp'].forEach((c) => tl.set(c, { opacity: 0 }, 0));
+      tl.set('#c-wa', { visibility: 'hidden' }, 8.8);
+      tl.fromTo('#c-sobre', { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.45, ease: 'power2.out' }, 8.3);
+      tl.fromTo('#toque1', { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.2 }, 8.85);
+      tl.to('#toque1', { opacity: 0, scale: 1.6, duration: 0.35 }, 9.05);
+      tl.to('#c-abre', { opacity: 1, duration: 0.25 }, 9.1);
+      tl.fromTo('#c-portada', { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 0.45 }, 9.75);
+      tl.fromTo('#c-cuenta', { opacity: 0, y: 200 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }, 11.0);
+      tl.fromTo('#c-mapa', { opacity: 0, y: 200 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }, 12.2);
+      tl.fromTo('#c-rsvp', { opacity: 0, y: 200 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }, 12.65);
+      tl.fromTo('#toque2', { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.2 }, 13.75);
+      tl.to('#toque2', { opacity: 0, scale: 1.6, duration: 0.35 }, 13.95);
+      // chips de funciones
+      [['#ch-musica', 10.32], ['#ch-cuenta', 11.04], ['#ch-mapa', 12.28], ['#ch-conf', 12.72]].forEach(([c, t]) => {
+        tl.fromTo(c, { opacity: 0, scale: 0.5 }, { ...pop }, t);
+        tl.to(c, { opacity: 0, scale: 0.9, duration: 0.25 }, 14.7);
+      });
+      // Cada familia: acercamiento al nombre y los pases
+      tl.to('#img-rsvp', { scale: 1.75, transformOrigin: '50% 63%', duration: 0.8, ease: 'power2.inOut' }, 14.85);
+      tl.fromTo('#ch-nombre', { opacity: 0, scale: 0.5 }, { ...pop }, 15.9);
+      tl.fromTo('#ch-lugares', { opacity: 0, scale: 0.5 }, { ...pop }, 16.56);
+      tl.to(['#ch-nombre', '#ch-lugares'], { opacity: 0, duration: 0.25 }, 17.9);
+      // cambio de hora
+      tl.to('#velo', { opacity: 1, duration: 0.3 }, 17.95);
+      tl.fromTo('#hora', { opacity: 0, y: 80, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.6)' }, 18.0);
+      tl.set('#h2', { yPercent: 100 }, 0);
+      tl.to('#h1', { yPercent: -100, duration: 0.45, ease: 'power3.inOut' }, 19.15);
+      tl.to('#h2', { yPercent: 0, duration: 0.45, ease: 'power3.inOut' }, 19.15);
+      tl.fromTo('#ok', { opacity: 0, scale: 0.6 }, { ...pop }, 19.7);
+      tl.fromTo('#noenvio', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3 }, 20.36);
+
+      // subtítulos [id, entra, sale]
+      [['#sb1', 5.65, 7.08], ['#sb2', 7.1, 8.28], ['#sb3', 8.3, 9.96], ['#sb4', 9.98, 12.2], ['#sb5', 12.24, 14.82],
+       ['#sb6', 14.84, 16.26], ['#sb7', 16.28, 18.0], ['#sb8', 18.02, 19.06], ['#sb9', 19.08, 20.32], ['#sb10', 20.34, 21.6]].forEach(([s, a, b]) => {
+        tl.fromTo(s, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out' }, a);
+        tl.to(s, { opacity: 0, duration: 0.08 }, b - 0.08);
+      });
+
+      /* ---- Escena 3 ---- */
+      tl.fromTo('#s3', { yPercent: 100 }, { yPercent: 0, duration: 0.45, ease: 'power3.out' }, 21.75);
+      [['#ev1', 21.92], ['#ev2', 22.48], ['#ev3', 23.55], ['#ev4', 24.16]].forEach(([e, t]) => tl.fromTo(e, { opacity: 0, scale: 0.5 }, { ...pop }, t));
+      tl.fromTo('#s3-logo', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'power3.out' }, 24.9);
+      tl.fromTo('#s3-lema', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 25.2);
+      tl.fromTo('#wa-btn', { opacity: 0, y: 60, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.8)' }, 25.28);
+      tl.to('#wa-btn', { scale: 1.06, duration: 0.35, yoyo: true, repeat: 5, ease: 'sine.inOut' }, 26.1);
+      tl.fromTo('#tel-num', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 25.9);
+      tl.fromTo('#aparta', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 26.76);
+      tl.fromTo('#sitio', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 27.4);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines['main'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
