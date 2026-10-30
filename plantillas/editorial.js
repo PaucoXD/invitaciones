@@ -123,7 +123,10 @@
   function render(V, d, S) {
     const e = S.esc, f = S.fechaInfo(d), oc = d.ocultar, E = V.estilo;
     const gal = (d.historia.fotos || []).filter(x => x && x.src);
-    const flores = (c) => S.adorno(d, 'flores', ramo(V.flores, V), 'ed-flores ' + c);
+    // Ramillete en PNG (plantillas/adornos/<diseño>-flores.png). En el archivo publicado se pide a la dirección del sitio.
+    const N = window.NEGOCIO || {}, ruta = d._rutaAdornos != null ? d._rutaAdornos : (N.sitio ? String(N.sitio).replace(/\/?$/, '/') + 'plantillas/adornos/' : null);
+    const dFlores = V.flores === 'linea' ? Object.assign({}, d, { _rutaAdornos: null }) : Object.assign({}, d, { _rutaAdornos: ruta });
+    const flores = (c) => S.adorno(dFlores, 'flores', ramo(V.flores, V), 'ed-flores ' + c);
     const ini1 = ((d.novia || '').trim()[0] || '').toUpperCase(), ini2 = ((d.novio || '').trim()[0] || '').toUpperCase();
     const mono = `<p class="ed-mono rv"><span>${e(ini1)}</span><i></i><span>${e(ini2)}</span></p>`;
     const nombresScript = `<h1 class="ed-nombres">${e(d.novia)}<i>&amp;</i>${e(d.novio)}</h1>`;
@@ -279,7 +282,7 @@ ${E === 'artesanal' ? `body.plantilla-${id}{background:${c.papel} ${PAPEL_ALGODO
 /* Flores */
 .ed-flores{display:block;pointer-events:none}
 .ed-tira{display:flex;justify-content:space-between;align-items:flex-start;height:0;position:relative;z-index:3}
-.ed-tira .ed-flores{width:170px;margin-top:-46px}
+.ed-tira .ed-flores{width:190px;margin-top:-50px}
 .ed-tira .t-der{transform:scaleX(-1)}
 .ed-tira.grande{justify-content:center;height:auto}
 .ed-tira.grande .ed-flores{width:min(420px,108%);margin:-70px auto -30px}
@@ -371,13 +374,14 @@ body.plantilla-${id} .firma-tf{color:var(--tinta)}
 .ed .pie .ed-foto{margin-top:6px}
 
 /* ---- Estilo: sobre ---- */
-.hero-sobre{position:relative;background:var(--banda);color:var(--sobre-banda);padding:60px 20px 34px;text-align:center;min-height:330px;display:flex;flex-direction:column;align-items:center;justify-content:space-between}
+.hero-sobre{position:relative;background:var(--banda);color:var(--sobre-banda);padding:60px 20px 74px;text-align:center;min-height:330px;display:flex;flex-direction:column;align-items:center;justify-content:space-between}
 .hs-solapa{position:absolute;left:0;right:0;top:0;width:100%;height:78%;fill:var(--banda-osc);filter:drop-shadow(0 8px 10px rgba(0,0,0,.28))}
 .hero-sobre .ed-nombres{position:relative;z-index:1;font-family:var(--f-script);font-weight:400;font-size:clamp(44px,13vw,60px);line-height:1.08;display:flex;flex-direction:column;align-items:center}
 .ed-nombres i{font-style:normal;font-size:.55em;opacity:.85}
-.hs-sello{position:absolute;left:50%;top:78%;transform:translate(-50%,-62%);width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e3c677,#b28d3f 60%,#86662a);color:#6d511e;display:flex;align-items:center;justify-content:center;font-family:var(--f-script);font-size:22px;box-shadow:inset 0 0 0 4px rgba(255,255,255,.18),0 4px 10px rgba(0,0,0,.35)}
-.hs-fecha{position:relative;z-index:1;font-size:14px;letter-spacing:.2em;margin-top:120px}
-.e-sobre .ed-intro{padding-top:56px}
+.hs-sello{position:absolute;left:50%;top:70%;transform:translate(-50%,-62%);width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e3c677,#b28d3f 60%,#86662a);color:#6d511e;display:flex;align-items:center;justify-content:center;font-family:var(--f-script);font-size:22px;box-shadow:inset 0 0 0 4px rgba(255,255,255,.18),0 4px 10px rgba(0,0,0,.35)}
+.hs-fecha{position:relative;z-index:1;font-size:14px;letter-spacing:.2em;margin-top:96px}
+.hs-sello+.hs-fecha{margin-top:150px}
+.e-sobre .ed-intro{padding-top:96px}
 .e-sobre .ed-fecha{padding-bottom:50px}
 
 /* ---- Estilo: acuarela ---- */

@@ -16,3 +16,12 @@ El nombre del archivo es `<plantilla>-<adorno>.png`:
 
 También puedes subirlos desde el editor (sección “Adornos de la plantilla”); así quedan
 solo en esa invitación. Usa ilustraciones con licencia comercial si vas a vender.
+
+## Diseños Editorial
+
+Los ramilletes `ed-cafe-flores.png`, `ed-navy-flores.png`, `ed-vino-flores.png`, `ed-terracota-flores.png`,
+`ed-salvia-flores.png` y `ed-esmeralda-flores.png` están armados con ilustraciones de acuarela de Pixabay
+(licencia de Pixabay: uso comercial sin atribución; no se pueden vender sueltas). Autores: PhuongLucky, SYG_Anime,
+Buntysmum, Kollsd, lucianapappdesign, 55rova y otros. La lista completa de autores y enlaces está en el
+archivo `FLORES-PIXABAY.md`. Las invitaciones publicadas toman estos PNG de la dirección del sitio
+(`NEGOCIO.sitio`); si no cargan, se ven las flores dibujadas incluidas.
